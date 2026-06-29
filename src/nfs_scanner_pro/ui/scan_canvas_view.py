@@ -161,6 +161,7 @@ class ScanCanvasView(QGraphicsView):
         self.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)
         self.setTransformationAnchor(QGraphicsView.ViewportAnchor.AnchorViewCenter)
         self.setResizeAnchor(QGraphicsView.ViewportAnchor.AnchorViewCenter)
+        self.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.setBackgroundBrush(QColor("#0A1018"))
         self._show_handles = show_handles
 
@@ -282,6 +283,7 @@ class ScanCanvasView(QGraphicsView):
         self.fitInView(target, Qt.AspectRatioMode.KeepAspectRatio)
         if PCB_ZOOM_FACTOR != 1.0:
             self.scale(PCB_ZOOM_FACTOR, PCB_ZOOM_FACTOR)
+        self.centerOn(PCB_X + PCB_WIDTH / 2, PCB_Y + PCB_HEIGHT / 2)
 
     def resizeEvent(self, event) -> None:  # noqa: N802
         super().resizeEvent(event)

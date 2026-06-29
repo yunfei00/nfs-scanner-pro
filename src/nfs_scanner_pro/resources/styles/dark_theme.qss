@@ -38,7 +38,7 @@ QToolBar#mainToolBar {
     background-color: #0B1724;
     border-bottom: 1px solid #1E2D3D;
     spacing: 5px;
-    padding: 2px 10px;
+    padding: 0 10px;
     min-height: 52px;
     max-height: 56px;
 }
@@ -55,8 +55,8 @@ QToolButton[variant="primary"] {
     border-radius: 6px;
     padding: 0 14px;
     font-weight: 600;
-    min-height: 38px;
-    max-height: 38px;
+    min-height: 36px;
+    max-height: 36px;
 }
 
 QToolButton[variant="primary"]:hover {
@@ -70,8 +70,8 @@ QToolButton[variant="danger"] {
     border-radius: 6px;
     padding: 0 14px;
     font-weight: 600;
-    min-height: 38px;
-    max-height: 38px;
+    min-height: 36px;
+    max-height: 36px;
 }
 
 QToolButton[variant="danger"]:hover {
@@ -92,6 +92,37 @@ QToolButton[variant="secondary"] {
 QToolButton[variant="secondary"]:hover {
     background-color: #1E2D3D;
     border-color: #243647;
+}
+
+QWidget#topMenuBar {
+    background-color: #0B1724;
+    border-bottom: 1px solid #1E2D3D;
+    min-height: 32px;
+    max-height: 32px;
+}
+
+QWidget#windowControls {
+    min-height: 32px;
+    max-height: 32px;
+}
+
+QWidget#windowControls QPushButton {
+    background-color: transparent;
+    color: #A8B3C2;
+    border: none;
+    border-radius: 0;
+    font-size: 14px;
+    padding: 0;
+}
+
+QWidget#windowControls QPushButton:hover {
+    background-color: #1E2D3D;
+    color: #EAF2FF;
+}
+
+QPushButton#windowCloseButton:hover {
+    background-color: #EF4444;
+    color: #EAF2FF;
 }
 
 QWidget#leftNavigationBar {
@@ -117,6 +148,23 @@ QWidget#leftNavigationBar QToolButton:checked {
 }
 
 QWidget#leftNavigationBar QToolButton:hover {
+    background-color: #1E2D3D;
+    color: #EAF2FF;
+}
+
+QWidget#leftNavigationBar QToolButton#navToggleButton {
+    background-color: #132337;
+    color: #A8B3C2;
+    border: 1px solid #1E2D3D;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    margin: 4px 2px;
+    padding-left: 0;
+    text-align: center;
+}
+
+QWidget#leftNavigationBar QToolButton#navToggleButton:hover {
     background-color: #1E2D3D;
     color: #EAF2FF;
 }
@@ -194,14 +242,14 @@ QLabel#minimapOverlay {
     padding: 2px;
 }
 
-QDockWidget#scanParameterDock,
+QDockWidget#scanParamDock,
 QDockWidget#deviceConfigDock,
 QDockWidget#analysisParameterDock,
 QDockWidget#reportSettingsDock {
     color: #EAF2FF;
 }
 
-QDockWidget#scanParameterDock::title {
+QDockWidget#scanParamDock::title {
     background-color: #0B1724;
     border-bottom: 1px solid #1E2D3D;
     padding: 8px;
@@ -328,6 +376,11 @@ QDockWidget QScrollBar::add-page:vertical,
 QDockWidget QScrollBar::sub-page:vertical {
     height: 0;
     background: none;
+}
+
+QDockWidget QScrollBar:horizontal {
+    height: 0;
+    background: transparent;
 }
 
 QStackedWidget#pageStack {

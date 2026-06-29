@@ -110,7 +110,7 @@ class ReportPage(QWidget):
         summary = QLabel(
             "结论摘要：CPU 区域在 2.450 GHz 出现局部辐射峰值（-23.45 dBm），"
             "位于 U2·CPU 封装东北侧 12 mm 处。建议进一步 Hy 扫描对比极化分量。"
-            "（Mock 占位，不生成真实 PDF）",
+            "（原型占位，不生成真实 PDF）",
             card,
         )
         summary.setWordWrap(True)

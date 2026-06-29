@@ -61,7 +61,7 @@ class ReportSettingsDock(QDockWidget):
         ef.addRow("", QCheckBox("包含热力图", checked=True))
         ef.addRow("", QCheckBox("包含设备信息", checked=True))
         ef.addRow("", QCheckBox("包含原始数据表"))
-        note = QLabel("Mock 占位 — 不生成真实 PDF")
+        note = QLabel("原型占位 — 不生成真实 PDF")
         note.setProperty("role", "placeholder")
         ef.addRow("", note)
         layout.addWidget(export)

@@ -16,6 +16,9 @@ class DeviceStatusBar(QWidget):
     _SPACING_MIN = 2
     _MARGIN_MAX = 10
     _MARGIN_MIN = 2
+    _DEVICE_PAD = 12
+    _META_PAD = 8
+    _SEP_PAD = 6
 
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
@@ -52,6 +55,7 @@ class DeviceStatusBar(QWidget):
                     "full": full,
                     "short": short,
                     "allow_short": device["name"] == "舵机系统",
+                    "pad": self._DEVICE_PAD,
                 }
             )
 
@@ -72,7 +76,13 @@ class DeviceStatusBar(QWidget):
                 sep.setWordWrap(False)
                 self._layout.addWidget(sep)
                 self._entries.append(
-                    {"label": sep, "full": "|", "short": "|", "allow_short": False}
+                    {
+                        "label": sep,
+                        "full": "|",
+                        "short": "|",
+                        "allow_short": False,
+                        "pad": self._SEP_PAD,
+                    }
                 )
 
             meta = QLabel(text, self)
@@ -84,7 +94,13 @@ class DeviceStatusBar(QWidget):
             meta.setTextInteractionFlags(Qt.TextInteractionFlag.NoTextInteraction)
             self._layout.addWidget(meta)
             self._entries.append(
-                {"label": meta, "full": text, "short": text, "allow_short": False}
+                {
+                    "label": meta,
+                    "full": text,
+                    "short": text,
+                    "allow_short": False,
+                    "pad": self._META_PAD,
+                }
             )
 
     def resizeEvent(self, event) -> None:  # noqa: N802
@@ -104,7 +120,10 @@ class DeviceStatusBar(QWidget):
         self, metrics: QFontMetrics, spacing: int, *, short_servo: bool
     ) -> int:
         texts = [self._display_text(e, short_servo=short_servo) for e in self._entries]
-        total = sum(metrics.horizontalAdvance(t) + 1 for t in texts)
+        total = sum(
+            metrics.horizontalAdvance(t) + entry["pad"]
+            for t, entry in zip(texts, self._entries)
+        )
         if len(texts) > 1:
             total += spacing * (len(texts) - 1)
         return total
@@ -141,6 +160,6 @@ class DeviceStatusBar(QWidget):
             text = self._display_text(entry, short_servo=short_servo)
             label.setFont(font)
             label.setText(text)
-            width = metrics.horizontalAdvance(text) + 2
+            width = metrics.horizontalAdvance(text) + entry["pad"]
             label.setFixedWidth(width)
             label.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Preferred)

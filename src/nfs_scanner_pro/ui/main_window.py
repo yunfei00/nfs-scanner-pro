@@ -10,6 +10,7 @@ from PySide6.QtWidgets import (
     QDockWidget,
     QHBoxLayout,
     QMainWindow,
+    QMenuBar,
     QMessageBox,
     QStackedWidget,
     QTabBar,
@@ -30,9 +31,10 @@ from nfs_scanner_pro.ui.pages.scan_page import ScanPage
 from nfs_scanner_pro.ui.report_settings_dock import ReportSettingsDock
 from nfs_scanner_pro.ui.scan_parameter_dock import ScanParameterDock
 from nfs_scanner_pro.ui.widgets.status_bar import AppStatusBar
+from nfs_scanner_pro.ui.widgets.top_menu_bar import TopMenuBar
 
 _SCAN_TOOLBAR = (
-    ("toolbarStartScanButton", "开始扫描", "primary", "开始扫描", "扫描中（Mock）"),
+    ("toolbarStartScanButton", "开始扫描", "primary", "开始扫描", "扫描中（原型）"),
     ("toolbarStopScanButton", "停止扫描", "danger", "停止扫描", "准备就绪"),
     ("toolbarCaptureButton", "拍照", "secondary", "拍照", None),
     ("toolbarAlignButton", "区域对齐", "secondary", "区域对齐", None),
@@ -53,6 +55,7 @@ class MainWindow(QMainWindow):
     WINDOW_TITLE = "近场扫描系统"
     DEFAULT_WIDTH = 1600
     DEFAULT_HEIGHT = 1000
+    FRAMELESS_WINDOW = True
 
     PAGE_SCAN = 0
     PAGE_DEVICE = 1
@@ -69,10 +72,23 @@ class MainWindow(QMainWindow):
         self._hidden_docks: list[QDockWidget] = []
         self._page_docks: list[QDockWidget] = []
 
-        self._build_menu_bar()
+        if self.FRAMELESS_WINDOW:
+            self.setWindowFlags(
+                Qt.WindowType.FramelessWindowHint | Qt.WindowType.Window
+            )
+
+        menu_bar = QMenuBar(self)
+        self._build_menu_bar(menu_bar)
+        if self.FRAMELESS_WINDOW:
+            self._top_menu_bar = TopMenuBar(self, menu_bar)
+            self.setMenuWidget(self._top_menu_bar)
+        else:
+            self.setMenuBar(menu_bar)
         self._tool_bar = QToolBar("主工具栏", self)
         self._tool_bar.setObjectName("mainToolBar")
         self._tool_bar.setMovable(False)
+        self._tool_bar.setFloatable(False)
+        self._tool_bar.setAllowedAreas(Qt.ToolBarArea.TopToolBarArea)
         self._tool_bar.setIconSize(QSize(18, 18))
         self._tool_bar.setFixedHeight(54)
         self.addToolBar(self._tool_bar)
@@ -83,11 +99,10 @@ class MainWindow(QMainWindow):
         self._rebuild_toolbar(self.PAGE_SCAN)
         self._switch_page(self.PAGE_SCAN)
 
-    def _build_menu_bar(self) -> None:
-        mb = self.menuBar()
-        mb.setObjectName("menuBar")
+    def _build_menu_bar(self, menu_bar: QMenuBar) -> None:
+        menu_bar.setObjectName("menuBar")
 
-        file_menu = mb.addMenu("文件(F)")
+        file_menu = menu_bar.addMenu("文件(F)")
         file_actions = [
             ("新建项目", self._mock_file_action),
             ("打开项目", self._mock_file_action),
@@ -107,8 +122,8 @@ class MainWindow(QMainWindow):
                 act = file_menu.addAction(label)
                 act.triggered.connect(slot)
 
-        mb.addMenu("编辑(E)")
-        view_menu = mb.addMenu("视图(V)")
+        menu_bar.addMenu("编辑(E)")
+        view_menu = menu_bar.addMenu("视图(V)")
 
         self._action_param_panel = QAction("显示参数面板", self)
         self._action_param_panel.setCheckable(True)
@@ -132,25 +147,26 @@ class MainWindow(QMainWindow):
         reset_act.triggered.connect(self._mock_log("重置布局"))
         view_menu.addAction(reset_act)
 
-        mb.addMenu("工具(T)")
-        mb.addMenu("设置(S)")
-        mb.addMenu("帮助(H)")
+        menu_bar.addMenu("工具(T)")
+        menu_bar.addMenu("设置(S)")
+        menu_bar.addMenu("帮助(H)")
 
     def _rebuild_toolbar(self, page_index: int) -> None:
         self._tool_bar.clear()
         spec = _REPORT_TOOLBAR if page_index == self.PAGE_REPORT else _SCAN_TOOLBAR
-        for obj_name, text, variant, log_msg, state_msg in spec:
+        for index, (obj_name, text, variant, log_msg, state_msg) in enumerate(spec):
             btn = QToolButton(self)
             btn.setObjectName(obj_name)
             btn.setText(text)
             btn.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextOnly)
             btn.setProperty("variant", variant)
-            height = 36 if variant == "secondary" else 38
-            btn.setFixedHeight(height)
+            btn.setFixedHeight(36)
             btn.clicked.connect(self._toolbar_action(log_msg, state_msg))
             self._tool_bar.addWidget(btn)
             btn.style().unpolish(btn)
             btn.style().polish(btn)
+            if index == 1:
+                self._tool_bar.addSeparator()
 
     def _build_central(self) -> None:
         central = QWidget(self)
@@ -265,7 +281,7 @@ class MainWindow(QMainWindow):
         self._action_param_panel.blockSignals(False)
 
     def _device_action(self, text: str) -> None:
-        self._status.set_state(f"设备操作：{text}（Mock）")
+        self._status.set_state(f"设备操作：{text}（原型）")
 
     def _mock_file_action(self) -> None:
         action = self.sender()
@@ -288,7 +304,7 @@ class MainWindow(QMainWindow):
 
     def _show_mock(self, message: str) -> None:
         print(f"[Mock UI] {message}", flush=True)
-        QMessageBox.information(self, "Mock", f"{message}\n\n（Mock 占位，无真实业务）")
+        QMessageBox.information(self, "原型占位", f"{message}\n\n（原型占位，无真实业务）")
 
 
 def load_stylesheet(app) -> None:

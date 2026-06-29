@@ -22,6 +22,14 @@ def placeholder_group(title: str, object_name: str, parent: QWidget) -> QGroupBo
     hint = QLabel("折叠 — 后续 Release 展开", group)
     hint.setProperty("role", "placeholder")
     layout.addWidget(hint)
+
+    def sync_collapsed(checked: bool) -> None:
+        hint.setVisible(checked)
+        group.setMaximumHeight(16777215 if checked else 44)
+        group.updateGeometry()
+
+    group.toggled.connect(sync_collapsed)
+    sync_collapsed(False)
     return group
 
 

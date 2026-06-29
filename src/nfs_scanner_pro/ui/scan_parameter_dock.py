@@ -21,13 +21,14 @@ from PySide6.QtWidgets import (
 from nfs_scanner_pro.ui import mock_data
 
 DOCK_MIN_WIDTH = 340
-DOCK_MAX_WIDTH = 400
+DOCK_MAX_WIDTH = 420
 DOCK_DEFAULT_WIDTH = 360
 
 
 def apply_dock_width_policy(dock: QDockWidget) -> None:
     dock.setMinimumWidth(DOCK_MIN_WIDTH)
     dock.setMaximumWidth(DOCK_MAX_WIDTH)
+    dock.setBaseSize(DOCK_DEFAULT_WIDTH, 0)
     dock.resize(DOCK_DEFAULT_WIDTH, dock.height())
 
 
@@ -41,7 +42,7 @@ class ScanParameterDock(QDockWidget):
 
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__("扫描参数", parent)
-        self.setObjectName("scanParameterDock")
+        self.setObjectName("scanParamDock")
         apply_dock_width_policy(self)
         self.setAllowedAreas(
             Qt.DockWidgetArea.LeftDockWidgetArea | Qt.DockWidgetArea.RightDockWidgetArea
@@ -175,4 +176,12 @@ class ScanParameterDock(QDockWidget):
         hint = QLabel("折叠 — 后续 Release 展开", group)
         hint.setProperty("role", "placeholder")
         layout.addWidget(hint)
+
+        def sync_collapsed(checked: bool) -> None:
+            hint.setVisible(checked)
+            group.setMaximumHeight(16777215 if checked else 44)
+            group.updateGeometry()
+
+        group.toggled.connect(sync_collapsed)
+        sync_collapsed(False)
         return group

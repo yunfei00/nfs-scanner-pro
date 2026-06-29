@@ -39,8 +39,8 @@ DEVICE_TOOLTIPS = {
     "舵机系统": "舵机系统\n状态：已连接",
 }
 
-BREADCRUMB_SCAN = f"项目 > {REGION_NAME} > Hx Probe > {FREQUENCY} > {POINTS} pts"
-BREADCRUMB_ANALYSIS = f"项目 > {REGION_NAME} > ScanTask {SCAN_TASK} > Trace 1 > {FREQUENCY}"
+BREADCRUMB_SCAN = f"项目 > {REGION_NAME} > Hx 探头 > {FREQUENCY} > {POINTS} 点"
+BREADCRUMB_ANALYSIS = f"项目 > {REGION_NAME} > 扫描任务 {SCAN_TASK} > 迹线 1 > {FREQUENCY}"
 
 DATE = "2025-06-16"
 TIME = "14:31:10"
@@ -60,8 +60,8 @@ STATUS_DEVICE = {
 
 STATUS_ANALYSIS = {
     "state": "分析就绪",
-    "extra1": "Heatmap：已加载",
-    "extra2": f"ScanTask：{SCAN_TASK} · {POINTS} pts",
+    "extra1": "热力图：已加载",
+    "extra2": f"扫描任务：{SCAN_TASK} · {POINTS} 点",
 }
 
 STATUS_REPORT = {

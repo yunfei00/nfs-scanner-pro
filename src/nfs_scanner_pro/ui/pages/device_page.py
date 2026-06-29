@@ -49,7 +49,7 @@ class DevicePage(QWidget):
                 ("型号", "ZNA67"),
                 ("连接方式", "TCP/IP"),
                 ("地址", "192.168.1.100:5025"),
-                ("Trace", "Trace 1"),
+                ("迹线", "迹线 1"),
                 ("频率范围", "1 MHz — 67 GHz"),
             ],
             [("spectrumTestButton", "测试连接")],
@@ -57,7 +57,7 @@ class DevicePage(QWidget):
         spectrum.setObjectName("deviceCardSpectrum")
         spectrum.action_clicked.connect(self._on_action)
 
-        preview = QLabel("相机预览区域（Mock）", grid_wrap)
+        preview = QLabel("相机预览区域（原型）", grid_wrap)
         preview.setObjectName("cameraPreview")
         preview.setProperty("role", "cameraPreview")
         preview.setMinimumHeight(100)

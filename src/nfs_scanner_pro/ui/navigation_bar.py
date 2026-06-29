@@ -1,4 +1,4 @@
-"""左侧图标导航栏 — 64px 默认，悬停展开至 180px。"""
+"""左侧图标导航栏 — 64px 折叠，点击按钮展开至 180px。"""
 
 from __future__ import annotations
 
@@ -32,6 +32,7 @@ class LeftNavigationBar(QWidget):
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self.setObjectName("leftNavigationBar")
+        self._expanded = False
         self._width = float(NAV_COLLAPSED)
         self.setFixedWidth(NAV_COLLAPSED)
 
@@ -59,6 +60,16 @@ class LeftNavigationBar(QWidget):
             self._buttons.append(btn)
 
         layout.addStretch()
+
+        self._toggle_btn = QToolButton(self)
+        self._toggle_btn.setObjectName("navToggleButton")
+        self._toggle_btn.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextOnly)
+        self._toggle_btn.setText("⟩")
+        self._toggle_btn.setToolTip("展开导航")
+        self._toggle_btn.setFixedHeight(40)
+        self._toggle_btn.clicked.connect(self.toggle_collapsed)
+        layout.addWidget(self._toggle_btn)
+
         self._buttons[0].setChecked(True)
         self._group.idClicked.connect(self.page_changed.emit)
 
@@ -85,13 +96,16 @@ class LeftNavigationBar(QWidget):
 
     navWidth = Property(float, get_nav_width, set_nav_width)
 
-    def enterEvent(self, event) -> None:  # noqa: N802
-        self._animate_to(NAV_EXPANDED, expanded=True)
-        super().enterEvent(event)
-
-    def leaveEvent(self, event) -> None:  # noqa: N802
-        self._animate_to(NAV_COLLAPSED, expanded=False)
-        super().leaveEvent(event)
+    def toggle_collapsed(self) -> None:
+        self._expanded = not self._expanded
+        target = NAV_EXPANDED if self._expanded else NAV_COLLAPSED
+        self._animate_to(target, expanded=self._expanded)
+        if self._expanded:
+            self._toggle_btn.setText("⟨")
+            self._toggle_btn.setToolTip("折叠导航")
+        else:
+            self._toggle_btn.setText("⟩")
+            self._toggle_btn.setToolTip("展开导航")
 
     def _animate_to(self, target: int, *, expanded: bool) -> None:
         self.setProperty("expanded", expanded)
