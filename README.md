@@ -29,7 +29,7 @@
 | **009.9 AI Index** | [Release_009_9](docs/product-spec/release/Release_009_9_AI_Knowledge_Index/README.md) |
 | **010 High Fidelity** | [Release_010](docs/product-spec/release/Release_010_High_Fidelity_Design/README.md) |
 | **010.5 High Fidelity 补全** | [Release_010_5](docs/product-spec/release/Release_010_5_High_Fidelity_Completion/README.md) |
-| 011 MainWindow PySide6 | [Release_011](docs/product-spec/release/Release_011_MainWindow_PySide6_Prototype/README.md)（待 010.5 验收） |
+| **011 MainWindow PySide6** | [Release_011](docs/product-spec/release/Release_011_MainWindow_PySide6_Prototype/README.md) · `python scripts/run_mock_ui.py` |
 
 ## 打开高保真原型
 

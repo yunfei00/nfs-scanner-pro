@@ -9,6 +9,8 @@ FREQUENCY = "2.450 GHz"
 POINTS = 6461
 GRID_X = 91
 GRID_Y = 71
+SCAN_TASK = "ST-001"
+DEVICE_PROFILE = "Lab_Default_v1"
 
 POSITION = {
     "x": 45.20,
@@ -37,15 +39,35 @@ DEVICE_TOOLTIPS = {
     "舵机系统": "舵机系统\n状态：已连接",
 }
 
-BREADCRUMB = f"项目 > {REGION_NAME} > Hx Probe > {FREQUENCY} > {POINTS} pts"
+BREADCRUMB_SCAN = f"项目 > {REGION_NAME} > Hx Probe > {FREQUENCY} > {POINTS} pts"
+BREADCRUMB_ANALYSIS = f"项目 > {REGION_NAME} > ScanTask {SCAN_TASK} > Trace 1 > {FREQUENCY}"
 
-STATUS_BAR = {
+DATE = "2025-06-16"
+TIME = "14:31:10"
+
+STATUS_SCAN = {
     "state": "准备就绪",
     "progress": 0,
-    "points": f"0 / {POINTS}",
-    "remaining": "00:12:31",
-    "date": "2025-06-16",
-    "time": "14:31:10",
+    "extra1": f"扫描点：0 / {POINTS}",
+    "extra2": "预计剩余时间：00:12:31",
+}
+
+STATUS_DEVICE = {
+    "state": "设备就绪",
+    "extra1": "已连接设备：4 / 4",
+    "extra2": f"当前配置：{DEVICE_PROFILE}",
+}
+
+STATUS_ANALYSIS = {
+    "state": "分析就绪",
+    "extra1": "Heatmap：已加载",
+    "extra2": f"ScanTask：{SCAN_TASK} · {POINTS} pts",
+}
+
+STATUS_REPORT = {
+    "state": "报告就绪",
+    "extra1": "当前：CPU_Area_Hx_2.45GHz_报告",
+    "extra2": "",
 }
 
 SCAN_SETTINGS = {
@@ -66,3 +88,27 @@ REGION_SETTINGS = {
     "path_length": "16.20 m",
     "estimated_time": "00:32:18",
 }
+
+REPORTS = [
+    {
+        "id": "r1",
+        "title": "CPU_Area_Hx_2.45GHz_报告",
+        "meta": "2025-06-16 14:20 · Hx",
+        "scan_time": "2025-06-16 14:20:33",
+        "probe": PROBE_NAME,
+    },
+    {
+        "id": "r2",
+        "title": "CPU_Area_Hy_2.45GHz_报告",
+        "meta": "2025-06-15 09:45 · Hy",
+        "scan_time": "2025-06-15 09:45:12",
+        "probe": "Hy(100 μm)",
+    },
+    {
+        "id": "r3",
+        "title": "全板初扫_摘要",
+        "meta": "2025-06-10 16:30 · Hx",
+        "scan_time": "2025-06-10 16:30:00",
+        "probe": PROBE_NAME,
+    },
+]

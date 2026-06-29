@@ -272,11 +272,165 @@ QStackedWidget#pageStack {
     background-color: #07111D;
 }
 
-QLabel#devicePage,
-QLabel#analysisPage,
-QLabel#reportPage {
+QLabel[role="pageBreadcrumb"] {
+    background-color: #0B1724;
+    border-bottom: 1px solid #1E2D3D;
+    padding: 8px 16px;
     color: #A8B3C2;
+    font-size: 13px;
+}
+
+QWidget#devicePage,
+QWidget#analysisPage,
+QWidget#reportPage {
+    background-color: #07111D;
+}
+
+QWidget#deviceCenter {
+    background-color: #07111D;
+}
+
+QWidget[card="true"] {
+    background-color: #0B1724;
+    border: 1px solid #1E2D3D;
+    border-radius: 8px;
+}
+
+QLabel[role="cardTitle"] {
+    color: #EAF2FF;
     font-size: 16px;
+    font-weight: 600;
+}
+
+QLabel[role="badge"] {
+    color: #22C55E;
+    font-size: 12px;
+    padding: 2px 8px;
+    border: 1px solid rgba(34, 197, 94, 0.35);
+    border-radius: 4px;
+}
+
+QPushButton[variant="primary"] {
+    background-color: #16A34A;
+    color: #EAF2FF;
+    border: 1px solid #22C55E;
+    border-radius: 6px;
+    padding: 6px 14px;
+}
+
+QPushButton[variant="action"],
+QPushButton[variant="secondary"] {
+    background-color: #132337;
+    color: #EAF2FF;
+    border: 1px solid #1E2D3D;
+    border-radius: 6px;
+    padding: 6px 14px;
+}
+
+QPushButton[variant="jog"] {
+    background-color: #132337;
+    color: #A8B3C2;
+    border: 1px solid #1E2D3D;
+    border-radius: 4px;
+}
+
+QLabel[role="servoChip"] {
+    background-color: #132337;
+    border: 1px solid #1E2D3D;
+    border-radius: 6px;
+    padding: 8px;
+    color: #A8B3C2;
+}
+
+QLabel[role="servoChip"][active="true"] {
+    border-color: #1A8CFF;
+    color: #EAF2FF;
+}
+
+QLabel[role="cameraPreview"] {
+    background-color: #0A1622;
+    border: 1px dashed #1E2D3D;
+    border-radius: 6px;
+    color: #6B8299;
+    padding: 24px;
+}
+
+QWidget#reportList {
+    background-color: #0B1724;
+    border-right: 1px solid #1E2D3D;
+}
+
+QLabel[role="listHeader"] {
+    color: #EAF2FF;
+    font-size: 15px;
+    font-weight: 600;
+    padding: 16px;
+    border-bottom: 1px solid #1E2D3D;
+}
+
+QFrame[role="reportListItem"] {
+    border-bottom: 1px solid #1E2D3D;
+}
+
+QFrame[role="reportListItem"][active="true"] {
+    background-color: rgba(26, 140, 255, 0.12);
+    border-left: 3px solid #1A8CFF;
+}
+
+QLabel[role="reportTitle"] {
+    color: #EAF2FF;
+    font-size: 14px;
+}
+
+QLabel[role="reportMeta"] {
+    color: #6B8299;
+    font-size: 12px;
+}
+
+QWidget#reportPreviewHost {
+    background-color: #07111D;
+}
+
+QFrame[role="pdfCard"] {
+    background-color: #FFFFFF;
+    border: 1px solid #D1D5DB;
+    border-radius: 4px;
+}
+
+QLabel[role="pdfTitle"] {
+    color: #111827;
+    font-size: 22px;
+    font-weight: 700;
+    padding-bottom: 12px;
+}
+
+QLabel[role="pdfMetaKey"] {
+    color: #6B7280;
+    font-size: 13px;
+}
+
+QLabel[role="pdfMetaValue"] {
+    color: #111827;
+    font-size: 13px;
+}
+
+QLabel[role="pdfSummary"] {
+    color: #374151;
+    font-size: 14px;
+    line-height: 1.5;
+    padding-top: 12px;
+}
+
+QDockWidget#deviceConfigDock::title,
+QDockWidget#analysisParameterDock::title,
+QDockWidget#reportSettingsDock::title {
+    background-color: #0B1724;
+    border-bottom: 1px solid #1E2D3D;
+    padding: 8px;
+    text-align: left;
+    font-size: 16px;
+    font-weight: 600;
+    color: #EAF2FF;
 }
 
 QScrollBar:vertical {

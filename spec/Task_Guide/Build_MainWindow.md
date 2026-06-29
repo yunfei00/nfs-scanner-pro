@@ -2,7 +2,7 @@
 
 ## 任务目标
 
-实现 **PySide6 QMainWindow Mock 壳层**：对齐 Release 010 高保真视觉，包含左侧导航、顶栏菜单/工具栏、设备状态栏、中央 QGraphicsView 画布、右侧参数 Dock、底部状态栏。**不接真实设备，不实现扫描业务**，Mock 数据即可。
+实现 **PySide6 QMainWindow Mock 壳层**：对齐 Release 010 / 010.5 高保真视觉，包含左侧导航、顶栏菜单/工具栏、设备状态栏、**四页**中央工作区、右侧按页切换 Dock、底部状态栏。**不接真实设备，不实现扫描业务**，Mock 数据即可。
 
 ## 开始前必须阅读
 
@@ -55,19 +55,20 @@ python scripts/run_mock_ui.py
 1. **QMainWindow 骨架**：菜单栏（文件/编辑/视图/工具/设置/帮助）、central widget。
 2. **左侧 NavigationBar**：仅四项——扫描、设备、分析、报告；64px 默认，Hover 180px。
 3. **文件菜单**：新建/打开/保存项目（Mock 对话框即可）。
-4. **视图菜单**：「显示参数面板」控制 scanParameterDock；日志/频谱/统计 **默认隐藏**。
-5. **工具栏**：开始/停止/拍照等 Mock 动作。
+4. **视图菜单**：「显示参数面板」控制当前页 Dock；日志/频谱/统计 **默认隐藏**。
+5. **工具栏**：扫描/设备/分析页 Mock 扫描动作；报告页 Mock 导出动作。
 6. **设备状态栏**：单行四设备 + 探头/区域/频率/点数。
-7. **中央 QGraphicsView + QGraphicsScene**：深绿 PCB Mock；热力图 **QGraphicsPixmapItem** 整图叠加。
-8. **右侧 Dock**：扫描参数 360px，Accordion 五组。
-9. **底部 QStatusBar**：进度条 Mock + 扫描统计。
-10. **objectName**：按 qt-spec / Qt_ObjectName_Rules。
-11. **QSS**：`resources/styles/dark_theme.qss`，Fusion + Token。
+7. **四页 QStackedWidget**：扫描（QGraphicsView）、设备（四卡片）、分析（PCB+热力图）、报告（列表+预览）。
+8. **中央 QGraphicsView + QGraphicsScene**：深绿 PCB Mock；热力图 **QGraphicsPixmapItem** 整图叠加。
+9. **右侧 Dock**：扫描参数 / 设备配置 / 分析参数 / 报告设置，按页切换。
+10. **底部 QStatusBar**：按页 Mock 状态与统计。
+11. **objectName**：按 qt-spec / Qt_ObjectName_Rules。
+12. **QSS**：`resources/styles/dark_theme.qss`，Fusion + Token。
 
 ## 验收标准
 
 - [ ] `python scripts/run_mock_ui.py` 可启动
-- [ ] 布局与高保真/线框一致，视觉接近 Release 010
+- [ ] 四页可切换，工具栏/状态栏/Dock 联动
 - [ ] 左侧仅四个一级模块，无「项目」页
 - [ ] 项目操作仅在文件菜单
 - [ ] 日志/频谱/统计默认不可见

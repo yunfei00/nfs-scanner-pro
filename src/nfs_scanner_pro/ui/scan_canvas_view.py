@@ -28,7 +28,6 @@ from PySide6.QtWidgets import (
 
 from nfs_scanner_pro.ui import mock_data
 
-# 场景坐标 — 对齐高保真 PCB 比例
 PCB_X = 0.0
 PCB_Y = 0.0
 PCB_WIDTH = 1320.0
@@ -41,7 +40,6 @@ HANDLE_SIZE = 14.0
 
 
 def _build_radial_heatmap_pixmap(width: int, height: int) -> QPixmap:
-    """整张 QImage 径向渐变模拟热力图，禁止逐格绘制。"""
     image = QImage(width, height, QImage.Format.Format_ARGB32_Premultiplied)
     image.fill(Qt.GlobalColor.transparent)
     painter = QPainter(image)
@@ -76,9 +74,35 @@ def _build_minimap_pixmap() -> QPixmap:
     return pix
 
 
-class ColorScaleWidget(QWidget):
-    """色带 Mock — 幅度(dBm) -10 … -90。"""
+def build_report_thumbnail_pixmap(width: int = 640, height: int = 180) -> QPixmap:
+    image = QImage(width, height, QImage.Format.Format_ARGB32_Premultiplied)
+    image.fill(QColor("#0a1018"))
+    painter = QPainter(image)
+    painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+    painter.setBrush(QColor("#185a3e"))
+    painter.setPen(QPen(QColor("#2d8a62"), 1.5))
+    painter.drawRoundedRect(40, 20, width - 80, height - 40, 8, 8)
+    painter.setBrush(QColor("#0d1520"))
+    painter.drawRect(120, 50, 80, 55)
+    painter.drawRect(280, 70, 110, 70)
+    pad_brush = QBrush(QColor("#c9a227"))
+    for cx, cy in ((100, 40), (350, 55), (480, 80), (400, 120)):
+        painter.setBrush(pad_brush)
+        painter.drawEllipse(cx, cy, 4, 4)
+    grad = QRadialGradient(320, 90, 80)
+    grad.setColorAt(0.0, QColor(239, 68, 68, 200))
+    grad.setColorAt(0.35, QColor(234, 179, 8, 150))
+    grad.setColorAt(0.65, QColor(34, 197, 94, 100))
+    grad.setColorAt(1.0, QColor(59, 130, 246, 60))
+    painter.fillRect(160, 45, 320, 90, grad)
+    painter.setPen(QPen(QColor(255, 255, 255, 120)))
+    painter.setBrush(Qt.BrushStyle.NoBrush)
+    painter.drawRect(160, 45, 320, 90)
+    painter.end()
+    return QPixmap.fromImage(image)
 
+
+class ColorScaleWidget(QWidget):
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self.setObjectName("colorScaleWidget")
@@ -112,13 +136,14 @@ class ColorScaleWidget(QWidget):
 class ScanCanvasView(QGraphicsView):
     mouse_scene_moved = Signal(float, float)
 
-    def __init__(self, parent: QWidget | None = None) -> None:
+    def __init__(self, parent: QWidget | None = None, *, show_handles: bool = True) -> None:
         super().__init__(parent)
         self.setObjectName("scanCanvasView")
         self.setRenderHint(QPainter.RenderHint.Antialiasing, True)
         self.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)
         self.setTransformationAnchor(QGraphicsView.ViewportAnchor.AnchorUnderMouse)
         self.setBackgroundBrush(QColor("#0A1018"))
+        self._show_handles = show_handles
 
         self._scene = QGraphicsScene(self)
         self._scene.setObjectName("scanScene")
@@ -126,56 +151,39 @@ class ScanCanvasView(QGraphicsView):
         self._build_scene()
 
     def _build_scene(self) -> None:
-        # 深绿 PCB 基板
         pcb = QGraphicsRectItem(PCB_X, PCB_Y, PCB_WIDTH, PCB_HEIGHT)
         pcb.setBrush(QBrush(QColor("#185a3e")))
         pcb.setPen(QPen(QColor("#2d8a62"), 2))
-        pcb.setZValue(0)
         self._scene.addItem(pcb)
 
-        # 内层铜区
         inner = QGraphicsRectItem(PCB_X + 24, PCB_Y + 20, PCB_WIDTH - 48, PCB_HEIGHT - 40)
         inner.setBrush(QBrush(QColor("#134832")))
         inner.setPen(QPen(QColor("#1f6b4a"), 1))
-        inner.setZValue(1)
         self._scene.addItem(inner)
 
-        # 芯片矩形
         chips = [
             (80, 60, 180, 120, "#1a3d2e"),
             (320, 80, 140, 100, "#1e4534"),
             (520, 50, 200, 150, "#163828"),
-            (780, 90, 160, 110, "#1a4030"),
-            (980, 70, 220, 130, "#184032"),
-            (200, 420, 260, 180, "#1c4436"),
-            (560, 380, 300, 200, "#184030"),
-            (920, 400, 240, 160, "#1a3a2c"),
+            (620, 320, 200, 130, "#0a1220"),
+            (980, 480, 100, 70, "#0d1520"),
         ]
         for x, y, w, h, color in chips:
             chip = QGraphicsRectItem(PCB_X + x, PCB_Y + y, w, h)
             chip.setBrush(QBrush(QColor(color)))
             chip.setPen(QPen(QColor("#2d5a48"), 1))
-            chip.setZValue(2)
             self._scene.addItem(chip)
 
-        # 走线
         trace_pen = QPen(QColor("#c9a227"), 1.2)
         trace_pen.setCosmetic(True)
-        traces = [
-            (120, 200, 400, 180),
-            (400, 180, 520, 140),
-            (700, 160, 980, 130),
-            (300, 420, 560, 400),
-            (860, 400, 1100, 380),
-            (150, 300, 150, 420),
-        ]
-        for x1, y1, x2, y2 in traces:
+        for x1, y1, x2, y2 in (
+            (120, 200, 400, 180), (400, 180, 520, 140), (700, 160, 980, 130),
+            (300, 420, 560, 400), (150, 300, 150, 420),
+        ):
             line = QGraphicsLineItem(PCB_X + x1, PCB_Y + y1, PCB_X + x2, PCB_Y + y2)
             line.setPen(trace_pen)
-            line.setZValue(3)
             self._scene.addItem(line)
 
-        # 金色焊盘 / 过孔
         pad_brush = QBrush(QColor("#c9a227"))
         via_pen = QPen(QColor("#c9a227"), 0.8)
         for gx in range(100, int(PCB_WIDTH - 40), 16):
@@ -184,13 +192,10 @@ class ScanCanvasView(QGraphicsView):
                 if h > 58:
                     continue
                 r = 3.5 if h % 7 == 0 else (2.8 if h % 4 == 0 else 2.0)
-                pad = QGraphicsEllipseItem(
-                    PCB_X + gx - r, PCB_Y + gy - r, r * 2, r * 2
-                )
+                pad = QGraphicsEllipseItem(PCB_X + gx - r, PCB_Y + gy - r, r * 2, r * 2)
                 pad.setBrush(pad_brush)
                 pad.setPen(QPen(QColor("#a88420"), 0.5))
                 pad.setOpacity(0.85)
-                pad.setZValue(4)
                 self._scene.addItem(pad)
                 if h % 11 == 0:
                     via = QGraphicsEllipseItem(
@@ -199,61 +204,42 @@ class ScanCanvasView(QGraphicsView):
                     via.setBrush(Qt.BrushStyle.NoBrush)
                     via.setPen(via_pen)
                     via.setOpacity(0.45)
-                    via.setZValue(4)
                     self._scene.addItem(via)
 
-        # 扫描区域白框
         region = QGraphicsRectItem(REGION_X, REGION_Y, REGION_W, REGION_H)
         region.setBrush(QBrush(QColor(255, 255, 255, 10)))
         region.setPen(QPen(QColor("#FFFFFF"), 2.5))
-        region.setZValue(6)
         self._scene.addItem(region)
 
-        # 热力图 — 单张 QPixmapItem
-        hm_w, hm_h = int(REGION_W), int(REGION_H)
-        heat_pix = _build_radial_heatmap_pixmap(hm_w, hm_h)
-        heat_item = QGraphicsPixmapItem(heat_pix)
+        heat_item = QGraphicsPixmapItem(_build_radial_heatmap_pixmap(int(REGION_W), int(REGION_H)))
         heat_item.setPos(REGION_X, REGION_Y)
         heat_item.setOpacity(0.68)
-        heat_item.setZValue(5)
         self._scene.addItem(heat_item)
 
-        # 扫描点网格（装饰线，非热力图数据格）
         grid_pen = QPen(QColor(255, 255, 255, 40))
         grid_pen.setStyle(Qt.PenStyle.DotLine)
-        step = 40
-        for gx in range(int(REGION_X), int(REGION_X + REGION_W) + 1, step):
-            line = QGraphicsLineItem(gx, REGION_Y, gx, REGION_Y + REGION_H)
-            line.setPen(grid_pen)
-            line.setZValue(7)
-            self._scene.addItem(line)
-        for gy in range(int(REGION_Y), int(REGION_Y + REGION_H) + 1, step):
+        for gx in range(int(REGION_X), int(REGION_X + REGION_W) + 1, 40):
+            self._scene.addItem(QGraphicsLineItem(gx, REGION_Y, gx, REGION_Y + REGION_H))
+        for gy in range(int(REGION_Y), int(REGION_Y + REGION_H) + 1, 40):
             line = QGraphicsLineItem(REGION_X, gy, REGION_X + REGION_W, gy)
             line.setPen(grid_pen)
-            line.setZValue(7)
             self._scene.addItem(line)
 
-        # 拖拽手柄
-        handle_pen = QPen(QColor("#1a8cff"), 2)
-        handle_brush = QBrush(QColor("#FFFFFF"))
-        handle_positions = [
-            (REGION_X - HANDLE_SIZE / 2, REGION_Y - HANDLE_SIZE / 2),
-            (REGION_X + REGION_W / 2 - HANDLE_SIZE / 2, REGION_Y - HANDLE_SIZE / 2),
-            (REGION_X + REGION_W - HANDLE_SIZE / 2, REGION_Y - HANDLE_SIZE / 2),
-            (REGION_X - HANDLE_SIZE / 2, REGION_Y + REGION_H / 2 - HANDLE_SIZE / 2),
-            (REGION_X + REGION_W - HANDLE_SIZE / 2, REGION_Y + REGION_H / 2 - HANDLE_SIZE / 2),
-            (REGION_X - HANDLE_SIZE / 2, REGION_Y + REGION_H - HANDLE_SIZE / 2),
-            (REGION_X + REGION_W / 2 - HANDLE_SIZE / 2, REGION_Y + REGION_H - HANDLE_SIZE / 2),
-            (REGION_X + REGION_W - HANDLE_SIZE / 2, REGION_Y + REGION_H - HANDLE_SIZE / 2),
-        ]
-        for hx, hy in handle_positions:
-            handle = QGraphicsRectItem(hx, hy, HANDLE_SIZE, HANDLE_SIZE)
-            handle.setBrush(handle_brush)
-            handle.setPen(handle_pen)
-            handle.setZValue(8)
-            self._scene.addItem(handle)
+        if self._show_handles:
+            handle_pen = QPen(QColor("#1a8cff"), 2)
+            handle_brush = QBrush(QColor("#FFFFFF"))
+            for hx, hy in (
+                (REGION_X - HANDLE_SIZE / 2, REGION_Y - HANDLE_SIZE / 2),
+                (REGION_X + REGION_W / 2 - HANDLE_SIZE / 2, REGION_Y - HANDLE_SIZE / 2),
+                (REGION_X + REGION_W - HANDLE_SIZE / 2, REGION_Y - HANDLE_SIZE / 2),
+                (REGION_X - HANDLE_SIZE / 2, REGION_Y + REGION_H - HANDLE_SIZE / 2),
+                (REGION_X + REGION_W - HANDLE_SIZE / 2, REGION_Y + REGION_H - HANDLE_SIZE / 2),
+            ):
+                handle = QGraphicsRectItem(hx, hy, HANDLE_SIZE, HANDLE_SIZE)
+                handle.setBrush(handle_brush)
+                handle.setPen(handle_pen)
+                self._scene.addItem(handle)
 
-        # 坐标轴
         axis_color = QColor("#9EB0C4")
         for label, x, y in (
             ("X →", REGION_X + 8, REGION_Y + REGION_H + 28),
@@ -263,7 +249,6 @@ class ScanCanvasView(QGraphicsView):
             text = QGraphicsTextItem(label)
             text.setDefaultTextColor(axis_color)
             text.setPos(x, y)
-            text.setZValue(9)
             self._scene.addItem(text)
 
         self._scene.setSceneRect(-50, -20, PCB_WIDTH + 80, PCB_HEIGHT + 60)
@@ -280,28 +265,35 @@ class ScanCanvasView(QGraphicsView):
         super().mouseMoveEvent(event)
 
 
-class ScanCanvasWidget(QWidget):
-    """面包屑 + 画布 + 色带/小地图/坐标浮窗。"""
-
-    def __init__(self, parent: QWidget | None = None) -> None:
+class PcbCanvasWidget(QWidget):
+    def __init__(
+        self,
+        *,
+        object_name: str,
+        breadcrumb: str,
+        show_minimap: bool = True,
+        show_handles: bool = True,
+        overlay_mode: str = "coord",
+        parent: QWidget | None = None,
+    ) -> None:
         super().__init__(parent)
-        self.setObjectName("scanPage")
+        self.setObjectName(object_name)
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(8, 4, 8, 4)
         layout.setSpacing(4)
 
-        self._breadcrumb = QLabel(mock_data.BREADCRUMB, self)
-        self._breadcrumb.setObjectName("breadcrumbBar")
-        layout.addWidget(self._breadcrumb)
+        breadcrumb_lbl = QLabel(breadcrumb, self)
+        breadcrumb_lbl.setObjectName("breadcrumbBar")
+        layout.addWidget(breadcrumb_lbl)
 
         self._canvas_container = QWidget(self)
         self._canvas_container.setObjectName("scanCanvasContainer")
-        container_layout = QVBoxLayout(self._canvas_container)
-        container_layout.setContentsMargins(0, 0, 0, 0)
+        cl = QVBoxLayout(self._canvas_container)
+        cl.setContentsMargins(0, 0, 0, 0)
 
-        self._view = ScanCanvasView(self._canvas_container)
-        container_layout.addWidget(self._view)
+        self._view = ScanCanvasView(self._canvas_container, show_handles=show_handles)
+        cl.addWidget(self._view)
 
         self._color_scale = ColorScaleWidget(self._canvas_container)
         self._color_scale.setObjectName("colorScaleOverlay")
@@ -310,18 +302,16 @@ class ScanCanvasWidget(QWidget):
         self._minimap.setObjectName("minimapOverlay")
         self._minimap.setPixmap(_build_minimap_pixmap())
         self._minimap.setFixedSize(148, 100)
-        self._minimap.setScaledContents(True)
+        self._minimap.setVisible(show_minimap)
 
-        minimap_title = QLabel("小地图", self._canvas_container)
-        minimap_title.setObjectName("minimapTitleLabel")
-        minimap_title.setStyleSheet("color: #6B8299; font-size: 11px;")
-        self._minimap_title = minimap_title
+        self._minimap_title = QLabel("小地图", self._canvas_container)
+        self._minimap_title.setObjectName("minimapTitleLabel")
+        self._minimap_title.setProperty("role", "minimapTitle")
+        self._minimap_title.setVisible(show_minimap)
 
         self._position_overlay = QLabel(self._canvas_container)
         self._position_overlay.setObjectName("canvasPositionOverlay")
-        self._position_overlay.setAlignment(
-            Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop
-        )
+        self._overlay_mode = overlay_mode
         self._update_position_overlay(mock_data.POSITION["x"], mock_data.POSITION["y"])
         self._view.mouse_scene_moved.connect(self._on_mouse_moved)
 
@@ -330,20 +320,15 @@ class ScanCanvasWidget(QWidget):
     def resizeEvent(self, event) -> None:  # noqa: N802
         super().resizeEvent(event)
         margin = 12
-        cw = self._canvas_container.width()
-        ch = self._canvas_container.height()
-
+        cw, ch = self._canvas_container.width(), self._canvas_container.height()
         self._color_scale.move(margin, ch - self._color_scale.height() - margin)
-
-        mm_x = cw - self._minimap.width() - margin
-        mm_y = ch - self._minimap.height() - margin - 16
-        self._minimap_title.move(mm_x + 6, mm_y - 14)
-        self._minimap.move(mm_x, mm_y)
-
-        self._position_overlay.move(
-            cw - self._position_overlay.width() - margin,
-            margin,
-        )
+        if self._minimap.isVisible():
+            mm_x = cw - self._minimap.width() - margin
+            mm_y = ch - self._minimap.height() - margin - 16
+            self._minimap_title.move(mm_x + 6, mm_y - 14)
+            self._minimap.move(mm_x, mm_y)
+        top = margin if self._overlay_mode == "coord" else ch - self._position_overlay.height() - margin
+        self._position_overlay.move(cw - self._position_overlay.width() - margin, top)
 
     def _on_mouse_moved(self, sx: float, sy: float) -> None:
         rel_x = (sx - REGION_X) / REGION_W if REGION_W else 0
@@ -354,12 +339,29 @@ class ScanCanvasWidget(QWidget):
 
     def _update_position_overlay(self, x: float, y: float) -> None:
         pos = mock_data.POSITION
-        self._position_overlay.setText(
-            "当前坐标\n"
-            f"X：{x:.2f} mm\n"
-            f"Y：{y:.2f} mm\n"
-            f"Z：{pos['z']:.2f} mm\n"
-            f"频率：{mock_data.FREQUENCY}\n"
-            f"幅度：{pos['amp']:.2f} dBm"
-        )
+        if self._overlay_mode == "cursor":
+            text = (
+                "光标读数\n"
+                f"X：{x:.2f} mm · Y：{y:.2f} mm\n"
+                f"幅度：{pos['amp']:.2f} dBm · 相位：112.3°"
+            )
+        else:
+            text = (
+                "当前坐标\n"
+                f"X：{x:.2f} mm\nY：{y:.2f} mm\nZ：{pos['z']:.2f} mm\n"
+                f"频率：{mock_data.FREQUENCY}\n幅度：{pos['amp']:.2f} dBm"
+            )
+        self._position_overlay.setText(text)
         self._position_overlay.adjustSize()
+
+
+class ScanCanvasWidget(PcbCanvasWidget):
+    def __init__(self, parent: QWidget | None = None) -> None:
+        super().__init__(
+            object_name="scanPage",
+            breadcrumb=mock_data.BREADCRUMB_SCAN,
+            show_minimap=True,
+            show_handles=True,
+            overlay_mode="coord",
+            parent=parent,
+        )
