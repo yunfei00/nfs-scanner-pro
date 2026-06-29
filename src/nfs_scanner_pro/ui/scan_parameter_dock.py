@@ -13,19 +13,36 @@ from PySide6.QtWidgets import (
     QLabel,
     QLineEdit,
     QScrollArea,
+    QSizePolicy,
     QVBoxLayout,
     QWidget,
 )
 
 from nfs_scanner_pro.ui import mock_data
 
+DOCK_MIN_WIDTH = 340
+DOCK_MAX_WIDTH = 400
+DOCK_DEFAULT_WIDTH = 360
+
+
+def apply_dock_width_policy(dock: QDockWidget) -> None:
+    dock.setMinimumWidth(DOCK_MIN_WIDTH)
+    dock.setMaximumWidth(DOCK_MAX_WIDTH)
+    dock.resize(DOCK_DEFAULT_WIDTH, dock.height())
+
+
+def _configure_form_field(field: QLineEdit | QComboBox) -> None:
+    field.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+    field.setMinimumWidth(0)
+
 
 class ScanParameterDock(QDockWidget):
-    DOCK_WIDTH = 360
+    DOCK_WIDTH = DOCK_DEFAULT_WIDTH
 
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__("扫描参数", parent)
         self.setObjectName("scanParameterDock")
+        apply_dock_width_policy(self)
         self.setAllowedAreas(
             Qt.DockWidgetArea.LeftDockWidgetArea | Qt.DockWidgetArea.RightDockWidgetArea
         )
@@ -43,8 +60,9 @@ class ScanParameterDock(QDockWidget):
 
         content = QWidget()
         content.setObjectName("scanParameterContent")
+        content.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
         layout = QVBoxLayout(content)
-        layout.setContentsMargins(10, 10, 10, 10)
+        layout.setContentsMargins(8, 8, 8, 8)
         layout.setSpacing(8)
 
         layout.addWidget(self._build_scan_settings())
@@ -52,12 +70,19 @@ class ScanParameterDock(QDockWidget):
         layout.addWidget(self._build_placeholder_group("displaySettingsGroup", "显示设置"))
         layout.addWidget(self._build_placeholder_group("instrumentSettingsGroup", "仪表设置"))
         layout.addWidget(self._build_placeholder_group("advancedSettingsGroup", "高级设置"))
-        layout.addStretch()
 
         scroll.setWidget(content)
         self.setWidget(scroll)
-        self.setMinimumWidth(300)
-        self.resize(self.DOCK_WIDTH, self.height())
+
+    @staticmethod
+    def _configure_form(form: QFormLayout) -> None:
+        form.setLabelAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
+        form.setFormAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
+        form.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow)
+        form.setRowWrapPolicy(QFormLayout.RowWrapPolicy.DontWrapRows)
+        form.setSpacing(6)
+        form.setHorizontalSpacing(6)
+        form.setVerticalSpacing(6)
 
     @staticmethod
     def _xyz_text(data: dict) -> str:
@@ -68,14 +93,14 @@ class ScanParameterDock(QDockWidget):
         group.setObjectName("scanSettingsGroup")
         group.setProperty("accordionHeader", True)
         form = QFormLayout(group)
-        form.setLabelAlignment(Qt.AlignmentFlag.AlignLeft)
-        form.setSpacing(8)
+        self._configure_form(form)
 
         s = mock_data.SCAN_SETTINGS
 
         mode = QComboBox(group)
         mode.addItem(s["mode"])
         mode.setEnabled(False)
+        _configure_form_field(mode)
         form.addRow("扫描模式", mode)
 
         for label, val in (
@@ -85,6 +110,7 @@ class ScanParameterDock(QDockWidget):
         ):
             field = QLineEdit(val, group)
             field.setReadOnly(True)
+            _configure_form_field(field)
             form.addRow(label, field)
 
         return_home = QCheckBox("扫描完成后回零", group)
@@ -104,7 +130,7 @@ class ScanParameterDock(QDockWidget):
         group.setObjectName("regionSettingsGroup")
         group.setProperty("accordionHeader", True)
         form = QFormLayout(group)
-        form.setSpacing(8)
+        self._configure_form(form)
         r = mock_data.REGION_SETTINGS
 
         for label, key in (
@@ -114,10 +140,13 @@ class ScanParameterDock(QDockWidget):
         ):
             field = QLineEdit(self._xyz_text(r[key]), group)
             field.setReadOnly(True)
+            _configure_form_field(field)
             form.addRow(label, field)
 
         stats = QGridLayout()
-        stats.setSpacing(6)
+        stats.setHorizontalSpacing(8)
+        stats.setVerticalSpacing(4)
+        stats.setColumnStretch(1, 1)
         stat_items = [
             ("点数", r["points_label"]),
             ("区域面积", r["area_mm2"]),
@@ -129,6 +158,7 @@ class ScanParameterDock(QDockWidget):
             k_lbl.setProperty("role", "statKey")
             v_lbl = QLabel(v, group)
             v_lbl.setProperty("role", "statValue")
+            v_lbl.setWordWrap(True)
             stats.addWidget(k_lbl, row, 0)
             stats.addWidget(v_lbl, row, 1)
         form.addRow("", stats)

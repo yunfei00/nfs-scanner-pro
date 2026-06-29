@@ -15,6 +15,8 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from nfs_scanner_pro.ui.scan_parameter_dock import apply_dock_width_policy
+
 
 class ReportSettingsDock(QDockWidget):
     DOCK_WIDTH = 360
@@ -22,6 +24,7 @@ class ReportSettingsDock(QDockWidget):
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__("报告设置", parent)
         self.setObjectName("reportSettingsDock")
+        apply_dock_width_policy(self)
         self.setAllowedAreas(
             Qt.DockWidgetArea.LeftDockWidgetArea | Qt.DockWidgetArea.RightDockWidgetArea
         )
@@ -30,6 +33,7 @@ class ReportSettingsDock(QDockWidget):
         scroll.setWidgetResizable(True)
         scroll.setObjectName("reportSettingsScroll")
         scroll.setFrameShape(QScrollArea.Shape.NoFrame)
+        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
         content = QWidget()
         content.setObjectName("reportSettingsContent")
@@ -65,5 +69,3 @@ class ReportSettingsDock(QDockWidget):
 
         scroll.setWidget(content)
         self.setWidget(scroll)
-        self.setMinimumWidth(300)
-        self.resize(self.DOCK_WIDTH, self.height())

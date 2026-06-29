@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from PySide6.QtCore import QPointF, Qt, Signal
+from PySide6.QtCore import QPointF, Qt, Signal, QRectF
 from PySide6.QtGui import (
     QBrush,
     QColor,
@@ -37,6 +37,8 @@ REGION_Y = 88.0
 REGION_W = 880.0
 REGION_H = 560.0
 HANDLE_SIZE = 14.0
+PCB_VIEW_RECT = (PCB_X - 20, PCB_Y - 10, PCB_WIDTH + 40, PCB_HEIGHT + 50)
+PCB_ZOOM_FACTOR = 1.05
 
 
 def _build_radial_heatmap_pixmap(width: int, height: int) -> QPixmap:
@@ -103,33 +105,49 @@ def build_report_thumbnail_pixmap(width: int = 640, height: int = 180) -> QPixma
 
 
 class ColorScaleWidget(QWidget):
+    """色带浮层 — 对齐高保真右侧垂直居中布局。"""
+
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self.setObjectName("colorScaleWidget")
-        self.setFixedSize(52, 220)
+        self.setFixedSize(80, 286)
 
     def paintEvent(self, event) -> None:  # noqa: N802
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-        rect = self.rect().adjusted(4, 24, -20, -4)
-        grad = QLinearGradient(rect.topLeft(), rect.bottomLeft())
+        painter.fillRect(self.rect(), QColor(8, 16, 26, 230))
+
+        title_rect = self.rect().adjusted(4, 6, -4, -8)
+        painter.setPen(QColor("#EAF2FF"))
+        font = painter.font()
+        font.setPointSize(9)
+        font.setBold(True)
+        painter.setFont(font)
+        painter.drawText(
+            title_rect,
+            Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop,
+            "幅度(dBm)",
+        )
+
+        bar = self.rect().adjusted(12, 28, -38, -10)
+        grad = QLinearGradient(bar.topLeft(), bar.bottomLeft())
         grad.setColorAt(0.0, QColor("#EF4444"))
         grad.setColorAt(0.25, QColor("#EAB308"))
         grad.setColorAt(0.5, QColor("#22C55E"))
         grad.setColorAt(0.75, QColor("#06B6D4"))
         grad.setColorAt(1.0, QColor("#3B82F6"))
-        painter.fillRect(rect, grad)
-        painter.setPen(QPen(QColor("#1E2D3D")))
-        painter.drawRect(rect)
-        painter.setPen(QColor("#A8B3C2"))
-        font = painter.font()
+        painter.fillRect(bar, grad)
+        painter.setPen(QPen(QColor("#243647")))
+        painter.drawRect(bar)
+
+        painter.setPen(QColor("#9EB0C4"))
         font.setPointSize(8)
+        font.setBold(False)
         painter.setFont(font)
-        painter.drawText(0, 16, "幅度(dBm)")
         labels = ["-10", "-20", "-30", "-40", "-50", "-60", "-70", "-80", "-90"]
         for i, label in enumerate(labels):
-            y = rect.top() + (rect.height() * i) / (len(labels) - 1)
-            painter.drawText(rect.right() + 4, int(y + 4), label)
+            y = bar.top() + (bar.height() * i) / (len(labels) - 1)
+            painter.drawText(bar.right() + 6, int(y + 4), label)
         painter.end()
 
 
@@ -141,7 +159,8 @@ class ScanCanvasView(QGraphicsView):
         self.setObjectName("scanCanvasView")
         self.setRenderHint(QPainter.RenderHint.Antialiasing, True)
         self.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)
-        self.setTransformationAnchor(QGraphicsView.ViewportAnchor.AnchorUnderMouse)
+        self.setTransformationAnchor(QGraphicsView.ViewportAnchor.AnchorViewCenter)
+        self.setResizeAnchor(QGraphicsView.ViewportAnchor.AnchorViewCenter)
         self.setBackgroundBrush(QColor("#0A1018"))
         self._show_handles = show_handles
 
@@ -219,7 +238,9 @@ class ScanCanvasView(QGraphicsView):
         grid_pen = QPen(QColor(255, 255, 255, 40))
         grid_pen.setStyle(Qt.PenStyle.DotLine)
         for gx in range(int(REGION_X), int(REGION_X + REGION_W) + 1, 40):
-            self._scene.addItem(QGraphicsLineItem(gx, REGION_Y, gx, REGION_Y + REGION_H))
+            line = QGraphicsLineItem(gx, REGION_Y, gx, REGION_Y + REGION_H)
+            line.setPen(grid_pen)
+            self._scene.addItem(line)
         for gy in range(int(REGION_Y), int(REGION_Y + REGION_H) + 1, 40):
             line = QGraphicsLineItem(REGION_X, gy, REGION_X + REGION_W, gy)
             line.setPen(grid_pen)
@@ -251,13 +272,21 @@ class ScanCanvasView(QGraphicsView):
             text.setPos(x, y)
             self._scene.addItem(text)
 
-        self._scene.setSceneRect(-50, -20, PCB_WIDTH + 80, PCB_HEIGHT + 60)
-        self.fitInView(self._scene.sceneRect(), Qt.AspectRatioMode.KeepAspectRatio)
+        self._scene.setSceneRect(-30, -10, PCB_WIDTH + 60, PCB_HEIGHT + 50)
+        self._fit_pcb()
+
+    def _fit_pcb(self) -> None:
+        x, y, w, h = PCB_VIEW_RECT
+        target = QRectF(x, y, w, h)
+        self.resetTransform()
+        self.fitInView(target, Qt.AspectRatioMode.KeepAspectRatio)
+        if PCB_ZOOM_FACTOR != 1.0:
+            self.scale(PCB_ZOOM_FACTOR, PCB_ZOOM_FACTOR)
 
     def resizeEvent(self, event) -> None:  # noqa: N802
         super().resizeEvent(event)
         if self._scene.items():
-            self.fitInView(self._scene.sceneRect(), Qt.AspectRatioMode.KeepAspectRatio)
+            self._fit_pcb()
 
     def mouseMoveEvent(self, event) -> None:  # noqa: N802
         scene_pos: QPointF = self.mapToScene(event.position().toPoint())
@@ -280,8 +309,8 @@ class PcbCanvasWidget(QWidget):
         self.setObjectName(object_name)
 
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(8, 4, 8, 4)
-        layout.setSpacing(4)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
 
         breadcrumb_lbl = QLabel(breadcrumb, self)
         breadcrumb_lbl.setObjectName("breadcrumbBar")
@@ -301,7 +330,7 @@ class PcbCanvasWidget(QWidget):
         self._minimap = QLabel(self._canvas_container)
         self._minimap.setObjectName("minimapOverlay")
         self._minimap.setPixmap(_build_minimap_pixmap())
-        self._minimap.setFixedSize(148, 100)
+        self._minimap.setFixedSize(132, 88)
         self._minimap.setVisible(show_minimap)
 
         self._minimap_title = QLabel("小地图", self._canvas_container)
@@ -319,16 +348,20 @@ class PcbCanvasWidget(QWidget):
 
     def resizeEvent(self, event) -> None:  # noqa: N802
         super().resizeEvent(event)
-        margin = 12
+        margin = 14
         cw, ch = self._canvas_container.width(), self._canvas_container.height()
-        self._color_scale.move(margin, ch - self._color_scale.height() - margin)
+        cs_w = self._color_scale.width()
+        cs_h = self._color_scale.height()
+        self._color_scale.move(cw - cs_w - margin, max(margin, (ch - cs_h) // 2))
+
         if self._minimap.isVisible():
-            mm_x = cw - self._minimap.width() - margin
-            mm_y = ch - self._minimap.height() - margin - 16
-            self._minimap_title.move(mm_x + 6, mm_y - 14)
-            self._minimap.move(mm_x, mm_y)
-        top = margin if self._overlay_mode == "coord" else ch - self._position_overlay.height() - margin
-        self._position_overlay.move(cw - self._position_overlay.width() - margin, top)
+            mm_y = ch - self._minimap.height() - margin
+            self._minimap_title.move(margin + 4, mm_y - 14)
+            self._minimap.move(margin, mm_y)
+
+        overlay_x = cw - self._position_overlay.width() - margin
+        overlay_y = ch - self._position_overlay.height() - margin
+        self._position_overlay.move(max(margin, overlay_x), max(margin, overlay_y))
 
     def _on_mouse_moved(self, sx: float, sy: float) -> None:
         rel_x = (sx - REGION_X) / REGION_W if REGION_W else 0

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from PySide6.QtCore import Property, QEasingCurve, QPropertyAnimation, Qt, Signal
+from PySide6.QtCore import Property, QEasingCurve, QPropertyAnimation, Qt, Signal, QSize
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
     QButtonGroup,
@@ -50,6 +50,7 @@ class LeftNavigationBar(QWidget):
             btn.setCheckable(True)
             btn.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
             btn.setIcon(QIcon(style.standardIcon(sp)))
+            btn.setIconSize(QSize(24, 24))
             btn.setText(label)
             btn.setToolTip(label)
             btn.setFixedHeight(52)

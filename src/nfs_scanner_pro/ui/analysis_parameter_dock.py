@@ -15,6 +15,7 @@ from PySide6.QtWidgets import (
 )
 
 from nfs_scanner_pro.ui import mock_data
+from nfs_scanner_pro.ui.scan_parameter_dock import apply_dock_width_policy
 from nfs_scanner_pro.ui.widgets.form_widgets import stat_grid
 
 
@@ -24,6 +25,7 @@ class AnalysisParameterDock(QDockWidget):
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__("分析参数", parent)
         self.setObjectName("analysisParameterDock")
+        apply_dock_width_policy(self)
         self.setAllowedAreas(
             Qt.DockWidgetArea.LeftDockWidgetArea | Qt.DockWidgetArea.RightDockWidgetArea
         )
@@ -32,6 +34,7 @@ class AnalysisParameterDock(QDockWidget):
         scroll.setWidgetResizable(True)
         scroll.setObjectName("analysisParameterScroll")
         scroll.setFrameShape(QScrollArea.Shape.NoFrame)
+        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
         content = QWidget()
         content.setObjectName("analysisParameterContent")
@@ -79,5 +82,3 @@ class AnalysisParameterDock(QDockWidget):
 
         scroll.setWidget(content)
         self.setWidget(scroll)
-        self.setMinimumWidth(300)
-        self.resize(self.DOCK_WIDTH, self.height())

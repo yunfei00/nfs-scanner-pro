@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QSize
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import (
     QDockWidget,
@@ -12,6 +12,7 @@ from PySide6.QtWidgets import (
     QMainWindow,
     QMessageBox,
     QStackedWidget,
+    QTabBar,
     QToolBar,
     QToolButton,
     QVBoxLayout,
@@ -72,6 +73,8 @@ class MainWindow(QMainWindow):
         self._tool_bar = QToolBar("主工具栏", self)
         self._tool_bar.setObjectName("mainToolBar")
         self._tool_bar.setMovable(False)
+        self._tool_bar.setIconSize(QSize(18, 18))
+        self._tool_bar.setFixedHeight(54)
         self.addToolBar(self._tool_bar)
         self._build_central()
         self._build_docks()
@@ -142,6 +145,8 @@ class MainWindow(QMainWindow):
             btn.setText(text)
             btn.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextOnly)
             btn.setProperty("variant", variant)
+            height = 36 if variant == "secondary" else 38
+            btn.setFixedHeight(height)
             btn.clicked.connect(self._toolbar_action(log_msg, state_msg))
             self._tool_bar.addWidget(btn)
             btn.style().unpolish(btn)
@@ -200,9 +205,15 @@ class MainWindow(QMainWindow):
             self._analysis_dock,
             self._report_dock,
         ]
-        for dock in self._page_docks:
+        self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self._scan_dock)
+        for dock in self._page_docks[1:]:
             self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, dock)
+            self.tabifyDockWidget(self._scan_dock, dock)
+        self._scan_dock.raise_()
+        for dock in self._page_docks:
             dock.setVisible(False)
+        for tab_bar in self.findChildren(QTabBar):
+            tab_bar.setVisible(False)
 
         for obj_name, title in (
             ("logDock", "日志"),
@@ -232,6 +243,7 @@ class MainWindow(QMainWindow):
 
         dock = self._current_dock()
         dock.setVisible(self._action_param_panel.isChecked())
+        dock.raise_()
         self._sync_param_action(dock.isVisible())
 
     def _wire_view_menu(self) -> None:
