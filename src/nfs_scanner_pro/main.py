@@ -1,4 +1,4 @@
-"""应用入口。"""
+"""应用入口 — Release 011 Mock UI。"""
 
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ def main() -> int:
     app.setStyle("Fusion")
     load_stylesheet(app)
     window = MainWindow()
-    window.show()
+    window.showMaximized()
     return app.exec()
 
 

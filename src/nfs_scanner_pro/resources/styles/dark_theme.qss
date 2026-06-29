@@ -1,4 +1,4 @@
-/* NFS Scanner Pro — Release 010 深色工业风 Mock 主题 */
+/* NFS Scanner Pro — Release 011 深色工业风 Mock 主题 */
 
 QMainWindow#mainWindow {
     background-color: #07111D;
@@ -12,6 +12,12 @@ QMenuBar {
     border-bottom: 1px solid #1E2D3D;
     min-height: 32px;
     padding: 0 4px;
+    font-size: 14px;
+}
+
+QMenuBar::item {
+    padding: 4px 10px;
+    background: transparent;
 }
 
 QMenuBar::item:selected {
@@ -32,30 +38,32 @@ QToolBar#mainToolBar {
     background-color: #0B1724;
     border-bottom: 1px solid #1E2D3D;
     spacing: 8px;
-    padding: 6px 8px;
+    padding: 8px 12px;
     min-height: 56px;
 }
 
 QToolButton[variant="primary"] {
-    background-color: #2563EB;
+    background-color: #16A34A;
     color: #EAF2FF;
-    border: 1px solid #3B82F6;
-    border-radius: 4px;
-    padding: 6px 14px;
+    border: 1px solid #22C55E;
+    border-radius: 6px;
+    padding: 8px 16px;
     font-weight: 600;
+    min-height: 32px;
 }
 
 QToolButton[variant="primary"]:hover {
-    background-color: #3B82F6;
+    background-color: #22C55E;
 }
 
 QToolButton[variant="danger"] {
     background-color: #DC2626;
     color: #EAF2FF;
     border: 1px solid #EF4444;
-    border-radius: 4px;
-    padding: 6px 14px;
+    border-radius: 6px;
+    padding: 8px 16px;
     font-weight: 600;
+    min-height: 32px;
 }
 
 QToolButton[variant="danger"]:hover {
@@ -66,12 +74,14 @@ QToolButton[variant="secondary"] {
     background-color: #132337;
     color: #EAF2FF;
     border: 1px solid #1E2D3D;
-    border-radius: 4px;
-    padding: 6px 12px;
+    border-radius: 6px;
+    padding: 8px 14px;
+    min-height: 32px;
 }
 
 QToolButton[variant="secondary"]:hover {
     background-color: #1E2D3D;
+    border-color: #243647;
 }
 
 QWidget#leftNavigationBar {
@@ -83,15 +93,16 @@ QWidget#leftNavigationBar QToolButton {
     background-color: transparent;
     color: #A8B3C2;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     text-align: left;
-    padding-left: 12px;
+    padding-left: 14px;
+    font-size: 14px;
 }
 
 QWidget#leftNavigationBar QToolButton:checked {
-    background-color: #132337;
+    background-color: rgba(26, 140, 255, 0.18);
     color: #EAF2FF;
-    border-left: 3px solid #3B82F6;
+    border-left: 3px solid #1A8CFF;
 }
 
 QWidget#leftNavigationBar QToolButton:hover {
@@ -103,6 +114,8 @@ QWidget#deviceStatusBar {
     background-color: #0B1724;
     border-bottom: 1px solid #1E2D3D;
     color: #A8B3C2;
+    min-height: 40px;
+    font-size: 13px;
 }
 
 QLabel[status="connected"] {
@@ -120,21 +133,35 @@ QLabel#deviceStatusSeparator {
 QLabel#breadcrumbBar {
     color: #A8B3C2;
     padding: 2px 4px;
-    font-size: 12px;
+    font-size: 13px;
 }
 
 QGraphicsView#scanCanvasView {
-    border: 1px solid #1E2D3D;
-    background-color: #0A1520;
+    border: none;
+    background-color: #0A1018;
 }
 
 QLabel#canvasPositionOverlay {
-    background-color: rgba(11, 23, 36, 0.92);
+    background-color: rgba(12, 24, 38, 0.92);
     color: #EAF2FF;
     border: 1px solid #1E2D3D;
-    border-radius: 4px;
-    padding: 8px 10px;
-    font-size: 12px;
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 13px;
+}
+
+QWidget#colorScaleWidget,
+QWidget#colorScaleOverlay {
+    background-color: rgba(12, 24, 38, 0.88);
+    border: 1px solid #1E2D3D;
+    border-radius: 6px;
+}
+
+QLabel#minimapOverlay {
+    background-color: rgba(12, 24, 38, 0.88);
+    border: 1px solid #1E2D3D;
+    border-radius: 6px;
+    padding: 2px;
 }
 
 QDockWidget#scanParameterDock {
@@ -144,8 +171,10 @@ QDockWidget#scanParameterDock {
 QDockWidget#scanParameterDock::title {
     background-color: #0B1724;
     border-bottom: 1px solid #1E2D3D;
-    padding: 6px;
+    padding: 8px;
     text-align: left;
+    font-size: 16px;
+    font-weight: 600;
 }
 
 QDockWidget QWidget#scanParameterContent {
@@ -155,25 +184,57 @@ QDockWidget QWidget#scanParameterContent {
 QGroupBox {
     color: #EAF2FF;
     border: 1px solid #1E2D3D;
-    border-radius: 4px;
-    margin-top: 10px;
-    padding-top: 8px;
-    background-color: #0B1724;
+    border-radius: 6px;
+    margin-top: 12px;
+    padding-top: 10px;
+    background-color: #101F30;
+    font-size: 14px;
 }
 
 QGroupBox::title {
     subcontrol-origin: margin;
-    left: 8px;
-    padding: 0 4px;
+    left: 10px;
+    padding: 0 6px;
     color: #EAF2FF;
+    font-size: 15px;
+    font-weight: 600;
 }
 
 QGroupBox[accordionHeader="true"]::title {
     font-weight: 600;
 }
 
-QLabel {
+QDockWidget QLineEdit,
+QDockWidget QComboBox {
+    background-color: #0A1622;
     color: #EAF2FF;
+    border: 1px solid #1E2D3D;
+    border-radius: 5px;
+    padding: 4px 8px;
+    min-height: 28px;
+    font-size: 14px;
+}
+
+QDockWidget QCheckBox {
+    color: #EAF2FF;
+    font-size: 14px;
+    spacing: 6px;
+}
+
+QDockWidget QLabel[role="statKey"] {
+    color: #A8B3C2;
+    font-size: 13px;
+}
+
+QDockWidget QLabel[role="statValue"] {
+    color: #EAF2FF;
+    font-size: 14px;
+}
+
+QDockWidget QLabel[role="placeholder"] {
+    color: #6B8299;
+    font-size: 14px;
+    padding: 8px;
 }
 
 QStatusBar#statusBar {
@@ -181,11 +242,25 @@ QStatusBar#statusBar {
     color: #A8B3C2;
     border-top: 1px solid #1E2D3D;
     min-height: 32px;
+    font-size: 13px;
 }
 
 QStatusBar#statusBar QLabel {
     color: #A8B3C2;
     padding: 0 8px;
+}
+
+QProgressBar#statusBarProgressBar {
+    background-color: #132337;
+    border: 1px solid #1E2D3D;
+    border-radius: 4px;
+    min-height: 10px;
+    max-height: 10px;
+}
+
+QProgressBar#statusBarProgressBar::chunk {
+    background-color: #1A8CFF;
+    border-radius: 3px;
 }
 
 QScrollArea#scanParameterScroll {
@@ -202,4 +277,21 @@ QLabel#analysisPage,
 QLabel#reportPage {
     color: #A8B3C2;
     font-size: 16px;
+}
+
+QScrollBar:vertical {
+    background: transparent;
+    width: 6px;
+    margin: 0;
+}
+
+QScrollBar::handle:vertical {
+    background: #1E2D3D;
+    border-radius: 3px;
+    min-height: 24px;
+}
+
+QScrollBar::add-line:vertical,
+QScrollBar::sub-line:vertical {
+    height: 0;
 }

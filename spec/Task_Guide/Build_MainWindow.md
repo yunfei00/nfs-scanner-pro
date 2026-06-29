@@ -1,8 +1,8 @@
-# Build MainWindow — Release 010 主窗口原型
+# Build MainWindow — Release 011 主窗口 PySide6 原型
 
 ## 任务目标
 
-实现 **PySide6 QMainWindow 壳层**：1920×1080 布局、左侧导航、顶栏菜单/工具栏、设备状态栏、中央 QGraphicsView 画布、右侧参数 Dock、底部状态栏。**不接真实设备，不实现扫描业务**，Mock 数据即可。
+实现 **PySide6 QMainWindow Mock 壳层**：对齐 Release 010 高保真视觉，包含左侧导航、顶栏菜单/工具栏、设备状态栏、中央 QGraphicsView 画布、右侧参数 Dock、底部状态栏。**不接真实设备，不实现扫描业务**，Mock 数据即可。
 
 ## 开始前必须阅读
 
@@ -10,10 +10,10 @@
 2. [spec/Registry/UI.yaml](../Registry/UI.yaml)
 3. [spec/Registry/Qt.yaml](../Registry/Qt.yaml)
 4. [spec/Context_Pack/UI_Context.md](../Context_Pack/UI_Context.md)
-5. [docs/product-spec/ui-wireframe/01_Main_Window_1920x1080.md](../../docs/product-spec/ui-wireframe/01_Main_Window_1920x1080.md)
-6. [docs/product-spec/ui-wireframe/02_Left_Navigation.md](../../docs/product-spec/ui-wireframe/02_Left_Navigation.md)
-7. [docs/product-spec/ui-wireframe/03_Top_Menu_And_Toolbar.md](../../docs/product-spec/ui-wireframe/03_Top_Menu_And_Toolbar.md)
-8. [docs/product-spec/ui-wireframe/06_Dock_System.md](../../docs/product-spec/ui-wireframe/06_Dock_System.md)
+5. [docs/product-spec/release/Release_010_High_Fidelity_Design/README.md](../../docs/product-spec/release/Release_010_High_Fidelity_Design/README.md)
+6. [docs/product-spec/high-fidelity/main-window/01_Main_Window_High_Fidelity_Spec.md](../../docs/product-spec/high-fidelity/main-window/01_Main_Window_High_Fidelity_Spec.md)
+7. [prototypes/high_fidelity/index.html](../../prototypes/high_fidelity/index.html)（视觉对照）
+8. [docs/product-spec/ui-wireframe/01_Main_Window_1920x1080.md](../../docs/product-spec/ui-wireframe/01_Main_Window_1920x1080.md)
 9. 组件规范：
    - [NavigationBar.md](../../docs/product-spec/design-system/02_Components/NavigationBar.md)
    - [06_Toolbar_System.md](../../docs/product-spec/design-system/06_Toolbar_System.md)
@@ -21,6 +21,15 @@
    - [StatusBar.md](../../docs/product-spec/design-system/02_Components/StatusBar.md)
    - [Qt_GraphicsView_Rules.md](../../docs/product-spec/design-system/07_Qt_Implementation/Qt_GraphicsView_Rules.md)
 10. [docs/product-spec/qt-spec/02_Qt_Object_Names.md](../../docs/product-spec/qt-spec/02_Qt_Object_Names.md)
+
+## 运行
+
+```bash
+pip install PySide6
+python scripts/run_mock_ui.py
+```
+
+入口代码：`src/nfs_scanner_pro/main.py`
 
 ## 不要阅读的内容
 
@@ -31,42 +40,41 @@
 
 ## 允许修改的目录
 
-- 新建 `src/` 或项目约定的 UI 包目录（若尚无，按 qt-spec 创建）
-- `resources/qss/`（主题文件）
-- `tests/ui/`（可选 smoke test）
+- `src/nfs_scanner_pro/`（UI 包与 QSS）
+- `scripts/run_mock_ui.py`
+- `docs/product-spec/release/Release_011_MainWindow_PySide6_Prototype/`（Release 说明）
+- `spec/Registry/Release.yaml`、`spec/AI_INDEX.md`（索引同步）
 
 ## 禁止修改的目录
 
-- `docs/product-spec/**`（除非用户明确要求补文档）
-- `spec/Registry/**`（除非同步更新索引任务）
-- 已有 ADR 正文
+- `prototypes/high_fidelity/`（Release 010 已定稿）
+- 已有 ADR 正文（除非用户明确要求）
 
 ## 实现步骤
 
-1. **QMainWindow 骨架**：菜单栏（文件/编辑/视图/设备/扫描/分析/报告/设置/帮助）、central widget 占位。
-2. **左侧 NavigationBar**：仅四项——扫描、设备、分析、报告；**不含项目**。
+1. **QMainWindow 骨架**：菜单栏（文件/编辑/视图/工具/设置/帮助）、central widget。
+2. **左侧 NavigationBar**：仅四项——扫描、设备、分析、报告；64px 默认，Hover 180px。
 3. **文件菜单**：新建/打开/保存项目（Mock 对话框即可）。
-4. **视图菜单**：日志、频谱、统计、数据表格 Dock **默认隐藏**，勾选后显示。
-5. **工具栏**：连接常用动作（Mock enabled/disabled）。
-6. **设备状态栏**：线框 04 尺寸与占位图标。
-7. **中央 QGraphicsView + QGraphicsScene**：PCB 背景 Mock 图；区域框 Mock；热力图用 **QGraphicsPixmapItem** 整图叠加。
-8. **右侧 Dock**：参数面板壳层（PropertyPanel 结构，表单可空）。
-9. **底部 QStatusBar**：坐标、扫描态 Mock。
-10. **objectName**：全部按 qt-spec / Qt_ObjectName_Rules 设置。
-11. **QSS**：引用 Design Token，深色主题；不散落 inline style。
-12. **dynamic property**：扫描态等用 `setProperty("scanState", ...)` 配合 QSS。
+4. **视图菜单**：「显示参数面板」控制 scanParameterDock；日志/频谱/统计 **默认隐藏**。
+5. **工具栏**：开始/停止/拍照等 Mock 动作。
+6. **设备状态栏**：单行四设备 + 探头/区域/频率/点数。
+7. **中央 QGraphicsView + QGraphicsScene**：深绿 PCB Mock；热力图 **QGraphicsPixmapItem** 整图叠加。
+8. **右侧 Dock**：扫描参数 360px，Accordion 五组。
+9. **底部 QStatusBar**：进度条 Mock + 扫描统计。
+10. **objectName**：按 qt-spec / Qt_ObjectName_Rules。
+11. **QSS**：`resources/styles/dark_theme.qss`，Fusion + Token。
 
 ## 验收标准
 
-- [ ] 窗口默认 1920×1080 比例可缩放，布局与线框一致
+- [ ] `python scripts/run_mock_ui.py` 可启动
+- [ ] 布局与高保真/线框一致，视觉接近 Release 010
 - [ ] 左侧仅四个一级模块，无「项目」页
 - [ ] 项目操作仅在文件菜单
-- [ ] 日志/频谱/统计/数据表格默认不可见
-- [ ] QGraphicsView 为主画布，非 QLabel 缩放
+- [ ] 日志/频谱/统计默认不可见
+- [ ] QGraphicsView 为主画布，热力图整图 QPixmap
 - [ ] 所有关键控件有 objectName
 - [ ] 无真实设备连接代码
 - [ ] 无 ScanTask 状态机业务逻辑（按钮 Mock 即可）
-- [ ] 通过 [Review_Code.md](Review_Code.md) 清单
 
 ## 常见错误
 
@@ -75,14 +83,14 @@
 | 左侧加「项目」导航 | Project 仅文件菜单 + 文件夹模型 |
 | 启动即显示日志 Dock | 视图菜单控制，默认隐藏 |
 | 热力图逐格 QGraphicsRectItem | 整张 QPixmap/QImage 一次绘制 |
-| 跳过线框自由改比例 | 以 01_Main_Window_1920x1080 为准 |
-| 全仓库复制粘贴旧 wireframe/ | 用 ui-wireframe/ + design-system |
+| 跳过线框/高保真自由改比例 | 以 010 高保真 + 008 线框为准 |
+| 修改 prototypes/high_fidelity | 010 已定稿，011 只写 PySide6 |
 
 ## 推荐 commit message
 
 ```
-feat(ui): add MainWindow shell prototype for Release 010
+feat(ui): add Release 011 MainWindow PySide6 mock prototype
 
-Mock-only QMainWindow with navigation, dock, and QGraphicsView canvas.
+Mock-only QMainWindow aligned with Release 010 high-fidelity design.
 No device or scan business logic.
 ```

@@ -1,4 +1,4 @@
-"""左侧图标导航栏 — 56px 默认，悬停展开至 180px。"""
+"""左侧图标导航栏 — 64px 默认，悬停展开至 180px。"""
 
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-NAV_COLLAPSED = 56
+NAV_COLLAPSED = 64
 NAV_EXPANDED = 180
 NAV_ANIM_MS = 180
 
@@ -32,7 +32,6 @@ class LeftNavigationBar(QWidget):
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self.setObjectName("leftNavigationBar")
-        self._expanded = False
         self._width = float(NAV_COLLAPSED)
         self.setFixedWidth(NAV_COLLAPSED)
 
@@ -49,27 +48,22 @@ class LeftNavigationBar(QWidget):
             btn = QToolButton(self)
             btn.setObjectName(name)
             btn.setCheckable(True)
-            btn.setToolButtonStyle(Qt.ToolButtonIconOnly)
+            btn.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
             btn.setIcon(QIcon(style.standardIcon(sp)))
             btn.setText(label)
             btn.setToolTip(label)
-            btn.setProperty("navLabel", label)
-            btn.setFixedHeight(48)
-            btn.setSizePolicy(
-                btn.sizePolicy().horizontalPolicy(),
-                btn.sizePolicy().verticalPolicy(),
-            )
+            btn.setFixedHeight(52)
             self._group.addButton(btn, index)
             layout.addWidget(btn)
             self._buttons.append(btn)
 
+        layout.addStretch()
         self._buttons[0].setChecked(True)
         self._group.idClicked.connect(self.page_changed.emit)
 
         self._anim = QPropertyAnimation(self, b"navWidth", self)
         self._anim.setDuration(NAV_ANIM_MS)
         self._anim.setEasingCurve(QEasingCurve.Type.OutCubic)
-
         self.setProperty("expanded", False)
 
     def get_nav_width(self) -> float:
@@ -81,7 +75,9 @@ class LeftNavigationBar(QWidget):
         self.setFixedWidth(w)
         expanded = w > NAV_COLLAPSED + (NAV_EXPANDED - NAV_COLLAPSED) // 2
         style = (
-            Qt.ToolButtonTextBesideIcon if expanded else Qt.ToolButtonIconOnly
+            Qt.ToolButtonStyle.ToolButtonTextBesideIcon
+            if expanded
+            else Qt.ToolButtonStyle.ToolButtonIconOnly
         )
         for btn in self._buttons:
             btn.setToolButtonStyle(style)

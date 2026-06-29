@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""启动 Release 010 Mock 主窗口 UI。"""
+"""启动 Release 011 Mock 主窗口 UI。"""
 
 from __future__ import annotations
 
@@ -10,6 +10,13 @@ ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
+
+try:
+    import PySide6  # noqa: F401
+except ModuleNotFoundError:
+    print("缺少 PySide6，请先安装：", file=sys.stderr)
+    print("  pip install PySide6", file=sys.stderr)
+    raise SystemExit(1)
 
 from nfs_scanner_pro.main import main  # noqa: E402
 

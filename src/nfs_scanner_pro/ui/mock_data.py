@@ -1,4 +1,4 @@
-"""Release 010 Mock 数据 — 仅用于 UI 原型展示。"""
+"""Release 011 Mock 数据 — 仅用于 UI 原型展示。"""
 
 from __future__ import annotations
 
@@ -41,7 +41,7 @@ BREADCRUMB = f"项目 > {REGION_NAME} > Hx Probe > {FREQUENCY} > {POINTS} pts"
 
 STATUS_BAR = {
     "state": "准备就绪",
-    "progress": "0%",
+    "progress": 0,
     "points": f"0 / {POINTS}",
     "remaining": "00:12:31",
     "date": "2025-06-16",
@@ -58,10 +58,10 @@ SCAN_SETTINGS = {
 }
 
 REGION_SETTINGS = {
-    "start": {"x": 0.0, "y": 0.0, "z": 5.0},
-    "end": {"x": 90.0, "y": 70.0, "z": 5.0},
-    "step": {"x": 1.0, "y": 1.0, "z": 0.0},
-    "points_label": f"{GRID_X} x {GRID_Y} = {POINTS}",
+    "start": {"x": 10.00, "y": -150.00, "z": 5.00},
+    "end": {"x": 190.00, "y": -10.00, "z": 5.00},
+    "step": {"x": 2.00, "y": 2.00, "z": 0.00},
+    "points_label": f"{GRID_X} × {GRID_Y} = {POINTS}",
     "area_mm2": "36000 mm²",
     "path_length": "16.20 m",
     "estimated_time": "00:32:18",

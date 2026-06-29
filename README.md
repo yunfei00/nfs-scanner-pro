@@ -11,7 +11,7 @@
 | [**spec/AI_INDEX.md**](spec/AI_INDEX.md) | AI 唯一第一入口 |
 | [spec/Architecture_Handbook.md](spec/Architecture_Handbook.md) | 架构摘要（15~20 节） |
 | [spec/Registry/](spec/Registry/README.md) | 机器可读 YAML 索引 |
-| [spec/Task_Guide/](spec/Task_Guide/README.md) | 任务级执行入口（含 Release 010 MainWindow） |
+| [spec/Task_Guide/](spec/Task_Guide/README.md) | 任务级执行入口（含 Release 011 MainWindow） |
 | [spec/Maintenance/](spec/Maintenance/README.md) | 增文档、更 Registry、AI 规则 |
 
 路径校验：`python scripts/check_spec_registry_paths.py`
@@ -28,11 +28,17 @@
 | 009.8 Domain Model | [Release_009_8](docs/product-spec/release/Release_009_8_Enterprise_Domain_Model/README.md) |
 | **009.9 AI Index** | [Release_009_9](docs/product-spec/release/Release_009_9_AI_Knowledge_Index/README.md) |
 | **010 High Fidelity** | [Release_010](docs/product-spec/release/Release_010_High_Fidelity_Design/README.md) |
+| **011 MainWindow PySide6** | [Release_011](docs/product-spec/release/Release_011_MainWindow_PySide6_Prototype/README.md) |
+
+## 运行 Mock UI（Release 011）
+
+```bash
+pip install PySide6
+python scripts/run_mock_ui.py
+```
+
+源码：`src/nfs_scanner_pro/` · 任务入口：[spec/Task_Guide/Build_MainWindow.md](spec/Task_Guide/Build_MainWindow.md)
 
 ## 打开高保真原型（Release 010）
 
-浏览器打开：[prototypes/high_fidelity/index.html](prototypes/high_fidelity/index.html)
-
-规格：[docs/product-spec/high-fidelity/](docs/product-spec/high-fidelity/README.md)
-
-PySide6 Mock 主窗口（实验性，非 Release 010 交付）见 `src/`；**Release 011** 从 [spec/Task_Guide/Build_MainWindow.md](spec/Task_Guide/Build_MainWindow.md) 启动，须先通过高保真验收清单。
+浏览器打开：[prototypes/high_fidelity/index.html](prototypes/high_fidelity/index.html) · 规格：[docs/product-spec/high-fidelity/](docs/product-spec/high-fidelity/README.md)

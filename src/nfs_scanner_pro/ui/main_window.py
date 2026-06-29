@@ -1,4 +1,4 @@
-"""主窗口 — Release 010 Mock 壳层。"""
+"""主窗口 — Release 011 PySide6 Mock 原型。"""
 
 from __future__ import annotations
 
@@ -13,7 +13,6 @@ from PySide6.QtWidgets import (
     QMainWindow,
     QMessageBox,
     QStackedWidget,
-    QStatusBar,
     QToolBar,
     QToolButton,
     QVBoxLayout,
@@ -21,10 +20,10 @@ from PySide6.QtWidgets import (
 )
 
 from nfs_scanner_pro.ui.device_status_bar import DeviceStatusBar
-from nfs_scanner_pro.ui.mock_data import STATUS_BAR
 from nfs_scanner_pro.ui.navigation_bar import LeftNavigationBar
 from nfs_scanner_pro.ui.scan_canvas_view import ScanCanvasWidget
 from nfs_scanner_pro.ui.scan_parameter_dock import ScanParameterDock
+from nfs_scanner_pro.ui.status_bar import AppStatusBar
 
 
 class MainWindow(QMainWindow):
@@ -43,14 +42,14 @@ class MainWindow(QMainWindow):
         self._build_tool_bar()
         self._build_central()
         self._build_docks()
-        self._build_status_bar()
+        self._status = AppStatusBar(self)
         self._wire_view_menu()
 
     def _build_menu_bar(self) -> None:
         mb = self.menuBar()
         mb.setObjectName("menuBar")
 
-        file_menu = mb.addMenu("文件(&F)")
+        file_menu = mb.addMenu("文件(F)")
         file_actions = [
             ("新建项目", self._mock_file_action),
             ("打开项目", self._mock_file_action),
@@ -70,8 +69,8 @@ class MainWindow(QMainWindow):
                 act = file_menu.addAction(label)
                 act.triggered.connect(slot)
 
-        mb.addMenu("编辑(&E)")
-        view_menu = mb.addMenu("视图(&V)")
+        mb.addMenu("编辑(E)")
+        view_menu = mb.addMenu("视图(V)")
 
         self._action_param_panel = QAction("显示参数面板", self)
         self._action_param_panel.setCheckable(True)
@@ -95,9 +94,9 @@ class MainWindow(QMainWindow):
         reset_act.triggered.connect(self._mock_log("重置布局"))
         view_menu.addAction(reset_act)
 
-        mb.addMenu("工具(&T)")
-        mb.addMenu("设置(&S)")
-        mb.addMenu("帮助(&H)")
+        mb.addMenu("工具(T)")
+        mb.addMenu("设置(S)")
+        mb.addMenu("帮助(H)")
 
     def _build_tool_bar(self) -> None:
         tb = QToolBar("主工具栏", self)
@@ -106,20 +105,20 @@ class MainWindow(QMainWindow):
         self.addToolBar(tb)
 
         buttons = (
-            ("toolbarStartScanButton", "开始扫描", "primary", "开始扫描"),
-            ("toolbarStopScanButton", "停止扫描", "danger", "停止扫描"),
-            ("toolbarCaptureButton", "拍照", "secondary", "拍照"),
-            ("toolbarAlignButton", "区域对齐", "secondary", "区域对齐"),
-            ("toolbarGridButton", "网格", "secondary", "网格"),
-            ("toolbarMeasureButton", "测量", "secondary", "测量"),
+            ("toolbarStartScanButton", "开始扫描", "primary", "开始扫描", "扫描中（Mock）"),
+            ("toolbarStopScanButton", "停止扫描", "danger", "停止扫描", "准备就绪"),
+            ("toolbarCaptureButton", "拍照", "secondary", "拍照", None),
+            ("toolbarAlignButton", "区域对齐", "secondary", "区域对齐", None),
+            ("toolbarGridButton", "网格", "secondary", "网格", None),
+            ("toolbarMeasureButton", "测量", "secondary", "测量", None),
         )
-        for obj_name, text, variant, log_msg in buttons:
+        for obj_name, text, variant, log_msg, state_msg in buttons:
             btn = QToolButton(self)
             btn.setObjectName(obj_name)
             btn.setText(text)
             btn.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextOnly)
             btn.setProperty("variant", variant)
-            btn.clicked.connect(self._mock_log(log_msg))
+            btn.clicked.connect(self._toolbar_action(log_msg, state_msg))
             tb.addWidget(btn)
             btn.style().unpolish(btn)
             btn.style().polish(btn)
@@ -182,31 +181,6 @@ class MainWindow(QMainWindow):
             self.addDockWidget(Qt.DockWidgetArea.BottomDockWidgetArea, dock)
             self._hidden_docks.append(dock)
 
-    def _build_status_bar(self) -> None:
-        sb = QStatusBar(self)
-        sb.setObjectName("statusBar")
-        self.setStatusBar(sb)
-
-        msg = QLabel(f"状态：{STATUS_BAR['state']}", self)
-        msg.setObjectName("statusBarMessageLabel")
-        sb.addWidget(msg)
-
-        for text, obj in (
-            (f"扫描进度：{STATUS_BAR['progress']}", "statusBarProgressLabel"),
-            (f"扫描点：{STATUS_BAR['points']}", "statusBarPointsLabel"),
-            (f"预计剩余时间：{STATUS_BAR['remaining']}", "statusBarRemainingLabel"),
-        ):
-            lbl = QLabel(text, self)
-            lbl.setObjectName(obj)
-            sb.addWidget(lbl)
-
-        dt = QLabel(
-            f"日期：{STATUS_BAR['date']}    时间：{STATUS_BAR['time']}",
-            self,
-        )
-        dt.setObjectName("statusBarDateTimeLabel")
-        sb.addPermanentWidget(dt)
-
     def _wire_view_menu(self) -> None:
         self._action_param_panel.triggered.connect(self._toggle_param_dock)
         self._param_dock.visibilityChanged.connect(self._sync_param_action)
@@ -223,6 +197,14 @@ class MainWindow(QMainWindow):
         action = self.sender()
         if isinstance(action, QAction):
             self._show_mock(action.text())
+
+    def _toolbar_action(self, log_msg: str, state_msg: str | None):
+        def handler(*_args) -> None:
+            print(f"[Mock UI] {log_msg}", flush=True)
+            if state_msg is not None:
+                self._status.set_state(state_msg)
+
+        return handler
 
     def _mock_log(self, message: str):
         def handler(*_args) -> None:

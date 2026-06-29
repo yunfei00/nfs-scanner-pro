@@ -76,6 +76,7 @@ spec/AI_INDEX.md
 → prototypes/high_fidelity/index.html（视觉对照）
 → docs/product-spec/ui-wireframe/01_Main_Window_1920x1080.md
 → docs/product-spec/design-system/（按需子文档）
+→ src/nfs_scanner_pro/main.py · scripts/run_mock_ui.py
 ```
 
 ### 5.2 做领域模型 / Mock JSON / 状态机
@@ -134,8 +135,8 @@ spec/Registry/Release.yaml
 | 009.5 | UI Foundation 分层 | ✅ 已交付 |
 | 009.8 | Domain Model | ✅ 已交付 |
 | **009.9** | **AI Knowledge Index** | ✅ 本 Release |
-| **010** | **High Fidelity Design** | ✅ 本 Release |
-| 011 | MainWindow Prototype (PySide6) | ⏳ 下一步 |
+| **010** | **High Fidelity Design** | ✅ 候选定稿 |
+| **011** | **MainWindow Prototype (PySide6)** | ⏳ 本 Release |
 
 ---
 
