@@ -27,7 +27,15 @@
 | 009.5 UI Foundation | [Release_009_5](docs/product-spec/release/Release_009_5_Enterprise_UI_Foundation/README.md) |
 | 009.8 Domain Model | [Release_009_8](docs/product-spec/release/Release_009_8_Enterprise_Domain_Model/README.md) |
 | **009.9 AI Index** | [Release_009_9](docs/product-spec/release/Release_009_9_AI_Knowledge_Index/README.md) |
+| **010 MainWindow** | [Release_010](docs/product-spec/release/Release_010_MainWindow_Prototype/README.md) |
 
-## Release 010 前置
+## 运行 Mock UI（Release 010）
 
-完成 Release 009.9 且 Registry 路径校验通过后，从 [spec/Task_Guide/Build_MainWindow.md](spec/Task_Guide/Build_MainWindow.md) 启动 MainWindow Prototype。
+```bash
+pip install -r requirements.txt
+python scripts/run_mock_ui.py
+```
+
+## Release 010 MainWindow Prototype
+
+Mock 主窗口已从 [spec/Task_Guide/Build_MainWindow.md](spec/Task_Guide/Build_MainWindow.md) 启动；详见 [Release_010 README](docs/product-spec/release/Release_010_MainWindow_Prototype/README.md)。
