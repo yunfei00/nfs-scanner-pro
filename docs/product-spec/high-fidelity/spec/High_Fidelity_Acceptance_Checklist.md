@@ -1,43 +1,45 @@
-# 高保真验收清单 — Release 010 候选定稿
+# 高保真验收清单 — Release 010.5 候选定稿
 
-Release 010 High Fidelity Design Package · **候选定稿版（v2.1 Final Candidate）**
+Release 010（扫描页定稿）+ Release 010.5（四页统一 + 状态补全）· **候选定稿版（v1.0 Final Candidate）**
 
-> 交互原型：[prototypes/high_fidelity/index.html](../../../../prototypes/high_fidelity/index.html)
+> 扫描：[index.html](../../../../prototypes/high_fidelity/index.html) · 设备：[device.html](../../../../prototypes/high_fidelity/device.html) · 分析：[analysis.html](../../../../prototypes/high_fidelity/analysis.html) · 报告：[report.html](../../../../prototypes/high_fidelity/report.html)
 
-## 检查项
+## 验收项
 
 | # | 检查项 | 通过标准 | 结果 |
 |---|---|---|---|
-| 1 | 全部简体中文 | 菜单/工具栏/导航/Dock/状态栏无英文主文案 | ✅ |
-| 2 | 无左侧「项目」 | 导航仅扫描/设备/分析/报告 | ✅ |
-| 3 | 项目仅在文件菜单 | 工具栏无新建/打开/保存/项目管理器 | ✅ |
-| 4 | 导航默认图标模式 | 宽 **64px** | ✅ |
-| 5 | 导航 Hover 展开 | **180px**，~180ms | ✅ |
-| 6 | 设备状态栏单行 | 不换行 | ✅ |
-| 7 | **PCB 占据视觉中心** | 深绿 PCB 占主区域 ≥75%；尺寸未缩小 | ✅ |
-| 8 | 热力图专业清晰 | 中心红→外圈蓝绿 **radial** 整层 | ✅ |
-| 9 | 右侧参数 Dock | **360px**，表单/统计卡片 | ✅ |
-| 10 | Dock 底部可访问 | 内容不被状态栏遮挡；Dock **内部独立滚动** | ✅ |
-| 11 | 色带可见 | 幅度(dBm) -10…-90 | ✅ |
-| 12 | **无浏览器滚动条** | `body`/`html` `overflow: hidden`；仅整体 scale | ✅ |
-| 13 | **字体可读性** | 菜单 16px；Dock 标签 **+1px**（14~16px） | ✅ |
-| 14 | 无页面内异常 X 元素 | 无顶部中央灰色 X（浏览器预览浮层除外） | ✅ |
-| 15 | 日志/频谱/统计隐藏 | 主屏无辅助 Dock | ✅ |
-| 16 | 无外部依赖 | 无 CDN/外链图 | ✅ |
-| 17 | 工具栏与状态栏 | 主/危险按钮清晰；进度条 10px | ✅ |
-| 18 | 可作 PySide6 参考 | 与 wireframe + design-system 一致 | ✅ |
+| 1 | **扫描页完成** | index.html 定稿；PCB 未缩小；布局未大改 | ✅ |
+| 2 | **设备页完成** | 四设备卡片 + 设备配置 Dock + 操作入口清晰 | ✅ |
+| 3 | **分析页完成** | PCB 视觉与扫描页一致；径向热力图；芯片/焊盘/走线/过孔 | ✅ |
+| 4 | **报告页完成** | 列表 + PDF 风预览；PCB+热力图缩略图（非纯渐变块） | ✅ |
+| 5 | **准备就绪状态** | [01_Ready_State.md](../states/01_Ready_State.md) | ✅ |
+| 6 | **扫描中状态** | [02_Scanning_State.md](../states/02_Scanning_State.md) | ✅ |
+| 7 | **完成状态** | [03_Completed_State.md](../states/03_Completed_State.md) | ✅ |
+| 8 | **设备异常状态** | [04_Device_Error_State.md](../states/04_Device_Error_State.md) | ✅ |
+| 9 | 四页简体中文 | 无英文主界面文案（标识符 ST-001 等除外） | ✅ |
+| 10 | 四页无左侧「项目」 | 导航仅扫描/设备/分析/报告 | ✅ |
+| 11 | **统一主窗口框架** | 菜单栏/工具栏 64px/设备状态栏/导航/Dock/状态栏一致 | ✅ |
+| 12 | 导航 64↔180px | 默认仅图标；Hover 展开；无设置/帮助/项目 | ✅ |
+| 13 | 无浏览器滚动条 | body overflow hidden；1920×1080 scale | ✅ |
+| 14 | Dock 不被遮挡 | 内部滚动；底部状态栏不覆盖内容 | ✅ |
+| 15 | 日志/频谱/统计隐藏 | 四页均不默认显示 | ✅ |
+| 16 | 无外部依赖 | 无 CDN/外链 | ✅ |
+| 17 | **可进入 Release_011** | 010 + 010.5 视觉闭环完整 | ✅ |
 
 ## 验证步骤
 
-1. 全屏打开 `prototypes/high_fidelity/index.html`
-2. 确认 **无浏览器纵向/横向滚动条**
-3. 确认右侧 Dock 折叠区可滚动到底，不被底部状态栏遮挡
-4. 确认 PCB、热力图、色带、工具栏结构未变
+1. 依次全屏打开四页 HTML，确认框架一致
+2. 确认分析页 PCB 细节与扫描页风格一致
+3. 确认报告预览缩略图为 PCB + 热力图 SVG
+4. 确认无浏览器纵向/横向滚动条
+5. 阅读 states/ 四份状态说明
 
-## Release 010 候选定稿结论
+## 结论
 
-**18/18 通过** — 本清单版本标记为 **Release 010 候选定稿**，可提交 Release 010。
+**17/17 通过** — Release 010.5 标记为 **候选定稿版**，可进入 **Release 011 MainWindow PySide6 Prototype**。
 
 ## Release 011 门禁
 
-候选定稿 Accepted 后，可进入 **Release 011 MainWindow Prototype（PySide6）**。
+- 视觉输入：**Release 010 + Release 010.5**（禁止仅用 AI 图片）
+- ADR-0022、ADR-0023 Accepted
+- 011 不重画扫描页 PCB 尺寸

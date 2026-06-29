@@ -28,9 +28,19 @@
 | 009.8 Domain Model | [Release_009_8](docs/product-spec/release/Release_009_8_Enterprise_Domain_Model/README.md) |
 | **009.9 AI Index** | [Release_009_9](docs/product-spec/release/Release_009_9_AI_Knowledge_Index/README.md) |
 | **010 High Fidelity** | [Release_010](docs/product-spec/release/Release_010_High_Fidelity_Design/README.md) |
-| **011 MainWindow PySide6** | [Release_011](docs/product-spec/release/Release_011_MainWindow_PySide6_Prototype/README.md) |
+| **010.5 High Fidelity 补全** | [Release_010_5](docs/product-spec/release/Release_010_5_High_Fidelity_Completion/README.md) |
+| 011 MainWindow PySide6 | [Release_011](docs/product-spec/release/Release_011_MainWindow_PySide6_Prototype/README.md)（待 010.5 验收） |
 
-## 运行 Mock UI（Release 011）
+## 打开高保真原型
+
+| 页面 | 路径 |
+|---|---|
+| 扫描 | [prototypes/high_fidelity/index.html](prototypes/high_fidelity/index.html) |
+| 设备 | [prototypes/high_fidelity/device.html](prototypes/high_fidelity/device.html) |
+| 分析 | [prototypes/high_fidelity/analysis.html](prototypes/high_fidelity/analysis.html) |
+| 报告 | [prototypes/high_fidelity/report.html](prototypes/high_fidelity/report.html) |
+
+## 运行 Mock UI（Release 011 — 暂停至 010.5 验收）
 
 ```bash
 pip install PySide6

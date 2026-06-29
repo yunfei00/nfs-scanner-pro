@@ -22,10 +22,24 @@ This folder stores product design documents for NFS Scanner Professional.
 | **Release 009.5** | **Enterprise UI Foundation（UI 权威）** | [release/Release_009_5_Enterprise_UI_Foundation/README.md](release/Release_009_5_Enterprise_UI_Foundation/README.md) |
 | **Release 009.8** | **Enterprise Domain Model（领域权威）** | [release/Release_009_8_Enterprise_Domain_Model/README.md](release/Release_009_8_Enterprise_Domain_Model/README.md) |
 | **Release 009.9** | **AI Knowledge Index（AI 第一入口）** | [release/Release_009_9_AI_Knowledge_Index/README.md](release/Release_009_9_AI_Knowledge_Index/README.md) |
-| **Release 010** | **High Fidelity Design（高保真设计包）** | [release/Release_010_High_Fidelity_Design/README.md](release/Release_010_High_Fidelity_Design/README.md) |
-| **Release 011** | **MainWindow PySide6 Prototype（Mock UI）** | [release/Release_011_MainWindow_PySide6_Prototype/README.md](release/Release_011_MainWindow_PySide6_Prototype/README.md) |
+| **Release 010** | **High Fidelity Design（扫描页候选定稿）** | [release/Release_010_High_Fidelity_Design/README.md](release/Release_010_High_Fidelity_Design/README.md) |
+| **Release 010.5** | **High Fidelity Completion（四页 + 状态补全）** | [release/Release_010_5_High_Fidelity_Completion/README.md](release/Release_010_5_High_Fidelity_Completion/README.md) |
+| Release 011 | MainWindow PySide6 Prototype | [release/Release_011_MainWindow_PySide6_Prototype/README.md](release/Release_011_MainWindow_PySide6_Prototype/README.md) |
 
-## PySide6 Mock UI（Release 011）
+## 高保真设计（Release 010 / 010.5）
+
+**入口**：[high-fidelity/README.md](high-fidelity/README.md)
+
+| 页面 | 浏览器原型 |
+|---|---|
+| 扫描 | [prototypes/high_fidelity/index.html](../prototypes/high_fidelity/index.html) |
+| 设备 | [prototypes/high_fidelity/device.html](../prototypes/high_fidelity/device.html) |
+| 分析 | [prototypes/high_fidelity/analysis.html](../prototypes/high_fidelity/analysis.html) |
+| 报告 | [prototypes/high_fidelity/report.html](../prototypes/high_fidelity/report.html) |
+
+状态说明：[high-fidelity/states/](high-fidelity/states/)
+
+## PySide6 Mock UI（Release 011 — 待 010.5 验收）
 
 ```bash
 pip install PySide6
@@ -33,10 +47,6 @@ python scripts/run_mock_ui.py
 ```
 
 源码：`src/nfs_scanner_pro/` · 启动脚本：`scripts/run_mock_ui.py`
-
-## 高保真设计（Release 010）
-
-**入口**：[high-fidelity/README.md](high-fidelity/README.md) · **浏览器原型**：[prototypes/high_fidelity/index.html](../prototypes/high_fidelity/index.html)
 
 ## AI 入口层（Release 009.9）
 

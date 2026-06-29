@@ -135,8 +135,9 @@ spec/Registry/Release.yaml
 | 009.5 | UI Foundation 分层 | ✅ 已交付 |
 | 009.8 | Domain Model | ✅ 已交付 |
 | **009.9** | **AI Knowledge Index** | ✅ 本 Release |
-| **010** | **High Fidelity Design** | ✅ 候选定稿 |
-| **011** | **MainWindow Prototype (PySide6)** | ⏳ 本 Release |
+| **010** | **High Fidelity Design** | ✅ 扫描页候选定稿 |
+| **010.5** | **High Fidelity Completion** | ⏳ 本 Release |
+| 011 | MainWindow Prototype (PySide6) | 🔒 待 010.5 验收 |
 
 ---
 

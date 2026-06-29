@@ -11,6 +11,7 @@ related_docs:
     - docs/product-spec/release/Release_009_8_Enterprise_Domain_Model/README.md
     - docs/product-spec/release/Release_009_9_AI_Knowledge_Index/README.md
     - docs/product-spec/release/Release_010_High_Fidelity_Design/README.md
+    - docs/product-spec/release/Release_010_5_High_Fidelity_Completion/README.md
     - docs/product-spec/release/Release_011_MainWindow_PySide6_Prototype/README.md
   wireframe_008:
     - docs/product-spec/ui-wireframe/README.md

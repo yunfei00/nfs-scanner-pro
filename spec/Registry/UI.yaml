@@ -27,8 +27,15 @@ related_docs:
   high_fidelity:
     - docs/product-spec/high-fidelity/README.md
     - docs/product-spec/high-fidelity/main-window/01_Main_Window_High_Fidelity_Spec.md
+    - docs/product-spec/high-fidelity/pages/device/Device_Page_High_Fidelity.md
+    - docs/product-spec/high-fidelity/pages/analysis/Analysis_Page_High_Fidelity.md
+    - docs/product-spec/high-fidelity/pages/report/Report_Page_High_Fidelity.md
+    - docs/product-spec/high-fidelity/states/01_Ready_State.md
     - docs/product-spec/high-fidelity/assets/main_window_high_fidelity.svg
     - prototypes/high_fidelity/index.html
+    - prototypes/high_fidelity/device.html
+    - prototypes/high_fidelity/analysis.html
+    - prototypes/high_fidelity/report.html
   tokens:
     - docs/product-spec/design-system/01_Foundation/Design_Tokens.md
     - docs/product-spec/design-system/06_QSS/README.md
@@ -37,6 +44,7 @@ adr:
   - docs/product-spec/decision/ADR-0013-Project-In-File-Menu.md
   - docs/product-spec/decision/ADR-0014-Enterprise-Design-System.md
   - docs/product-spec/decision/ADR-0022-High-Fidelity-Before-PySide6.md
+  - docs/product-spec/decision/ADR-0023-High-Fidelity-Completion-Before-Code.md
 output_expected:
   - 符合 1920x1080 线框的 QWidget/QMainWindow 结构
   - objectName 与 qt-spec 一致

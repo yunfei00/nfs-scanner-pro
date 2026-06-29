@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>近场扫描系统 — 设备页高保真</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="viewport-host">
+    <div class="scale-stage" id="scaleStage">
+      <div class="app-shell" role="application" aria-label="近场扫描系统 — 设备">
+
+        <header class="menubar" aria-label="菜单栏">
+          <div class="menu-items">
+            <span>文件(F)</span><span>编辑(E)</span><span>视图(V)</span>
+            <span>工具(T)</span><span>设置(S)</span><span>帮助(H)</span>
+          </div>
+          <div class="menu-status">
+            <span class="status-lamp" aria-hidden="true"></span>
+            <span>状态：准备就绪</span>
+          </div>
+        </header>
+
+        <div class="toolbar" aria-label="工具栏">
+          <button type="button" class="btn btn-scan">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7L8 5z"/></svg>
+            开始扫描
+          </button>
+          <button type="button" class="btn btn-stop">
+            <svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="1"/></svg>
+            停止扫描
+          </button>
+          <span class="toolbar-divider"></span>
+          <button type="button" class="btn btn-outline">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="13" r="4"/><path d="M5 7h2l1-3h8l1 3h2a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2z"/></svg>
+            拍照
+          </button>
+          <button type="button" class="btn btn-outline">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 8V4h4M20 8V4h-4M4 16v4h4M20 16v4h-4"/><circle cx="12" cy="12" r="3"/></svg>
+            区域对齐
+          </button>
+          <button type="button" class="btn btn-outline">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z"/></svg>
+            网格
+          </button>
+          <button type="button" class="btn btn-outline">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h6m8 0h6M12 2v6m0 8v6"/></svg>
+            测量
+          </button>
+        </div>
+
+        <div class="device-status" aria-label="设备状态栏">
+          <span class="device-chip"><span class="dot"></span>运动平台(COM6)</span>
+          <span class="device-chip"><span class="dot"></span>频谱仪(ZNA67)</span>
+          <span class="device-chip"><span class="dot"></span>相机(USB3.0)</span>
+          <span class="device-chip"><span class="dot"></span>舵机系统</span>
+          <span class="sep">|</span>
+          <div class="meta">
+            <span>探头：<strong>Hx(100 μm)</strong></span>
+            <span>高度：<strong>5.000 mm</strong></span>
+            <span>区域：<strong>CPU_Area</strong></span>
+            <span>频率：<strong>2.450 GHz</strong></span>
+            <span>点数：<strong>6461</strong></span>
+          </div>
+        </div>
+
+        <div class="main-body">
+          <aside class="sidebar" aria-label="左侧导航">
+            <a class="nav-item" href="index.html" title="扫描">
+              <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+              <span class="label">扫描</span>
+            </a>
+            <a class="nav-item active" href="device.html" title="设备">
+              <svg viewBox="0 0 24 24"><path d="M4 6h16v10H4V6zm2 2v6h12V8H6zm-4 8h20v2H2v-2z"/></svg>
+              <span class="label">设备</span>
+            </a>
+            <a class="nav-item" href="analysis.html" title="分析">
+              <svg viewBox="0 0 24 24"><path d="M3 17h2v-7H3v7zm4 0h2V7H7v10zm4 0h2v-4h-2v4zm4 0h2V4h-2v13zm4 0h2v-6h-2v6z"/></svg>
+              <span class="label">分析</span>
+            </a>
+            <a class="nav-item" href="report.html" title="报告">
+              <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 2l5 5h-5V4zM8 13h8v2H8v-2zm0 4h8v2H8v-2z"/></svg>
+              <span class="label">报告</span>
+            </a>
+          </aside>
+
+          <main class="page-column">
+            <div class="page-breadcrumb">设备中心 &gt; <em>设备配置文件</em> &gt; 四设备联机配置</div>
+            <div class="device-center" aria-label="设备中心">
+              <article class="device-card">
+                <div class="device-card-header">
+                  <h3>运动平台</h3>
+                  <span class="badge"><span class="badge-dot" aria-hidden="true"></span>已连接</span>
+                </div>
+                <div class="device-kv">
+                  <span class="k">端口</span><span class="v">COM6</span>
+                  <span class="k">波特率</span><span class="v">115200</span>
+                  <span class="k">状态</span><span class="v">已连接</span>
+                  <span class="k">当前坐标</span><span class="v">X 45.20 / Y -28.30 / Z 5.00 mm</span>
+                </div>
+                <div class="device-actions">
+                  <button type="button" class="btn-sm action">回零</button>
+                </div>
+                <div class="jog-pad" aria-label="Jog 控制">
+                  <span></span><button type="button">Y+</button><span></span>
+                  <button type="button">X-</button><button type="button">●</button><button type="button">X+</button>
+                  <span></span><button type="button">Y-</button><span></span>
+                </div>
+              </article>
+
+              <article class="device-card">
+                <div class="device-card-header">
+                  <h3>频谱仪</h3>
+                  <span class="badge"><span class="badge-dot" aria-hidden="true"></span>已连接</span>
+                </div>
+                <div class="device-kv">
+                  <span class="k">型号</span><span class="v">ZNA67</span>
+                  <span class="k">连接方式</span><span class="v">TCP/IP</span>
+                  <span class="k">地址</span><span class="v">192.168.1.100:5025</span>
+                  <span class="k">Trace</span><span class="v">Trace 1</span>
+                  <span class="k">频率范围</span><span class="v">1 MHz — 67 GHz</span>
+                </div>
+                <div class="device-actions">
+                  <button type="button" class="btn-sm primary">测试连接</button>
+                </div>
+              </article>
+
+              <article class="device-card">
+                <div class="device-card-header">
+                  <h3>相机</h3>
+                  <span class="badge"><span class="badge-dot" aria-hidden="true"></span>已连接</span>
+                </div>
+                <div class="device-kv">
+                  <span class="k">接口</span><span class="v">USB3.0</span>
+                  <span class="k">分辨率</span><span class="v">4096 × 3000</span>
+                  <span class="k">状态</span><span class="v">预览就绪</span>
+                </div>
+                <div class="camera-preview">相机预览区域（Mock）</div>
+                <div class="device-actions">
+                  <button type="button" class="btn-sm primary">拍照</button>
+                </div>
+              </article>
+
+              <article class="device-card">
+                <div class="device-card-header">
+                  <h3>舵机系统</h3>
+                  <span class="badge"><span class="badge-dot" aria-hidden="true"></span>已连接</span>
+                </div>
+                <div class="servo-row">
+                  <div class="servo-chip active">
+                    <div class="name">Hx</div>
+                    <div class="val">当前</div>
+                  </div>
+                  <div class="servo-chip">
+                    <div class="name">Hy</div>
+                    <div class="val">待命</div>
+                  </div>
+                </div>
+                <div class="device-kv">
+                  <span class="k">旋转角度</span><span class="v">0.0°</span>
+                  <span class="k">偏移补偿</span><span class="v">X +0.02 / Y -0.01 mm</span>
+                </div>
+                <div class="device-actions">
+                  <button type="button" class="btn-sm secondary">Hx/Hy 校准</button>
+                </div>
+              </article>
+            </div>
+          </main>
+
+          <aside class="dock" aria-label="设备配置面板">
+            <div class="dock-title">设备配置</div>
+            <div class="dock-body">
+              <details class="panel-section" open>
+                <summary>设备配置文件</summary>
+                <div class="panel-content">
+                  <div class="field">
+                    <label>配置文件</label>
+                    <input type="text" value="Lab_Default_v1" readonly />
+                  </div>
+                  <div class="field">
+                    <label>运动平台驱动</label>
+                    <select><option>COM6 · 115200</option></select>
+                  </div>
+                  <div class="field">
+                    <label>频谱仪驱动</label>
+                    <select><option>ZNA67 · TCP/IP</option></select>
+                  </div>
+                </div>
+              </details>
+              <details class="panel-section" open>
+                <summary>连接策略</summary>
+                <div class="panel-content">
+                  <label class="checkbox-field"><input type="checkbox" checked disabled /> 启动时自动连接</label>
+                  <label class="checkbox-field"><input type="checkbox" checked disabled /> 相机可选（离线不阻止扫描）</label>
+                  <div class="dock-note">静态高保真 — 不接真实设备</div>
+                </div>
+              </details>
+              <details class="panel-section">
+                <summary>高级</summary>
+                <div class="panel-collapsed-hint">折叠 — Release 011 实现</div>
+              </details>
+            </div>
+          </aside>
+        </div>
+
+        <footer class="statusbar" aria-label="状态栏">
+          <span class="item">状态：准备就绪</span>
+          <span class="item progress-wrap">
+            扫描进度：0%
+            <span class="progress-track"><span class="progress-fill"></span></span>
+          </span>
+          <span class="item">扫描点：0 / 6461</span>
+          <span class="item">预计剩余时间：00:12:31</span>
+          <span class="right">日期：2025-06-16&nbsp;&nbsp;时间：14:31:10</span>
+        </footer>
+      </div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      var W = 1920, H = 1080;
+      function fitScale() {
+        var stage = document.getElementById("scaleStage");
+        var sx = window.innerWidth / W, sy = window.innerHeight / H;
+        stage.style.transform = "translate(-50%, -50%) scale(" + Math.min(sx, sy) + ")";
+        document.documentElement.style.overflow = "hidden";
+        document.body.style.overflow = "hidden";
+        document.documentElement.style.overscrollBehavior = "none";
+        document.body.style.overscrollBehavior = "none";
+      }
+      window.addEventListener("resize", fitScale);
+      fitScale();
+    })();
+  </script>
+</body>
+</html>

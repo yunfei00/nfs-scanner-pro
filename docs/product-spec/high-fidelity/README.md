@@ -38,20 +38,32 @@ Release 010 · 1920×1080 · 深色工业仪器软件
 docs/product-spec/high-fidelity/
 ├── README.md
 ├── main-window/01_Main_Window_High_Fidelity_Spec.md
-├── pages/01~04_*.md
+├── pages/
+│   ├── device/Device_Page_High_Fidelity.md
+│   ├── analysis/Analysis_Page_High_Fidelity.md
+│   └── report/Report_Page_High_Fidelity.md
+├── states/01~04_*.md
 ├── assets/main_window_high_fidelity.svg
 ├── tokens/high_fidelity_tokens.md
 └── spec/High_Fidelity_Acceptance_Checklist.md
 
 prototypes/high_fidelity/
-├── index.html
+├── index.html      ← 扫描（010 定稿）
+├── device.html     ← 设备（010.5）
+├── analysis.html   ← 分析（010.5）
+├── report.html     ← 报告（010.5）
 ├── styles.css
 └── README.md
 ```
 
 ## 7. 打开原型
 
-浏览器打开：[prototypes/high_fidelity/index.html](../../../prototypes/high_fidelity/index.html)
+| 页面 | 链接 |
+|---|---|
+| 扫描 | [prototypes/high_fidelity/index.html](../../../prototypes/high_fidelity/index.html) |
+| 设备 | [prototypes/high_fidelity/device.html](../../../prototypes/high_fidelity/device.html) |
+| 分析 | [prototypes/high_fidelity/analysis.html](../../../prototypes/high_fidelity/analysis.html) |
+| 报告 | [prototypes/high_fidelity/report.html](../../../prototypes/high_fidelity/report.html) |
 
 ## 8. 相关 Release
 

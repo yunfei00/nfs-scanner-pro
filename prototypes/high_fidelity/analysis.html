@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>近场扫描系统 — 高保真原型</title>
+  <title>近场扫描系统 — 分析页高保真</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div class="viewport-host">
     <div class="scale-stage" id="scaleStage">
-      <div class="app-shell" role="application" aria-label="近场扫描系统主窗口">
+      <div class="app-shell" role="application" aria-label="近场扫描系统 — 分析">
 
         <header class="menubar" aria-label="菜单栏">
           <div class="menu-items">
@@ -67,7 +67,7 @@
 
         <div class="main-body">
           <aside class="sidebar" aria-label="左侧导航">
-            <a class="nav-item active" href="index.html" title="扫描">
+            <a class="nav-item" href="index.html" title="扫描">
               <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
               <span class="label">扫描</span>
             </a>
@@ -75,7 +75,7 @@
               <svg viewBox="0 0 24 24"><path d="M4 6h16v10H4V6zm2 2v6h12V8H6zm-4 8h20v2H2v-2z"/></svg>
               <span class="label">设备</span>
             </a>
-            <a class="nav-item" href="analysis.html" title="分析">
+            <a class="nav-item active" href="analysis.html" title="分析">
               <svg viewBox="0 0 24 24"><path d="M3 17h2v-7H3v7zm4 0h2V7H7v10zm4 0h2v-4h-2v4zm4 0h2V4h-2v13zm4 0h2v-6h-2v6z"/></svg>
               <span class="label">分析</span>
             </a>
@@ -88,11 +88,10 @@
           <main class="canvas-column">
             <div class="canvas-wrap">
               <div class="breadcrumb-overlay">
-                项目 &gt; <em>CPU_Area</em> &gt; Hx Probe &gt; 2.450 GHz &gt; 6461 pts
+                项目 &gt; <em>CPU_Area</em> &gt; ScanTask ST-001 &gt; Trace 1 &gt; 2.450 GHz
               </div>
-
               <div class="pcb-stage">
-                <svg class="pcb-svg" viewBox="0 0 1496 892" xmlns="http://www.w3.org/2000/svg" aria-label="PCB扫描画布">
+                <svg class="pcb-svg" viewBox="0 0 1496 892" xmlns="http://www.w3.org/2000/svg" aria-label="分析热力图画布">
                   <defs>
                     <linearGradient id="pcbBase" x1="0%" y1="0%" x2="100%" y2="100%">
                       <stop offset="0%" stop-color="#1f6b4a"/>
@@ -121,104 +120,45 @@
                       <stop offset="100%" stop-color="#b8860b"/>
                     </linearGradient>
                   </defs>
-
-                  <!-- 画布背景 -->
                   <rect width="1496" height="892" fill="#0a1018"/>
                   <rect width="1496" height="892" fill="url(#silkDots)" opacity="0.4"/>
-
-                  <!-- PCB 主板 -->
                   <g filter="url(#pcbGlow)">
                     <rect x="48" y="32" width="1320" height="828" rx="14" fill="url(#pcbBase)" stroke="#2d8a62" stroke-width="2"/>
                     <rect x="48" y="32" width="1320" height="828" rx="14" fill="url(#silkDots)" opacity="0.5"/>
                   </g>
-
-                  <!-- 边缘安装孔 -->
                   <g fill="#0a1620" stroke="#c9a227" stroke-width="1.5">
                     <circle cx="88" cy="72" r="14"/><circle cx="88" cy="72" r="6" fill="#1a2838"/>
                     <circle cx="1328" cy="72" r="14"/><circle cx="1328" cy="72" r="6" fill="#1a2838"/>
                     <circle cx="88" cy="820" r="14"/><circle cx="88" cy="820" r="6" fill="#1a2838"/>
                     <circle cx="1328" cy="820" r="14"/><circle cx="1328" cy="820" r="6" fill="#1a2838"/>
                   </g>
-
-                  <!-- 接插件区域 -->
                   <rect x="60" y="380" width="36" height="180" rx="3" fill="#1a2838" stroke="#4a6080" stroke-width="1"/>
-                  <g fill="#8899aa">
-                    <rect x="68" y="392" width="20" height="6" rx="1"/><rect x="68" y="408" width="20" height="6" rx="1"/>
-                    <rect x="68" y="424" width="20" height="6" rx="1"/><rect x="68" y="440" width="20" height="6" rx="1"/>
-                    <rect x="68" y="456" width="20" height="6" rx="1"/><rect x="68" y="472" width="20" height="6" rx="1"/>
-                    <rect x="68" y="488" width="20" height="6" rx="1"/><rect x="68" y="504" width="20" height="6" rx="1"/>
-                    <rect x="68" y="520" width="20" height="6" rx="1"/><rect x="68" y="536" width="20" height="6" rx="1"/>
-                  </g>
-                  <rect x="1320" y="200" width="40" height="120" rx="3" fill="#1a2838" stroke="#4a6080"/>
-                  <rect x="1328" y="212" width="24" height="8" rx="1" fill="#667788"/>
-                  <rect x="1328" y="228" width="24" height="8" rx="1" fill="#667788"/>
-                  <rect x="1328" y="244" width="24" height="8" rx="1" fill="#667788"/>
-                  <rect x="1328" y="260" width="24" height="8" rx="1" fill="#667788"/>
-                  <rect x="1328" y="276" width="24" height="8" rx="1" fill="#667788"/>
-                  <rect x="1328" y="292" width="24" height="8" rx="1" fill="#667788"/>
-
-                  <!-- 走线 -->
                   <g stroke="#c9a227" stroke-width="1.2" fill="none" opacity="0.55">
                     <path d="M140 120 H520 V200 H880 V160 H1200"/>
                     <path d="M160 760 H420 V620 H780 V700 H1180"/>
                     <path d="M220 140 V480 H380 V580"/>
                     <path d="M900 100 V420 H1040 V680"/>
-                    <path d="M500 200 V400"/><path d="M700 300 H950"/>
-                    <path d="M350 480 H550 V560 H750"/>
-                    <path d="M1000 520 H1150 V620 H1250"/>
                   </g>
                   <g stroke="#8ab4c9" stroke-width="0.8" fill="none" opacity="0.38">
-                    <path d="M200 250 H340 M360 270 H480 M520 320 H640"/>
-                    <path d="M680 400 H820 M860 440 H1000 M400 520 H560"/>
-                    <path d="M240 600 H380 M420 640 H580 M620 680 H780"/>
+                    <path d="M200 250 H340 M520 320 H640"/>
+                    <path d="M680 400 H820 M400 520 H560"/>
                   </g>
-
-                  <!-- 芯片 -->
                   <g>
                     <rect x="280" y="180" width="140" height="100" rx="3" fill="#0d1520" stroke="#3a5068" stroke-width="1.5"/>
-                    <g fill="#2a3848"><rect x="290" y="190" width="8" height="80"/><rect x="402" y="190" width="8" height="80"/>
-                    <rect x="300" y="180" width="100" height="6"/><rect x="300" y="274" width="100" height="6"/></g>
                     <text x="310" y="240" fill="rgba(180,200,220,0.5)" font-size="11" font-family="Microsoft YaHei UI,sans-serif">U1·SoC</text>
-
                     <rect x="620" y="320" width="200" height="130" rx="3" fill="#0a1220" stroke="#3a5068" stroke-width="1.5"/>
-                    <g fill="#2a3848"><rect x="630" y="330" width="10" height="110"/><rect x="800" y="330" width="10" height="110"/>
-                    <rect x="640" y="320" width="160" height="6"/><rect x="640" y="444" width="160" height="6"/></g>
                     <text x="670" y="395" fill="rgba(180,200,220,0.5)" font-size="11" font-family="Microsoft YaHei UI,sans-serif">U2·CPU</text>
-
                     <rect x="980" y="480" width="100" height="70" rx="2" fill="#0d1520" stroke="#3a5068"/>
                     <rect x="420" y="580" width="80" height="55" rx="2" fill="#0d1520" stroke="#3a5068"/>
                     <rect x="760" y="560" width="120" height="65" rx="2" fill="#0a1220" stroke="#3a5068"/>
-                    <rect x="1080" y="200" width="90" height="60" rx="2" fill="#0d1520" stroke="#3a5068"/>
-                    <rect x="520" y="680" width="110" height="75" rx="2" fill="#0d1520" stroke="#3a5068"/>
-                    <rect x="880" y="140" width="75" height="50" rx="2" fill="#0a1220" stroke="#3a5068"/>
-                    <rect x="1150" y="520" width="95" height="60" rx="2" fill="#0d1520" stroke="#3a5068"/>
-                    <rect x="180" y="620" width="65" height="45" rx="2" fill="#0d1520" stroke="#3a5068"/>
                   </g>
-
-                  <!-- 过孔环 -->
                   <g id="pcbVias" fill="none" stroke="#c9a227" stroke-width="0.8" opacity="0.45"></g>
-
-                  <!-- 焊盘/过孔（由脚本补充） -->
                   <g id="pcbPads" fill="url(#goldPad)" opacity="0.9"></g>
-
-                  <!-- 扫描区域 -->
                   <g id="scanRegion">
                     <rect x="240" y="120" width="880" height="560" fill="rgba(255,255,255,0.04)" stroke="#ffffff" stroke-width="2.5" stroke-opacity="0.95"/>
-                    <g fill="#ffffff" stroke="#1a8cff" stroke-width="2">
-                      <rect x="230" y="110" width="14" height="14" rx="2"/>
-                      <rect x="1116" y="110" width="14" height="14" rx="2"/>
-                      <rect x="230" y="676" width="14" height="14" rx="2"/>
-                      <rect x="1116" y="676" width="14" height="14" rx="2"/>
-                      <rect x="673" y="110" width="14" height="14" rx="2"/>
-                      <rect x="673" y="676" width="14" height="14" rx="2"/>
-                      <rect x="230" y="393" width="14" height="14" rx="2"/>
-                      <rect x="1116" y="393" width="14" height="14" rx="2"/>
-                    </g>
                     <rect x="240" y="120" width="880" height="560" fill="url(#heatmapCore)" opacity="0.68" style="mix-blend-mode:screen"/>
                     <rect x="240" y="120" width="880" height="560" fill="url(#scanGrid)" opacity="0.45"/>
                   </g>
-
-                  <!-- 坐标轴 -->
                   <g fill="#9eb0c4" font-size="13" font-family="Microsoft YaHei UI,sans-serif">
                     <text x="250" y="710">X →</text>
                     <text x="120" y="400" transform="rotate(-90 120 400)">Y →</text>
@@ -226,7 +166,6 @@
                   </g>
                 </svg>
               </div>
-
               <div class="color-scale" aria-label="色带">
                 <div class="scale-title">幅度(dBm)</div>
                 <div class="color-scale-inner">
@@ -237,124 +176,74 @@
                   </div>
                 </div>
               </div>
-
-              <div class="coord-overlay" aria-label="当前坐标">
-                <div class="title">当前坐标</div>
-                <div class="row"><span>X</span><span class="val">45.20 mm</span></div>
-                <div class="row"><span>Y</span><span class="val">-28.30 mm</span></div>
-                <div class="row"><span>Z</span><span class="val">5.00 mm</span></div>
-                <div class="row"><span>频率</span><span class="val">2.450 GHz</span></div>
-                <div class="row"><span>幅度</span><span class="val">-23.45 dBm</span></div>
+              <div class="analysis-cursor-readout" aria-label="光标读数">
+                <div class="title">光标读数</div>
+                <div>X：45.20 mm · Y：-28.30 mm</div>
+                <div>幅度：-23.45 dBm · 相位：112.3°</div>
               </div>
-
-              <div class="minimap" aria-label="小地图">
-                <span class="minimap-label">小地图</span>
-                <svg viewBox="0 0 148 100" xmlns="http://www.w3.org/2000/svg">
-                  <rect width="148" height="100" fill="#134832"/>
-                  <rect x="20" y="12" width="108" height="76" rx="2" fill="#185a3e" stroke="#2d8a62"/>
-                  <rect x="38" y="24" width="52" height="36" fill="none" stroke="#1a8cff" stroke-width="1"/>
-                  <rect x="38" y="24" width="52" height="36" fill="url(#heatmapCore)" opacity="0.6"/>
-                </svg>
+              <div class="hidden-dock-hint floating">
+                频谱 / 统计 Dock 默认隐藏<br/>经「视图」菜单打开
               </div>
             </div>
           </main>
 
-          <aside class="dock" aria-label="扫描参数面板">
-            <div class="dock-title">扫描参数</div>
+          <aside class="dock" aria-label="分析参数面板">
+            <div class="dock-title">分析参数</div>
             <div class="dock-body">
               <details class="panel-section" open>
-                <summary>扫描设置</summary>
+                <summary>数据源</summary>
                 <div class="panel-content">
-                  <div class="field">
-                    <label>扫描模式</label>
-                    <select><option>蛇形扫描</option></select>
-                  </div>
-                  <div class="field-row">
-                    <div class="field">
-                      <label>驻留时间 (ms)</label>
-                      <input type="text" value="50" readonly />
-                    </div>
-                    <div class="field">
-                      <label>平均次数</label>
-                      <input type="text" value="1" readonly />
-                    </div>
-                  </div>
-                  <div class="field">
-                    <label>扫描速度 (mm/min)</label>
-                    <input type="text" value="1000" readonly />
-                  </div>
-                  <label class="checkbox-field">
-                    <input type="checkbox" /> 扫描完成后回零
-                  </label>
-                  <label class="checkbox-field">
-                    <input type="checkbox" checked /> 实时显示热力图
-                  </label>
+                  <div class="field"><label>Trace 选择</label><select><option>Trace 1</option><option>Trace 2</option></select></div>
+                  <div class="field"><label>频率选择</label><select><option>2.450 GHz</option><option>2.460 GHz</option></select></div>
                 </div>
               </details>
-
               <details class="panel-section" open>
-                <summary>区域设置</summary>
+                <summary>显示</summary>
                 <div class="panel-content">
-                  <div class="field">
-                    <label>起点 X / Y / Z (mm)</label>
-                    <input type="text" value="10.00 / -150.00 / 5.00" readonly />
+                  <div class="field"><label>显示模式</label><select><option>幅度</option><option>相位</option><option>实部</option><option>虚部</option></select></div>
+                  <div class="field"><label>LUT 选择</label><select><option>Jet</option><option>Viridis</option><option>Hot</option></select></div>
+                  <div class="field-row">
+                    <div class="field"><label>vmin (dBm)</label><input type="text" value="-90" readonly /></div>
+                    <div class="field"><label>vmax (dBm)</label><input type="text" value="-10" readonly /></div>
                   </div>
-                  <div class="field">
-                    <label>终点 X / Y / Z (mm)</label>
-                    <input type="text" value="190.00 / -10.00 / 5.00" readonly />
-                  </div>
-                  <div class="field">
-                    <label>步长 X / Y / Z (mm)</label>
-                    <input type="text" value="2.00 / 2.00 / 0.00" readonly />
-                  </div>
-                  <div class="stat-grid">
-                    <div class="stat-item"><span class="k">点数</span><span class="v">91 × 71 = 6461</span></div>
-                    <div class="stat-item"><span class="k">区域面积</span><span class="v">36000 mm²</span></div>
-                    <div class="stat-item"><span class="k">路径长度</span><span class="v">16.20 m</span></div>
-                    <div class="stat-item"><span class="k">预计时间</span><span class="v">00:32:18</span></div>
-                  </div>
+                  <div class="field"><label>透明度</label><input type="text" value="72 %" readonly /></div>
                 </div>
               </details>
-
-              <details class="panel-section">
-                <summary>显示设置</summary>
-                <div class="panel-collapsed-hint">折叠 — 后续 Release 展开</div>
-              </details>
-              <details class="panel-section">
-                <summary>仪表设置</summary>
-                <div class="panel-collapsed-hint">折叠 — 后续 Release 展开</div>
-              </details>
-              <details class="panel-section">
-                <summary>高级设置</summary>
-                <div class="panel-collapsed-hint">折叠 — 后续 Release 展开</div>
+              <details class="panel-section" open>
+                <summary>光标</summary>
+                <div class="panel-content">
+                  <div class="stat-grid">
+                    <div class="stat-item"><span class="k">X</span><span class="v">45.20 mm</span></div>
+                    <div class="stat-item"><span class="k">Y</span><span class="v">-28.30 mm</span></div>
+                    <div class="stat-item"><span class="k">幅度</span><span class="v">-23.45 dBm</span></div>
+                    <div class="stat-item"><span class="k">相位</span><span class="v">112.3°</span></div>
+                  </div>
+                </div>
               </details>
             </div>
           </aside>
         </div>
 
         <footer class="statusbar" aria-label="状态栏">
-          <span class="item">状态：准备就绪</span>
+          <span class="item">状态：分析就绪</span>
           <span class="item progress-wrap">
-            扫描进度：0%
-            <span class="progress-track"><span class="progress-fill"></span></span>
+            扫描进度：100%
+            <span class="progress-track"><span class="progress-fill" style="width:100%"></span></span>
           </span>
-          <span class="item">扫描点：0 / 6461</span>
-          <span class="item">预计剩余时间：00:12:31</span>
+          <span class="item">扫描点：6461 / 6461</span>
+          <span class="item">扫描任务：ST-001</span>
           <span class="right">日期：2025-06-16&nbsp;&nbsp;时间：14:31:10</span>
         </footer>
       </div>
     </div>
   </div>
-
   <script>
     (function () {
       var W = 1920, H = 1080;
       function fitScale() {
         var stage = document.getElementById("scaleStage");
-        var sx = window.innerWidth / W;
-        var sy = window.innerHeight / H;
-        var s = Math.min(sx, sy);
-        stage.style.transform = "translate(-50%, -50%) scale(" + s + ")";
+        var sx = window.innerWidth / W, sy = window.innerHeight / H;
+        stage.style.transform = "translate(-50%, -50%) scale(" + Math.min(sx, sy) + ")";
         document.documentElement.style.overflow = "hidden";
         document.body.style.overflow = "hidden";
         document.documentElement.style.overscrollBehavior = "none";
