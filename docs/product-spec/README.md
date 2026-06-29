@@ -19,7 +19,26 @@ This folder stores product design documents for NFS Scanner Professional.
 |---|---|---|
 | Release 008 | UI 线框与固定尺寸 | [ui-wireframe/README.md](ui-wireframe/README.md) |
 | Release 009 | Enterprise Design System（扁平文档） | [release/Release_009_Enterprise_Design_System/README.md](release/Release_009_Enterprise_Design_System/README.md) |
-| **Release 009.5** | **Enterprise UI Foundation（分层结构，当前权威）** | [release/Release_009_5_Enterprise_UI_Foundation/README.md](release/Release_009_5_Enterprise_UI_Foundation/README.md) |
+| **Release 009.5** | **Enterprise UI Foundation（UI 权威）** | [release/Release_009_5_Enterprise_UI_Foundation/README.md](release/Release_009_5_Enterprise_UI_Foundation/README.md) |
+| **Release 009.8** | **Enterprise Domain Model（领域权威）** | [release/Release_009_8_Enterprise_Domain_Model/README.md](release/Release_009_8_Enterprise_Domain_Model/README.md) |
+
+## Domain Model（Release 009.8）
+
+**入口**：[domain/README.md](domain/README.md)
+
+| 层 | 路径 | 说明 |
+|---|---|---|
+| Overview | [domain/01_Overview/](domain/01_Overview/Domain_Principles.md) | 原则、关系图 |
+| Core Objects | [domain/02_Core_Objects/](domain/02_Core_Objects/Project.md) | Project、PCB、Region、ScanTask… |
+| Device Objects | [domain/03_Device_Objects/](domain/03_Device_Objects/MotionSystem.md) | 四类设备 + Snapshot |
+| **State Machines** | [domain/04_State_Machines/](domain/04_State_Machines/README.md) | **Scan 七态等** |
+| **Lifecycle** | [domain/05_Lifecycle/](domain/05_Lifecycle/ScanTask_Lifecycle.md) | 端到端业务链 |
+| **Error Recovery** | [domain/06_Error_Recovery/](domain/06_Error_Recovery/README.md) | Motion/Spectrum/Scan/Data… |
+| Implementation | [domain/07_Implementation_Guide/](domain/07_Implementation_Guide/README.md) | UI/Qt/文件映射 |
+
+对象关系 Mermaid：[domain/01_Overview/Object_Relationships.md](domain/01_Overview/Object_Relationships.md)
+
+历史兼容：[data/](data/README.md)（Sample→PCB，Scan→ScanTask 见 domain 命名规则）
 
 ## Design System（Release 009.5）
 
@@ -43,8 +62,8 @@ This folder stores product design documents for NFS Scanner Professional.
 
 ## Other Modules
 
-- [data/](data/README.md) — 领域数据模型
-- [decision/](decision/README.md) — ADR（含 [ADR-0014](decision/ADR-0014-Enterprise-Design-System.md)）
+- [data/](data/README.md) — 首版数据模型（见 [domain/](domain/README.md) 权威层）
+- [decision/](decision/README.md) — ADR（领域：**[0015–0020](decision/ADR-0015-Enterprise-Domain-Model.md)**；UI：[0014](decision/ADR-0014-Enterprise-Design-System.md)）
 - [rules/](rules/README.md) — 产品规则
 - [workflow/](workflow/README.md) — 业务流程
 - [pages/](pages/README.md) — 页面规格

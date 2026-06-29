@@ -1,5 +1,7 @@
 # Data Model
 
+> **历史兼容**：首版数据模型。Release 009.8 权威领域模型见 [../domain/README.md](../domain/README.md)。本目录保留不删。
+
 本目录定义 NFS Scanner Professional 的产品数据模型。
 
 这里描述的是产品领域对象，不是数据库表，也不是代码类。

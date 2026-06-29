@@ -89,6 +89,12 @@ Release 010   MainWindow Prototype   → 下一步
 4. `04_Interaction/` 与 `05_Animation/` 无与 Release 008 线框冲突。
 5. Release 008 `ui-wireframe/` 仍无结构变更需求。
 6. ADR-0014 仍然有效；若架构变更需新 ADR。
+7. **Release 009.8 Domain Model Review 完成**（含状态机、Recovery、ADR 0016–0020）。
+
+## 与 Release 009.8 关系
+
+- UI 映射：`domain/07_Implementation_Guide/Domain_To_UI_Mapping.md`
+- Scan 状态：`domain/04_State_Machines/Scan_State_Machine.md` ↔ `04_Interaction/Scan_State_Interaction.md`
 
 ---
 
