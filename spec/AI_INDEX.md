@@ -1,0 +1,177 @@
+# AI_INDEX — NFS Scanner Pro 第一入口
+
+> **Cursor / ChatGPT / Codex：任何任务必须先读本文，再读 Registry 与 Task_Guide。**
+
+---
+
+## 1. 项目一句话定义
+
+NFS Scanner Pro 是一套面向 **PCB 近场电磁扫描** 的桌面工作台软件，通过运动平台、频谱仪、相机（可选）和舵机（可选）完成 **区域扫描 → 热力图叠加 → 分析 → 报告** 全流程；Project 以**文件夹**形式组织数据，UI 以 **PCB 画布** 为视觉中心。
+
+---
+
+## 2. 当前产品原则（不可违反）
+
+| # | 原则 |
+|---|---|
+| 1 | **PCB 永远是主角**（画布 ≥70% 宽） |
+| 2 | **Project 是文件夹**，是数据容器，**不是**左侧一级页面 |
+| 3 | 左侧一级导航只有：**扫描、设备、分析、报告** |
+| 4 | 项目新建、打开、保存放在 **「文件」菜单** |
+| 5 | **设置、帮助** 放在顶级菜单栏 |
+| 6 | 右侧参数区使用 **Dock**（可固定 / 自动隐藏 / 关闭） |
+| 7 | **日志、频谱、统计、数据表格** 默认隐藏，经 **「视图」** 菜单打开 |
+| 8 | 热力图必须 **整张 QImage / QPixmap** 绘制，**禁止逐格** Item |
+| 9 | **Camera 可选**，不能影响扫描数据采集（ADR-0003） |
+| 10 | **Hx / Hy** 整区切换；切换后须看 **偏移补偿** 与 **Alignment 状态**（ADR-0004/0019） |
+
+权威：ADR-0012、0013、0014、0018~0020 · [Decision_Context.md](Context_Pack/Decision_Context.md)
+
+---
+
+## 3. AI 工作规则
+
+1. **不要**一次性读取整个仓库或 `docs/` 全树。
+2. **先读** 本文件 `spec/AI_INDEX.md`。
+3. **根据任务类型** 读 `spec/Registry/{UI|Domain|Workflow|Data|Decision|Qt|Release}.yaml`。
+4. **读** 对应 `spec/Context_Pack/*_Context.md`。
+5. **若有现成任务** 读 `spec/Task_Guide/*.md`。
+6. **最后** 仅打开 Registry 列出的 **相关** `docs/product-spec/...` 原文。
+7. **不要** 重复创建已有规范目录（如再造一套 design-system）。
+8. **不要** 自由发挥目录结构；新文档走 [Maintenance/How_To_Add_New_Document.md](Maintenance/How_To_Add_New_Document.md)。
+9. **不要** 在无 ADR 情况下推翻核心决策（Project 文件夹、Alignment 属 Region 等）。
+10. 任务完成后：若新增文档，**必须**更新 Registry（见 Maintenance）。
+
+---
+
+## 4. 仓库导航（摘要）
+
+```text
+spec/                          ← 你在这里（AI 层）
+docs/product-spec/
+  ui-wireframe/                Release 008 线框尺寸（最高 UI 布局权威）
+  design-system/               Release 009.5 UI 规范
+  domain/                      Release 009.8 领域模型
+  workflow/  data/  rules/     流程与首版数据（data 历史兼容）
+  decision/                    ADR
+  qt-spec/                     Qt 布局 / objectName
+  release/                     Release 说明
+```
+
+更深架构摘要：[Architecture_Handbook.md](Architecture_Handbook.md)
+
+---
+
+## 5. 任务入口
+
+### 5.1 做 UI / 主窗口 / Dock / QSS
+
+```text
+spec/AI_INDEX.md
+→ spec/Context_Pack/UI_Context.md
+→ spec/Registry/UI.yaml
+→ spec/Task_Guide/Build_MainWindow.md（若做 Release 010 壳层）
+→ docs/product-spec/ui-wireframe/01_Main_Window_1920x1080.md
+→ docs/product-spec/design-system/（按需子文档）
+```
+
+### 5.2 做领域模型 / Mock JSON / 状态机
+
+```text
+spec/AI_INDEX.md
+→ spec/Context_Pack/Domain_Context.md
+→ spec/Registry/Domain.yaml
+→ docs/product-spec/domain/01_Overview/Object_Relationships.md
+→ docs/product-spec/domain/04_State_Machines/Scan_State_Machine.md（若涉及扫描）
+```
+
+### 5.3 做扫描 / 设备 / 业务流程
+
+```text
+spec/AI_INDEX.md
+→ spec/Context_Pack/Workflow_Context.md
+→ spec/Registry/Workflow.yaml
+→ docs/product-spec/workflow/Run_Scan.md 等
+```
+
+### 5.4 做 Qt / PySide6 实现
+
+```text
+spec/AI_INDEX.md
+→ spec/Context_Pack/Qt_Context.md
+→ spec/Registry/Qt.yaml
+→ docs/product-spec/qt-spec/
+→ docs/product-spec/design-system/07_Qt_Implementation/
+```
+
+### 5.5 做架构 / ADR / 文档审查
+
+```text
+spec/AI_INDEX.md
+→ spec/Context_Pack/Decision_Context.md
+→ spec/Registry/Decision.yaml
+→ spec/Task_Guide/Review_Documentation.md 或 Review_Code.md
+```
+
+### 5.6 了解 Release 历程
+
+```text
+spec/Registry/Release.yaml
+→ docs/product-spec/release/
+```
+
+---
+
+## 6. Release 路线图（摘要）
+
+| Release | 内容 | 状态 |
+|---|---|---|
+| 008 | UI Wireframe 尺寸 | ✅ 已交付 |
+| 009 | Design System 扁平 | ✅ 历史 |
+| 009.5 | UI Foundation 分层 | ✅ 已交付 |
+| 009.8 | Domain Model | ✅ 已交付 |
+| **009.9** | **AI Knowledge Index** | ✅ 本 Release |
+| 010 | MainWindow Prototype | ⏳ 下一步 |
+
+---
+
+## 7. 关键对象命名（避免读错旧 doc）
+
+| 旧 (data/) | 新 (domain/) |
+|---|---|
+| Sample | **PCB** |
+| Scan | **ScanTask** |
+
+---
+
+## 8. 常用链接速查
+
+| 主题 | 文档 |
+|---|---|
+| 主窗口线框 | [ui-wireframe/01_Main_Window_1920x1080.md](../docs/product-spec/ui-wireframe/01_Main_Window_1920x1080.md) |
+| Design Token | [design-system/01_Foundation/Design_Tokens.md](../docs/product-spec/design-system/01_Foundation/Design_Tokens.md) |
+| Scan 七态 | [domain/04_State_Machines/Scan_State_Machine.md](../docs/product-spec/domain/04_State_Machines/Scan_State_Machine.md) |
+| Domain→UI | [domain/07_Implementation_Guide/Domain_To_UI_Mapping.md](../docs/product-spec/domain/07_Implementation_Guide/Domain_To_UI_Mapping.md) |
+| ADR 列表 | [decision/README.md](../docs/product-spec/decision/README.md) |
+
+---
+
+## 9. 校验 Registry 路径
+
+```bash
+python scripts/check_spec_registry_paths.py
+```
+
+失败则修复 YAML 或补文档，**不得**带缺失路径进入 Release 010。
+
+---
+
+## 10. 维护
+
+- 新增文档 → [Maintenance/How_To_Add_New_Document.md](Maintenance/How_To_Add_New_Document.md)
+- 更新 YAML → [Maintenance/How_To_Update_Registry.md](Maintenance/How_To_Update_Registry.md)
+- AI 行为 → [Maintenance/AI_Context_Rules.md](Maintenance/AI_Context_Rules.md)
+
+---
+
+**读完本文件后，打开对应 Registry YAML，不要跳过。**

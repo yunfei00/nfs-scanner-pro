@@ -1,0 +1,30 @@
+name: Qt Registry
+purpose: PySide6 实现、objectName、QGraphicsView、Dock 技术规则
+must_read:
+  - spec/AI_INDEX.md
+  - spec/Context_Pack/Qt_Context.md
+  - docs/product-spec/qt-spec/01_Qt_Layout_Spec.md
+  - docs/product-spec/qt-spec/02_Qt_Object_Names.md
+related_docs:
+  design_system_qt:
+    - docs/product-spec/design-system/07_Qt_Implementation/README.md
+    - docs/product-spec/design-system/07_Qt_Implementation/Qt_ObjectName_Rules.md
+    - docs/product-spec/design-system/07_Qt_Implementation/Qt_Widget_Mapping.md
+    - docs/product-spec/design-system/07_Qt_Implementation/Qt_DockWidget_Rules.md
+    - docs/product-spec/design-system/07_Qt_Implementation/Qt_GraphicsView_Rules.md
+    - docs/product-spec/design-system/07_Qt_Implementation/Qt_State_Property_Rules.md
+  domain_mapping:
+    - docs/product-spec/domain/07_Implementation_Guide/Domain_To_Qt_Model_Mapping.md
+  wireframe_prompt:
+    - docs/product-spec/ui-wireframe/07_Cursor_Implementation_Prompt.md
+adr:
+  - docs/product-spec/decision/ADR-0010-Heatmap.md
+  - docs/product-spec/decision/ADR-0012-UI-Wireframe-First.md
+output_expected:
+  - QMainWindow 壳层与 qt-spec 一致
+  - 热力图 QGraphicsPixmapItem
+  - setObjectName 完整
+forbidden:
+  - 不要用 QLabel 替代 QGraphicsView 缩放
+  - 不要 MDI 作为主壳层
+  - 不要内联大量 setStyleSheet 散落各文件

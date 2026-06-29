@@ -1,0 +1,35 @@
+name: Workflow Registry
+purpose: 指导业务流程、用户操作链、扫描前后置条件
+must_read:
+  - spec/AI_INDEX.md
+  - spec/Context_Pack/Workflow_Context.md
+  - docs/product-spec/03_Workflow.md
+  - docs/product-spec/workflow/README.md
+related_docs:
+  project:
+    - docs/product-spec/workflow/Create_Project.md
+    - docs/product-spec/workflow/Open_Project.md
+    - docs/product-spec/workflow/Resume_Project.md
+  device:
+    - docs/product-spec/workflow/Connect_Devices.md
+    - docs/product-spec/workflow/Prepare_Sample.md
+  region_scan:
+    - docs/product-spec/workflow/Create_Region.md
+    - docs/product-spec/workflow/Alignment.md
+    - docs/product-spec/workflow/Run_Scan.md
+    - docs/product-spec/workflow/Run_Hx_Hy.md
+  output:
+    - docs/product-spec/workflow/Analysis.md
+    - docs/product-spec/workflow/Export_Report.md
+  rules:
+    - docs/product-spec/rules/Rule_003_Scan.md
+    - docs/product-spec/rules/Rule_007_HxHy.md
+adr:
+  - docs/product-spec/decision/ADR-0004-HxHy_Strategy.md
+  - docs/product-spec/decision/ADR-0003-Camera_Optional.md
+output_expected:
+  - 流程步骤与 domain 状态机不冲突
+  - 前置条件在 UI 未就绪态体现
+forbidden:
+  - 不要改写 workflow 原文除非用户明确要求
+  - 不要跳过设备检查开始扫描

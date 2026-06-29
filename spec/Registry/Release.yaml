@@ -1,0 +1,27 @@
+name: Release Registry
+purpose: Release 历程与权威层级
+must_read:
+  - spec/AI_INDEX.md
+  - spec/Architecture_Handbook.md
+related_docs:
+  releases:
+    - docs/product-spec/ui-wireframe/README.md
+    - docs/product-spec/release/Release_009_Enterprise_Design_System/README.md
+    - docs/product-spec/release/Release_009_5_Enterprise_UI_Foundation/README.md
+    - docs/product-spec/release/Release_009_8_Enterprise_Domain_Model/README.md
+    - docs/product-spec/release/Release_009_9_AI_Knowledge_Index/README.md
+  wireframe_008:
+    - docs/product-spec/ui-wireframe/README.md
+  ai_layer:
+    - spec/README.md
+    - spec/Task_Guide/Build_MainWindow.md
+authority_order:
+  - docs/product-spec/ui-wireframe/
+  - docs/product-spec/design-system/
+  - docs/product-spec/domain/
+  - docs/product-spec/data/
+output_expected:
+  - 新 Release 更新本 YAML 与 Release README
+forbidden:
+  - 不要跳过 009.9 AI Index 直接全库读
+  - 不要删除旧 Release 文档

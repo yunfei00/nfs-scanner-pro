@@ -21,6 +21,22 @@ This folder stores product design documents for NFS Scanner Professional.
 | Release 009 | Enterprise Design System（扁平文档） | [release/Release_009_Enterprise_Design_System/README.md](release/Release_009_Enterprise_Design_System/README.md) |
 | **Release 009.5** | **Enterprise UI Foundation（UI 权威）** | [release/Release_009_5_Enterprise_UI_Foundation/README.md](release/Release_009_5_Enterprise_UI_Foundation/README.md) |
 | **Release 009.8** | **Enterprise Domain Model（领域权威）** | [release/Release_009_8_Enterprise_Domain_Model/README.md](release/Release_009_8_Enterprise_Domain_Model/README.md) |
+| **Release 009.9** | **AI Knowledge Index（AI 第一入口）** | [release/Release_009_9_AI_Knowledge_Index/README.md](release/Release_009_9_AI_Knowledge_Index/README.md) |
+
+## AI 入口层（Release 009.9）
+
+**所有 AI 任务必须先读** [spec/AI_INDEX.md](../../spec/AI_INDEX.md)，禁止无目标全仓库扫描。
+
+| 组件 | 路径 |
+|---|---|
+| 第一入口 | [spec/AI_INDEX.md](../../spec/AI_INDEX.md) |
+| 架构摘要 | [spec/Architecture_Handbook.md](../../spec/Architecture_Handbook.md) |
+| 上下文包 | [spec/Context_Pack/](../../spec/Context_Pack/README.md) |
+| Registry | [spec/Registry/](../../spec/Registry/README.md) |
+| Task Guide | [spec/Task_Guide/](../../spec/Task_Guide/README.md) |
+| 维护 | [spec/Maintenance/](../../spec/Maintenance/README.md) |
+
+校验：`python scripts/check_spec_registry_paths.py`
 
 ## Domain Model（Release 009.8）
 
@@ -63,7 +79,7 @@ This folder stores product design documents for NFS Scanner Professional.
 ## Other Modules
 
 - [data/](data/README.md) — 首版数据模型（见 [domain/](domain/README.md) 权威层）
-- [decision/](decision/README.md) — ADR（领域：**[0015–0020](decision/ADR-0015-Enterprise-Domain-Model.md)**；UI：[0014](decision/ADR-0014-Enterprise-Design-System.md)）
+- [decision/](decision/README.md) — ADR（领域：**[0015–0020](decision/ADR-0015-Enterprise-Domain-Model.md)**；UI：[0014](decision/ADR-0014-Enterprise-Design-System.md)；AI Index：[0021](decision/ADR-0021-AI-Knowledge-Index.md)）
 - [rules/](rules/README.md) — 产品规则
 - [workflow/](workflow/README.md) — 业务流程
 - [pages/](pages/README.md) — 页面规格

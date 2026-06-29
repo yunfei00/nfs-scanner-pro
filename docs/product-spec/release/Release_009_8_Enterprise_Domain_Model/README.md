@@ -62,9 +62,18 @@ docs/product-spec/
 5. ADR-0015 ~ **0020** Accepted；与 ADR-0001~0010 无矛盾。
 6. Mock 数据 JSON 结构可仅从 Domain 文档推导（Release 010 首 PR 验证）。
 7. **Scan 七态状态机**与 **Device/Alignment 状态机**文档 Review 完成。
+8. **Release 009.9 AI Knowledge Index** 完成，`python scripts/check_spec_registry_paths.py` 零缺失；实现从 [spec/AI_INDEX.md](../../../../spec/AI_INDEX.md) → [Build_MainWindow.md](../../../../spec/Task_Guide/Build_MainWindow.md) 进入。
+
+## AI 入口（009.9 之后）
+
+| 组件 | 路径 |
+|---|---|
+| 第一入口 | [spec/AI_INDEX.md](../../../../spec/AI_INDEX.md) |
+| Registry | [spec/Registry/](../../../../spec/Registry/README.md) |
+| Task Guide | [spec/Task_Guide/](../../../../spec/Task_Guide/README.md) |
 
 ---
 
 **状态**：Accepted  
 **版本**：Release 009.8（含关系说明、状态机八要素、ADR 0016–0020）  
-**依赖**：Release 008、009、009.5；`data/`；ADR-0001~0020
+**依赖**：Release 008、009、009.5、009.9；`data/`；ADR-0001~0021

@@ -1,0 +1,33 @@
+name: Data Registry
+purpose: 首版 data/ 数据模型（历史兼容）；新任务优先读 domain/
+must_read:
+  - spec/AI_INDEX.md
+  - docs/product-spec/data/README.md
+  - docs/product-spec/domain/README.md
+related_docs:
+  core:
+    - docs/product-spec/data/Project.md
+    - docs/product-spec/data/Sample.md
+    - docs/product-spec/data/Region.md
+    - docs/product-spec/data/Scan.md
+    - docs/product-spec/data/Alignment.md
+  device:
+    - docs/product-spec/data/Device_Profile.md
+    - docs/product-spec/data/Device_Snapshot.md
+  analysis:
+    - docs/product-spec/data/Analysis.md
+    - docs/product-spec/data/Report.md
+  meta:
+    - docs/product-spec/data/Relationships.md
+    - docs/product-spec/data/Life_Cycle.md
+  filesystem:
+    - docs/product-spec/07_File_System.md
+adr:
+  - docs/product-spec/decision/ADR-0001-Project_Model.md
+  - docs/product-spec/decision/ADR-0008-Project_Folder.md
+output_expected:
+  - 新文档使用 domain 命名（PCB/ScanTask）
+  - 引用 data/ 时注明历史兼容
+forbidden:
+  - 不要仅读 data/ 而忽略 domain/ 权威层
+  - 不要删除 data/ 文件

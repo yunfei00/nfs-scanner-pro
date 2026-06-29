@@ -11,5 +11,6 @@
 | [ADR-0018](ADR-0018-Project-As-Folder-Domain.md) | Project 即文件夹 |
 | [ADR-0019](ADR-0019-Region-Alignment-Ownership.md) | Alignment 属 Region |
 | [ADR-0020](ADR-0020-DeviceSnapshot-For-ScanTask.md) | ScanTask 设备快照 |
+| [ADR-0021](ADR-0021-AI-Knowledge-Index.md) | AI Knowledge Index（spec/ 入口层） |
 
 完整列表：ADR-0001 ~ ADR-0013 见本目录各文件。

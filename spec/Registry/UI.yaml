@@ -1,0 +1,42 @@
+name: UI Registry
+purpose: 指导 UI、主窗口、Dock、导航、QSS 相关任务
+must_read:
+  - spec/AI_INDEX.md
+  - spec/Context_Pack/UI_Context.md
+  - docs/product-spec/ui-wireframe/README.md
+  - docs/product-spec/design-system/README.md
+related_docs:
+  wireframe:
+    - docs/product-spec/ui-wireframe/01_Main_Window_1920x1080.md
+    - docs/product-spec/ui-wireframe/02_Left_Navigation.md
+    - docs/product-spec/ui-wireframe/03_Top_Menu_And_Toolbar.md
+    - docs/product-spec/ui-wireframe/06_Dock_System.md
+  navigation:
+    - docs/product-spec/design-system/02_Components/NavigationBar.md
+    - docs/product-spec/design-system/04_Interaction/Dock_Interaction.md
+  dock:
+    - docs/product-spec/design-system/02_Components/DockPanel.md
+    - docs/product-spec/design-system/03_Patterns/View_Menu_Dock_Pattern.md
+  canvas:
+    - docs/product-spec/design-system/03_Patterns/Canvas_Overlay_Pattern.md
+    - docs/product-spec/design-system/07_Qt_Implementation/Qt_GraphicsView_Rules.md
+  components:
+    - docs/product-spec/design-system/06_Toolbar_System.md
+    - docs/product-spec/design-system/02_Components/MenuBar.md
+    - docs/product-spec/design-system/02_Components/StatusBar.md
+  tokens:
+    - docs/product-spec/design-system/01_Foundation/Design_Tokens.md
+    - docs/product-spec/design-system/06_QSS/README.md
+adr:
+  - docs/product-spec/decision/ADR-0012-UI-Wireframe-First.md
+  - docs/product-spec/decision/ADR-0013-Project-In-File-Menu.md
+  - docs/product-spec/decision/ADR-0014-Enterprise-Design-System.md
+output_expected:
+  - 符合 1920x1080 线框的 QWidget/QMainWindow 结构
+  - objectName 与 qt-spec 一致
+  - 深色 QSS 使用 Design Token
+forbidden:
+  - 不要把项目作为左侧一级页面
+  - 不要默认显示日志、频谱、统计、数据表格 Dock
+  - 不要逐格绘制热力图
+  - 不要跳过 ui-wireframe 自由改布局尺寸

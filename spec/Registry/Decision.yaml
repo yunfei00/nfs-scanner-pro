@@ -1,0 +1,31 @@
+name: Decision Registry
+purpose: ADR 架构决策查询与合规审查
+must_read:
+  - spec/AI_INDEX.md
+  - spec/Context_Pack/Decision_Context.md
+  - docs/product-spec/decision/README.md
+related_docs:
+  ui:
+    - docs/product-spec/decision/ADR-0012-UI-Wireframe-First.md
+    - docs/product-spec/decision/ADR-0013-Project-In-File-Menu.md
+    - docs/product-spec/decision/ADR-0014-Enterprise-Design-System.md
+  domain:
+    - docs/product-spec/decision/ADR-0015-Enterprise-Domain-Model.md
+    - docs/product-spec/decision/ADR-0016-Enterprise-Domain-Model.md
+    - docs/product-spec/decision/ADR-0017-Scan-State-Machine.md
+    - docs/product-spec/decision/ADR-0018-Project-As-Folder-Domain.md
+    - docs/product-spec/decision/ADR-0019-Region-Alignment-Ownership.md
+    - docs/product-spec/decision/ADR-0020-DeviceSnapshot-For-ScanTask.md
+  core:
+    - docs/product-spec/decision/ADR-0001-Project_Model.md
+    - docs/product-spec/decision/ADR-0003-Camera_Optional.md
+    - docs/product-spec/decision/ADR-0004-HxHy_Strategy.md
+    - docs/product-spec/decision/ADR-0010-Heatmap.md
+  ai:
+    - docs/product-spec/decision/ADR-0021-AI-Knowledge-Index.md
+output_expected:
+  - 核心变更附带 ADR 或引用已有 ADR
+  - Review 清单覆盖 forbidden 项
+forbidden:
+  - 不要无 ADR 推翻 Project 文件夹模型
+  - 不要无 ADR 改左侧导航四项结构

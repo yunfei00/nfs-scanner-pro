@@ -1,0 +1,43 @@
+name: Domain Registry
+purpose: 指导领域模型、状态机、生命周期、Mock 数据、Domain 映射任务
+must_read:
+  - spec/AI_INDEX.md
+  - spec/Context_Pack/Domain_Context.md
+  - docs/product-spec/domain/README.md
+  - docs/product-spec/domain/01_Overview/Object_Relationships.md
+related_docs:
+  core_objects:
+    - docs/product-spec/domain/02_Core_Objects/Project.md
+    - docs/product-spec/domain/02_Core_Objects/PCB.md
+    - docs/product-spec/domain/02_Core_Objects/Region.md
+    - docs/product-spec/domain/02_Core_Objects/ScanTask.md
+    - docs/product-spec/domain/02_Core_Objects/Heatmap.md
+    - docs/product-spec/domain/02_Core_Objects/Report.md
+  state_machines:
+    - docs/product-spec/domain/04_State_Machines/Scan_State_Machine.md
+    - docs/product-spec/domain/04_State_Machines/Device_State_Machine.md
+    - docs/product-spec/domain/04_State_Machines/Alignment_State_Machine.md
+  lifecycle:
+    - docs/product-spec/domain/05_Lifecycle/ScanTask_Lifecycle.md
+    - docs/product-spec/domain/05_Lifecycle/Region_Lifecycle.md
+  error_recovery:
+    - docs/product-spec/domain/06_Error_Recovery/Scan_Error_Recovery.md
+    - docs/product-spec/domain/06_Error_Recovery/Motion_Error_Recovery.md
+  implementation:
+    - docs/product-spec/domain/07_Implementation_Guide/Domain_To_UI_Mapping.md
+    - docs/product-spec/domain/07_Implementation_Guide/Domain_To_File_System_Mapping.md
+    - docs/product-spec/domain/07_Implementation_Guide/Domain_Event_Model.md
+adr:
+  - docs/product-spec/decision/ADR-0015-Enterprise-Domain-Model.md
+  - docs/product-spec/decision/ADR-0017-Scan-State-Machine.md
+  - docs/product-spec/decision/ADR-0018-Project-As-Folder-Domain.md
+  - docs/product-spec/decision/ADR-0019-Region-Alignment-Ownership.md
+  - docs/product-spec/decision/ADR-0020-DeviceSnapshot-For-ScanTask.md
+output_expected:
+  - JSON/模型字段与 domain 文档一致
+  - ScanTask 七态与 UI 启用态一致
+  - Sample 称 PCB、Scan 称 ScanTask
+forbidden:
+  - 不要覆盖 ScanTask raw 数据
+  - 不要将 Alignment 提升为 Project 级唯一
+  - 不要让 Camera 离线阻止 ScanTask
