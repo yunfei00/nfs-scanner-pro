@@ -1,5 +1,7 @@
 # 02 字体与间距
 
+> **历史兼容**：该文档已迁移到 `01_Foundation/Typography_Tokens.md` 与 `01_Foundation/Spacing_Tokens.md`，保留用于历史兼容。请参阅 [design-system/README.md](README.md)。
+
 ## 字体
 
 ```text

@@ -1,5 +1,7 @@
 # 03 组件规范
 
+> **历史兼容**：该文档已迁移到 `02_Components/`，保留用于历史兼容。请参阅 [design-system/README.md](README.md)。
+
 ## 按钮
 
 主按钮：蓝色背景，白色文字，高度 36 px，圆角 6 px。

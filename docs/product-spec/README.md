@@ -2,10 +2,55 @@
 
 This folder stores product design documents for NFS Scanner Professional.
 
-## Documents
+## Core Documents
 
-- 01 Product Vision
-- 02 Product Goals
-- 03 Workflow
-- 04 Object Model
-- 05 Navigation
+- [00 Introduction](00_Introduction.md)
+- [01 Product Vision](01_Product_Vision.md)
+- [02 Product Goals](02_Product_Goals.md)
+- [03 Workflow](03_Workflow.md)
+- [04 Object Model](04_Object_Model.md)
+- [05 Navigation](05_Navigation.md)
+- [06 Glossary](06_Glossary.md)
+- [07 File System](07_File_System.md)
+
+## Releases
+
+| Release | 说明 | 入口 |
+|---|---|---|
+| Release 008 | UI 线框与固定尺寸 | [ui-wireframe/README.md](ui-wireframe/README.md) |
+| Release 009 | Enterprise Design System（扁平文档） | [release/Release_009_Enterprise_Design_System/README.md](release/Release_009_Enterprise_Design_System/README.md) |
+| **Release 009.5** | **Enterprise UI Foundation（分层结构，当前权威）** | [release/Release_009_5_Enterprise_UI_Foundation/README.md](release/Release_009_5_Enterprise_UI_Foundation/README.md) |
+
+## Design System（Release 009.5）
+
+**入口**：[design-system/README.md](design-system/README.md)
+
+| 层 | 路径 | 说明 |
+|---|---|---|
+| Foundation | [design-system/01_Foundation/](design-system/01_Foundation/README.md) | Design Token、原则 |
+| Components | [design-system/02_Components/](design-system/02_Components/README.md) | 组件库 15 件 |
+| Patterns | [design-system/03_Patterns/](design-system/03_Patterns/README.md) | 主窗口、扫描工作台等模式 |
+| Interaction | [design-system/04_Interaction/](design-system/04_Interaction/README.md) | 鼠标、键盘、扫描状态 |
+| Animation | [design-system/05_Animation/](design-system/05_Animation/README.md) | 导航、Dock、进度动效 |
+| QSS | [design-system/06_QSS/](design-system/06_QSS/README.md) | 样式与 Token 映射 |
+| Qt Implementation | [design-system/07_Qt_Implementation/](design-system/07_Qt_Implementation/README.md) | objectName、GraphicsView |
+
+核心 Token：[design-system/01_Foundation/Design_Tokens.md](design-system/01_Foundation/Design_Tokens.md)
+
+### 历史兼容（Release 009 扁平文档）
+
+`design-system/01_Color_System.md` … `15_QSS_Guide.md` 仍保留，已标注迁移目标。
+
+## Other Modules
+
+- [data/](data/README.md) — 领域数据模型
+- [decision/](decision/README.md) — ADR（含 [ADR-0014](decision/ADR-0014-Enterprise-Design-System.md)）
+- [rules/](rules/README.md) — 产品规则
+- [workflow/](workflow/README.md) — 业务流程
+- [pages/](pages/README.md) — 页面规格
+- [wireframe/](wireframe/00_Product_Navigation.md) — 旧版文字线框
+- [qt-spec/](qt-spec/01_Qt_Layout_Spec.md) — Qt 布局（与 07_Qt_Implementation 同步）
+
+## Visual Design (V1, 部分参考)
+
+- [product-design/](../product-design/README.md) — 高保真 SVG（ADR-0012 起以线框 + Design System 为准）
