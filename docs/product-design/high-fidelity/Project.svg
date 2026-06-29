@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080">
+<rect width="1920" height="1080" fill="#1f2329"/>
+<rect x="0" y="0" width="1920" height="60" fill="#2d333b"/>
+<text x="30" y="38" font-size="28" fill="white">Project</text>
+<rect x="0" y="60" width="260" height="940" fill="#2b2b2b"/>
+<rect x="260" y="60" width="1320" height="940" fill="#353535"/>
+<rect x="1580" y="60" width="340" height="940" fill="#2b2b2b"/>
+<rect x="0" y="1000" width="1920" height="80" fill="#2d333b"/>
+<text x="30" y="120" fill="#9cdcfe" font-size="22">Project + Region Tree</text>
+<text x="700" y="120" fill="#9cdcfe" font-size="22">Project Details</text>
+<text x="1610" y="120" fill="#9cdcfe" font-size="22">Properties</text>
+<text x="30" y="1045" fill="#dcdcaa" font-size="20">Status</text>
+</svg>
