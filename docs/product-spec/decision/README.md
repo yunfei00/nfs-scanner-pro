@@ -12,5 +12,6 @@
 | [ADR-0019](ADR-0019-Region-Alignment-Ownership.md) | Alignment 属 Region |
 | [ADR-0020](ADR-0020-DeviceSnapshot-For-ScanTask.md) | ScanTask 设备快照 |
 | [ADR-0021](ADR-0021-AI-Knowledge-Index.md) | AI Knowledge Index（spec/ 入口层） |
+| [ADR-0022](ADR-0022-High-Fidelity-Before-PySide6.md) | 高保真先于 PySide6 |
 
 完整列表：ADR-0001 ~ ADR-0013 见本目录各文件。

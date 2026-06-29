@@ -50,6 +50,7 @@ NFS Scanner Pro 是一套面向 **PCB 近场电磁扫描** 的桌面工作台软
 spec/                          ← 你在这里（AI 层）
 docs/product-spec/
   ui-wireframe/                Release 008 线框尺寸（最高 UI 布局权威）
+  high-fidelity/               Release 010 高保真设计包
   design-system/               Release 009.5 UI 规范
   domain/                      Release 009.8 领域模型
   workflow/  data/  rules/     流程与首版数据（data 历史兼容）
@@ -70,7 +71,9 @@ docs/product-spec/
 spec/AI_INDEX.md
 → spec/Context_Pack/UI_Context.md
 → spec/Registry/UI.yaml
-→ spec/Task_Guide/Build_MainWindow.md（若做 Release 010 壳层）
+→ spec/Task_Guide/Build_MainWindow.md（Release 011 PySide6 壳层）
+→ docs/product-spec/high-fidelity/main-window/01_Main_Window_High_Fidelity_Spec.md
+→ prototypes/high_fidelity/index.html（视觉对照）
 → docs/product-spec/ui-wireframe/01_Main_Window_1920x1080.md
 → docs/product-spec/design-system/（按需子文档）
 ```
@@ -131,7 +134,8 @@ spec/Registry/Release.yaml
 | 009.5 | UI Foundation 分层 | ✅ 已交付 |
 | 009.8 | Domain Model | ✅ 已交付 |
 | **009.9** | **AI Knowledge Index** | ✅ 本 Release |
-| 010 | MainWindow Prototype | ⏳ 下一步 |
+| **010** | **High Fidelity Design** | ✅ 本 Release |
+| 011 | MainWindow Prototype (PySide6) | ⏳ 下一步 |
 
 ---
 

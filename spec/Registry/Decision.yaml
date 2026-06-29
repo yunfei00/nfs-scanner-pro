@@ -23,6 +23,8 @@ related_docs:
     - docs/product-spec/decision/ADR-0010-Heatmap.md
   ai:
     - docs/product-spec/decision/ADR-0021-AI-Knowledge-Index.md
+  high_fidelity:
+    - docs/product-spec/decision/ADR-0022-High-Fidelity-Before-PySide6.md
 output_expected:
   - 核心变更附带 ADR 或引用已有 ADR
   - Review 清单覆盖 forbidden 项

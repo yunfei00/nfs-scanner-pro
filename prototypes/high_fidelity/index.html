@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1920, initial-scale=1" />
+  <title>近场扫描系统 — 高保真原型</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell" role="application" aria-label="近场扫描系统主窗口">
+    <nav class="menubar" aria-label="菜单栏">
+      <span>文件(F)</span>
+      <span>编辑(E)</span>
+      <span>视图(V)</span>
+      <span>工具(T)</span>
+      <span>设置(S)</span>
+      <span>帮助(H)</span>
+    </nav>
+
+    <div class="toolbar" aria-label="工具栏">
+      <button type="button" class="btn btn-primary">开始扫描</button>
+      <button type="button" class="btn btn-danger">停止扫描</button>
+      <button type="button" class="btn btn-secondary">拍照</button>
+      <button type="button" class="btn btn-secondary">区域对齐</button>
+      <button type="button" class="btn btn-secondary">网格</button>
+      <button type="button" class="btn btn-secondary">测量</button>
+    </div>
+
+    <div class="device-status" aria-label="设备状态栏">
+      <span class="dot-ok">● 运动平台(COM6)</span>
+      <span class="dot-ok">● 频谱仪(ZNA67)</span>
+      <span class="dot-ok">● 相机(USB3.0)</span>
+      <span class="dot-ok">● 舵机系统</span>
+      <span class="sep">|</span>
+      <div class="meta">
+        <span>探头：Hx(100 μm)</span>
+        <span>高度：5.000 mm</span>
+        <span>区域：CPU_Area</span>
+        <span>频率：2.450 GHz</span>
+        <span>点数：6461</span>
+      </div>
+    </div>
+
+    <div class="main-body">
+      <aside class="sidebar" aria-label="左侧导航">
+        <div class="nav-item active" title="扫描">
+          <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          <span class="label">扫描</span>
+        </div>
+        <div class="nav-item" title="设备">
+          <svg viewBox="0 0 24 24"><path d="M4 6h16v10H4V6zm2 2v6h12V8H6zm-4 8h20v2H2v-2z"/></svg>
+          <span class="label">设备</span>
+        </div>
+        <div class="nav-item" title="分析">
+          <svg viewBox="0 0 24 24"><path d="M3 17h2v-7H3v7zm4 0h2V7H7v10zm4 0h2v-4h-2v4zm4 0h2V4h-2v13zm4 0h2v-6h-2v6z"/></svg>
+          <span class="label">分析</span>
+        </div>
+        <div class="nav-item" title="报告">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 2l5 5h-5V4zM8 13h8v2H8v-2zm0 4h8v2H8v-2z"/></svg>
+          <span class="label">报告</span>
+        </div>
+      </aside>
+
+      <main class="canvas-column">
+        <div class="breadcrumb">项目 &gt; CPU_Area &gt; Hx Probe &gt; 2.450 GHz &gt; 6461 pts</div>
+        <div class="canvas-wrap">
+          <svg class="pcb-svg" viewBox="0 0 1520 880" xmlns="http://www.w3.org/2000/svg" aria-label="PCB扫描画布">
+            <defs>
+              <linearGradient id="heatmapGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#3B82F6" stop-opacity="0.35"/>
+                <stop offset="45%" stop-color="#EAB308" stop-opacity="0.55"/>
+                <stop offset="100%" stop-color="#EF4444" stop-opacity="0.65"/>
+              </linearGradient>
+              <pattern id="gridDots" width="24" height="24" patternUnits="userSpaceOnUse">
+                <circle cx="12" cy="12" r="1" fill="#2A3F55"/>
+              </pattern>
+            </defs>
+            <rect width="1520" height="880" fill="#050A12"/>
+            <!-- PCB 主板 -->
+            <rect x="80" y="60" width="1200" height="720" rx="4" fill="#132337" stroke="#1E2D3D" stroke-width="2"/>
+            <!-- 模拟走线 -->
+            <g stroke="#1E3A5F" stroke-width="1.5" fill="none" opacity="0.8">
+              <path d="M120 120 H400 V200 H680 V160 H1000"/>
+              <path d="M140 600 H360 V480 H720 V560 H1100"/>
+              <path d="M200 140 V400 H320 V520"/>
+              <path d="M800 100 V380 H920 V640"/>
+            </g>
+            <!-- 焊盘 -->
+            <g fill="#C9A227">
+              <circle cx="200" cy="180" r="5"/><circle cx="280" cy="180" r="5"/>
+              <circle cx="360" cy="220" r="4"/><circle cx="440" cy="220" r="4"/>
+              <circle cx="720" cy="300" r="6"/><circle cx="820" cy="300" r="6"/>
+              <circle cx="500" cy="520" r="5"/><circle cx="600" cy="520" r="5"/>
+              <circle cx="900" cy="480" r="4"/><circle cx="980" cy="480" r="4"/>
+            </g>
+            <!-- 芯片占位 -->
+            <rect x="340" y="280" width="120" height="80" rx="2" fill="#0B1724" stroke="#1E2D3D"/>
+            <rect x="680" y="380" width="160" height="100" rx="2" fill="#0B1724" stroke="#1E2D3D"/>
+            <!-- 扫描区域 -->
+            <rect x="220" y="140" width="720" height="480" fill="none" stroke="#3B82F6" stroke-width="2" stroke-dasharray="8 4"/>
+            <!-- 热力图整层叠加 -->
+            <rect x="220" y="140" width="720" height="480" fill="url(#heatmapGrad)" opacity="0.72"/>
+            <!-- 网格点 -->
+            <rect x="220" y="140" width="720" height="480" fill="url(#gridDots)" opacity="0.6"/>
+            <!-- 坐标轴 -->
+            <text x="220" y="660" fill="#A8B3C2" font-size="14" font-family="Microsoft YaHei UI, sans-serif">X</text>
+            <text x="60" y="380" fill="#A8B3C2" font-size="14" font-family="Microsoft YaHei UI, sans-serif">Y</text>
+            <text x="1290" y="80" fill="#A8B3C2" font-size="14" font-family="Microsoft YaHei UI, sans-serif">Z</text>
+            <line x1="220" y1="640" x2="940" y2="640" stroke="#1E2D3D"/>
+            <line x1="200" y1="140" x2="200" y2="620" stroke="#1E2D3D"/>
+          </svg>
+          <div class="minimap" aria-label="小地图">
+            <span class="minimap-label">小地图</span>
+            <div class="minimap-viewport"></div>
+          </div>
+          <div class="coord-overlay" aria-label="当前坐标">
+            X: 45.20 mm<br/>
+            Y: -28.30 mm<br/>
+            Z: 5.00 mm<br/>
+            频率: 2.450 GHz<br/>
+            幅度: -23.45 dBm
+          </div>
+        </div>
+      </main>
+
+      <aside class="dock" aria-label="扫描参数面板">
+        <div class="dock-title">扫描参数</div>
+        <div class="dock-body">
+          <details class="accordion" open>
+            <summary>扫描设置</summary>
+            <div class="accordion-body">
+              <div class="row"><span>扫描模式</span><span class="val">蛇形扫描</span></div>
+              <div class="row"><span>驻留时间(ms)</span><span class="val">50</span></div>
+              <div class="row"><span>平均次数</span><span class="val">1</span></div>
+              <div class="row"><span>扫描速度(mm/min)</span><span class="val">1000</span></div>
+              <div class="row"><span>扫描完成后回零</span><span class="val">未勾选</span></div>
+              <div class="row"><span>实时显示热力图</span><span class="val">勾选</span></div>
+            </div>
+          </details>
+          <details class="accordion" open>
+            <summary>区域设置</summary>
+            <div class="accordion-body">
+              <div class="row"><span>起点 X/Y/Z</span><span class="val">0.0 / 0.0 / 5.0</span></div>
+              <div class="row"><span>终点 X/Y/Z</span><span class="val">90.0 / 70.0 / 5.0</span></div>
+              <div class="row"><span>步长 X/Y/Z</span><span class="val">1.0 / 1.0 / 0.0</span></div>
+              <div class="row"><span>点数</span><span class="val">91 × 71 = 6461</span></div>
+              <div class="row"><span>区域面积</span><span class="val">36000 mm²</span></div>
+              <div class="row"><span>路径长度</span><span class="val">16.20 m</span></div>
+              <div class="row"><span>预计时间</span><span class="val">00:32:18</span></div>
+            </div>
+          </details>
+          <details class="accordion">
+            <summary>显示设置</summary>
+            <div class="accordion-body">（折叠占位）</div>
+          </details>
+          <details class="accordion">
+            <summary>仪表设置</summary>
+            <div class="accordion-body">（折叠占位）</div>
+          </details>
+          <details class="accordion">
+            <summary>高级设置</summary>
+            <div class="accordion-body">（折叠占位）</div>
+          </details>
+        </div>
+      </aside>
+    </div>
+
+    <footer class="statusbar" aria-label="状态栏">
+      <span>状态：准备就绪</span>
+      <span>扫描进度：0%</span>
+      <span>扫描点：0 / 6461</span>
+      <span>预计剩余时间：00:12:31</span>
+      <span class="right">日期：2025-06-16&nbsp;&nbsp;时间：14:31:10</span>
+    </footer>
+  </div>
+</body>
+</html>

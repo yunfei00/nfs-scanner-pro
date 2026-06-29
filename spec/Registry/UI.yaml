@@ -24,6 +24,11 @@ related_docs:
     - docs/product-spec/design-system/06_Toolbar_System.md
     - docs/product-spec/design-system/02_Components/MenuBar.md
     - docs/product-spec/design-system/02_Components/StatusBar.md
+  high_fidelity:
+    - docs/product-spec/high-fidelity/README.md
+    - docs/product-spec/high-fidelity/main-window/01_Main_Window_High_Fidelity_Spec.md
+    - docs/product-spec/high-fidelity/assets/main_window_high_fidelity.svg
+    - prototypes/high_fidelity/index.html
   tokens:
     - docs/product-spec/design-system/01_Foundation/Design_Tokens.md
     - docs/product-spec/design-system/06_QSS/README.md
@@ -31,6 +36,7 @@ adr:
   - docs/product-spec/decision/ADR-0012-UI-Wireframe-First.md
   - docs/product-spec/decision/ADR-0013-Project-In-File-Menu.md
   - docs/product-spec/decision/ADR-0014-Enterprise-Design-System.md
+  - docs/product-spec/decision/ADR-0022-High-Fidelity-Before-PySide6.md
 output_expected:
   - 符合 1920x1080 线框的 QWidget/QMainWindow 结构
   - objectName 与 qt-spec 一致

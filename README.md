@@ -27,15 +27,12 @@
 | 009.5 UI Foundation | [Release_009_5](docs/product-spec/release/Release_009_5_Enterprise_UI_Foundation/README.md) |
 | 009.8 Domain Model | [Release_009_8](docs/product-spec/release/Release_009_8_Enterprise_Domain_Model/README.md) |
 | **009.9 AI Index** | [Release_009_9](docs/product-spec/release/Release_009_9_AI_Knowledge_Index/README.md) |
-| **010 MainWindow** | [Release_010](docs/product-spec/release/Release_010_MainWindow_Prototype/README.md) |
+| **010 High Fidelity** | [Release_010](docs/product-spec/release/Release_010_High_Fidelity_Design/README.md) |
 
-## 运行 Mock UI（Release 010）
+## 打开高保真原型（Release 010）
 
-```bash
-pip install -r requirements.txt
-python scripts/run_mock_ui.py
-```
+浏览器打开：[prototypes/high_fidelity/index.html](prototypes/high_fidelity/index.html)
 
-## Release 010 MainWindow Prototype
+规格：[docs/product-spec/high-fidelity/](docs/product-spec/high-fidelity/README.md)
 
-Mock 主窗口已从 [spec/Task_Guide/Build_MainWindow.md](spec/Task_Guide/Build_MainWindow.md) 启动；详见 [Release_010 README](docs/product-spec/release/Release_010_MainWindow_Prototype/README.md)。
+PySide6 Mock 主窗口（实验性，非 Release 010 交付）见 `src/`；**Release 011** 从 [spec/Task_Guide/Build_MainWindow.md](spec/Task_Guide/Build_MainWindow.md) 启动，须先通过高保真验收清单。

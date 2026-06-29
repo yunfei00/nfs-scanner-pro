@@ -10,6 +10,7 @@ related_docs:
     - docs/product-spec/release/Release_009_5_Enterprise_UI_Foundation/README.md
     - docs/product-spec/release/Release_009_8_Enterprise_Domain_Model/README.md
     - docs/product-spec/release/Release_009_9_AI_Knowledge_Index/README.md
+    - docs/product-spec/release/Release_010_High_Fidelity_Design/README.md
   wireframe_008:
     - docs/product-spec/ui-wireframe/README.md
   ai_layer:

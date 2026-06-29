@@ -22,6 +22,11 @@ This folder stores product design documents for NFS Scanner Professional.
 | **Release 009.5** | **Enterprise UI Foundation（UI 权威）** | [release/Release_009_5_Enterprise_UI_Foundation/README.md](release/Release_009_5_Enterprise_UI_Foundation/README.md) |
 | **Release 009.8** | **Enterprise Domain Model（领域权威）** | [release/Release_009_8_Enterprise_Domain_Model/README.md](release/Release_009_8_Enterprise_Domain_Model/README.md) |
 | **Release 009.9** | **AI Knowledge Index（AI 第一入口）** | [release/Release_009_9_AI_Knowledge_Index/README.md](release/Release_009_9_AI_Knowledge_Index/README.md) |
+| **Release 010** | **High Fidelity Design（高保真设计包）** | [release/Release_010_High_Fidelity_Design/README.md](release/Release_010_High_Fidelity_Design/README.md) |
+
+## 高保真设计（Release 010）
+
+**入口**：[high-fidelity/README.md](high-fidelity/README.md) · **浏览器原型**：[prototypes/high_fidelity/index.html](../prototypes/high_fidelity/index.html)
 
 ## AI 入口层（Release 009.9）
 
@@ -79,7 +84,7 @@ This folder stores product design documents for NFS Scanner Professional.
 ## Other Modules
 
 - [data/](data/README.md) — 首版数据模型（见 [domain/](domain/README.md) 权威层）
-- [decision/](decision/README.md) — ADR（领域：**[0015–0020](decision/ADR-0015-Enterprise-Domain-Model.md)**；UI：[0014](decision/ADR-0014-Enterprise-Design-System.md)；AI Index：[0021](decision/ADR-0021-AI-Knowledge-Index.md)）
+- [decision/](decision/README.md) — ADR（AI Index：[0021](decision/ADR-0021-AI-Knowledge-Index.md)；高保真：[0022](decision/ADR-0022-High-Fidelity-Before-PySide6.md)）
 - [rules/](rules/README.md) — 产品规则
 - [workflow/](workflow/README.md) — 业务流程
 - [pages/](pages/README.md) — 页面规格
