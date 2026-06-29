@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+  <rect width="1920" height="1080" fill="#07111D"/>
+  <rect x="0" y="0" width="1920" height="32" fill="#081421" stroke="#1E2D3D"/>
+  <text x="24" y="22" fill="#EAF2FF" font-size="14">文件(F)  编辑(E)  视图(V)  工具(T)  设置(S)  帮助(H)</text>
+  <rect x="0" y="32" width="1920" height="56" fill="#0B1724" stroke="#1E2D3D"/>
+  <rect x="120" y="44" width="110" height="32" rx="6" fill="#0D6EFD"/><text x="145" y="65" fill="#fff" font-size="14">开始扫描</text>
+  <rect x="246" y="44" width="110" height="32" rx="6" fill="#EF4444"/><text x="271" y="65" fill="#fff" font-size="14">停止扫描</text>
+  <rect x="0" y="88" width="1920" height="40" fill="#0B1724" stroke="#1E2D3D"/>
+  <text x="82" y="113" fill="#22C55E" font-size="14">● 运动平台(COM6)</text>
+  <text x="280" y="113" fill="#22C55E" font-size="14">● 频谱仪(ZNA67)</text>
+  <text x="480" y="113" fill="#22C55E" font-size="14">● 相机(USB3.0)</text>
+  <text x="660" y="113" fill="#22C55E" font-size="14">● 舵机系统</text>
+  <text x="900" y="113" fill="#EAF2FF" font-size="14">探头：Hx   高度：5.000 mm   区域：CPU_Area   频率：2.450 GHz   点数：6461</text>
+  <rect x="0" y="128" width="56" height="920" fill="#0B1724" stroke="#1E2D3D"/>
+  <text x="20" y="190" fill="#EAF2FF" font-size="28">◎</text><text x="18" y="270" fill="#EAF2FF" font-size="28">▣</text><text x="17" y="350" fill="#EAF2FF" font-size="28">▧</text><text x="18" y="430" fill="#EAF2FF" font-size="28">▤</text>
+  <rect x="56" y="128" width="1524" height="920" fill="#07111D" stroke="#1E2D3D"/>
+  <rect x="84" y="160" width="1468" height="820" rx="8" fill="#0B1724" stroke="#1E2D3D"/>
+  <text x="110" y="190" fill="#EAF2FF" font-size="16">项目 &gt; CPU_Area &gt; Hx Probe &gt; 2.450 GHz &gt; 6461 pts</text>
+  <rect x="340" y="230" width="900" height="620" rx="14" fill="#123321" stroke="#365C3D" stroke-width="2"/>
+  <rect x="470" y="315" width="640" height="410" fill="#0D6EFD" opacity="0.5" stroke="#EAF2FF" stroke-width="3"/>
+  <text x="720" y="530" fill="#EAF2FF" font-size="28">PCB + 热力图主画布</text>
+  <rect x="1580" y="128" width="340" height="920" fill="#0B1724" stroke="#1E2D3D"/>
+  <text x="1610" y="168" fill="#EAF2FF" font-size="18">扫描参数 Dock</text>
+  <rect x="0" y="1048" width="1920" height="32" fill="#0B1724" stroke="#1E2D3D"/>
+  <text x="24" y="1069" fill="#22C55E" font-size="14">● 状态：准备就绪</text>
+  <text x="320" y="1069" fill="#EAF2FF" font-size="14">扫描进度：65.2%（4220 / 6461）</text>
+  <text x="900" y="1069" fill="#EAF2FF" font-size="14">剩余时间：00:11:10</text>
+</svg>
