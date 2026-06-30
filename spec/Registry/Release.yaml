@@ -28,6 +28,7 @@ related_docs:
     - docs/product-spec/release/Release_024_Full_Workflow_Smoke_Test/README.md
     - docs/product-spec/release/Release_025_CI_Verification_Integration/README.md
     - docs/product-spec/release/Release_026_Scan_Page_UI_Interaction_Verification/README.md
+    - docs/product-spec/release/Release_027_Analysis_Page_UI_Interaction_Verification/README.md
   wireframe_008:
     - docs/product-spec/ui-wireframe/README.md
   ai_layer:

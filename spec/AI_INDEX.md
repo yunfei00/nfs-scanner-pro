@@ -225,6 +225,16 @@ spec/AI_INDEX.md
 → src/nfs_scanner_pro/ui/pages/scan_page.py
 ```
 
+### 5.1q 做分析页 UI 交互验收（Release 027）
+
+```text
+spec/AI_INDEX.md
+→ docs/product-spec/release/Release_027_Analysis_Page_UI_Interaction_Verification/README.md
+→ scripts/verify_release_027.py
+→ src/nfs_scanner_pro/ui/pages/analysis_page.py
+→ src/nfs_scanner_pro/analysis/analysis_data_source_mock.py
+```
+
 ### 5.2 做领域模型 / Mock JSON / 状态机
 
 ```text
