@@ -34,6 +34,7 @@ related_docs:
     - docs/product-spec/release/Release_030_Cross_Page_Workflow_UI_Verification/README.md
     - docs/product-spec/release/Release_031_Verification_Performance_Isolation/README.md
     - docs/product-spec/release/Release_032_Migrate_Legacy_Verify_Scripts_To_Isolated_Runtime/README.md
+    - docs/product-spec/release/Release_033_Release_Verification_Script_Generator/README.md
   wireframe_008:
     - docs/product-spec/ui-wireframe/README.md
   ai_layer:

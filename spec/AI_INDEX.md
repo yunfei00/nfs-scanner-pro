@@ -292,6 +292,78 @@ spec/AI_INDEX.md
 → runtime/verification/Rxxx/
 ```
 
+### 5.1w 做 Release 验收脚手架（Release 033）
+
+```text
+spec/AI_INDEX.md
+→ docs/product-spec/release/Release_033_Release_Verification_Script_Generator/README.md
+→ scripts/scaffold_verify_release.py
+→ scripts/verify_release_033.py
+→ scripts/verify_all.py
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ### 5.2 做领域模型 / Mock JSON / 状态机
 
 ```text

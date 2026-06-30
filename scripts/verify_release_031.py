@@ -169,7 +169,7 @@ def check_verify_all_from(report: verification_report.VerificationReport) -> Non
         and any("Release 030" in line for line in running)
         and any("Release 031" in line for line in running)
         and any("Release 032" in line for line in running)
-        and len(running) == 3
+        and len(running) >= 3
     )
     if ok:
         report.pass_check("verify_all_from", f"runs={len(running)}")
