@@ -197,6 +197,15 @@ spec/AI_INDEX.md
 → scripts/verify_all.py
 ```
 
+### 5.1n 做全流程冒烟验收（Release 024）
+
+```text
+spec/AI_INDEX.md
+→ docs/product-spec/release/Release_024_Full_Workflow_Smoke_Test/README.md
+→ scripts/verify_release_024.py
+→ scripts/verify_all.py
+```
+
 ### 5.2 做领域模型 / Mock JSON / 状态机
 
 ```text

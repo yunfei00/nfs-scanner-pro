@@ -2,7 +2,7 @@
 
 ## 验收时间
 
-2026-06-30 14:11:44 UTC
+2026-06-30 14:17:59 UTC
 
 ## 执行命令
 
@@ -16,7 +16,7 @@ python scripts/verify_release_022.py
 - [PASS] `module_imports`
 - [PASS] `gitignore_runtime` — ok
 - [PASS] `mock_scan_result_ready` — D:\code_2026\nfs-scanner-pro\runtime\mock_projects\iPhone16_Mainboard\scans\ST-VERIFY-001
-- [PASS] `analysis_dataset_load` — projects=2 tasks=['ST-555F01', 'ST-CF3710', 'ST-VERIFY-001', 'ST-VERIFY-023'] empty=False
+- [PASS] `analysis_dataset_load` — projects=2 tasks=['ST-0F358C', 'ST-2F507F', 'ST-555F01', 'ST-CF3710', 'ST-F145AF', 'ST-VERIFY-001', 'ST-VERIFY-023'] empty=False
 - [PASS] `analysis_cursor_readout` — keys=['amp', 'frequency', 'phase', 'x', 'y', 'z']
 - [PASS] `report_context_build` — default_name='CPU_Area_Hx_2.45GHz_报告' has_data=True
 - [PASS] `report_draft_fields` — CPU_Area_Hx_2.45GHz_报告

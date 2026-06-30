@@ -37,6 +37,7 @@ This folder stores product design documents for NFS Scanner Professional.
 | Release 021 | Analysis Data Source Mock | [release/Release_021_Analysis_Data_Source_Mock/README.md](release/Release_021_Analysis_Data_Source_Mock/README.md) |
 | Release 022 | Report Data Source Mock | [release/Release_022_Report_Data_Source_Mock/README.md](release/Release_022_Report_Data_Source_Mock/README.md) |
 | Release 023 | End-to-End Mock Verification | [release/Release_023_End_to_End_Mock_Verification/README.md](release/Release_023_End_to_End_Mock_Verification/README.md) |
+| Release 024 | Full Workflow Smoke Test | [release/Release_024_Full_Workflow_Smoke_Test/README.md](release/Release_024_Full_Workflow_Smoke_Test/README.md) |
 
 ## 高保真设计（Release 010 / 010.5）
 
