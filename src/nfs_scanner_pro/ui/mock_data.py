@@ -1,4 +1,4 @@
-"""Release 011 Mock 数据 — 仅用于 UI 原型展示。"""
+"""Release 011/012 Mock 数据 — 仅用于 UI 原型展示。"""
 
 from __future__ import annotations
 
@@ -10,12 +10,71 @@ POINTS = 6461
 GRID_X = 91
 GRID_Y = 71
 SCAN_TASK = "ST-001"
-DEVICE_PROFILE = "Lab_Default_v1"
 
-POSITION = {
+DEVICE_PROFILE = {
+    "name": "Lab_Default_v1",
+    "motion": "COM6 · 115200",
+    "spectrum": "ZNA67 · TCP/IP",
+    "camera": "USB3.0 Camera",
+    "servo": "HxHy_Default",
+}
+
+MOTION_STATE = {
+    "port": "COM6",
+    "baudrate": 115200,
+    "status": "已连接",
     "x": 45.20,
     "y": -28.30,
     "z": 5.00,
+    "speed": 1000,
+    "travel_x": "0 ~ 200",
+    "travel_y": "0 ~ -300",
+    "travel_z": "0 ~ 10",
+}
+
+SPECTRUM_STATE = {
+    "model": "ZNA67",
+    "connection": "TCP/IP",
+    "address": "192.168.1.100:5025",
+    "trace": "Trace 1",
+    "freq_range": "1 MHz — 67 GHz",
+    "current_freq": "2.450 GHz",
+}
+
+CAMERA_STATE = {
+    "interface": "USB3.0",
+    "resolution": "4096 × 3000",
+    "status": "预览就绪",
+    "capture_x": 0.0,
+    "capture_y": 0.0,
+    "capture_z": 5.00,
+}
+
+SERVO_STATE = {
+    "current_probe": "Hx",
+    "hy_status": "待命",
+    "angle": "0.0°",
+    "offset": "X +0.02 / Y -0.01 mm",
+    "calibration": "已校准",
+}
+
+DEVICE_POLICY = {
+    "auto_connect": True,
+    "camera_optional": True,
+    "block_scan_on_fault": True,
+}
+
+DEVICE_SAFETY = {
+    "x_range": "0 ~ 200 mm",
+    "y_range": "0 ~ -300 mm",
+    "z_range": "0 ~ 10 mm",
+    "default_speed": "1000 mm/min",
+}
+
+POSITION = {
+    "x": MOTION_STATE["x"],
+    "y": MOTION_STATE["y"],
+    "z": MOTION_STATE["z"],
     "amp": -23.45,
 }
 
@@ -55,7 +114,7 @@ STATUS_SCAN = {
 STATUS_DEVICE = {
     "state": "设备就绪",
     "extra1": "已连接设备：4 / 4",
-    "extra2": f"当前配置：{DEVICE_PROFILE}",
+    "extra2": f"当前配置：{DEVICE_PROFILE['name']}",
 }
 
 STATUS_ANALYSIS = {

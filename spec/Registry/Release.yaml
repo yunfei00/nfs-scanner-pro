@@ -13,6 +13,7 @@ related_docs:
     - docs/product-spec/release/Release_010_High_Fidelity_Design/README.md
     - docs/product-spec/release/Release_010_5_High_Fidelity_Completion/README.md
     - docs/product-spec/release/Release_011_MainWindow_PySide6_Prototype/README.md
+    - docs/product-spec/release/Release_012_Device_Module_Mock/README.md
   wireframe_008:
     - docs/product-spec/ui-wireframe/README.md
   ai_layer:
