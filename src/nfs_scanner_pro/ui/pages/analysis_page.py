@@ -51,8 +51,8 @@ class AnalysisPage(PcbCanvasWidget):
         panel.scan_task_changed.connect(self._on_scan_task_selected)
 
     def refresh_data_source(self) -> None:
-        preferred = project_mock.get_scan_project_name()
-        project_name, tasks = self._data_source.resolve_project_and_tasks(preferred)
+        project_name = project_mock.get_scan_project_name()
+        tasks = self._data_source.list_scan_tasks(project_name)
         self._current_project = project_name
         self._current_tasks = tasks
         selected = tasks[-1] if tasks else ""
@@ -99,6 +99,8 @@ class AnalysisPage(PcbCanvasWidget):
                     self._control_panel._freq_combo.setCurrentIndex(idx)
         self._update_breadcrumb()
         self.set_analysis_empty_state(dataset.is_empty())
+        if dataset.is_empty():
+            self._empty_overlay.setText("未发现 Mock 扫描结果")
 
     def _on_panel_params(self, params: dict) -> None:
         self._mock.apply_params(**params)

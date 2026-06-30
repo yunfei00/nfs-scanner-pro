@@ -46,6 +46,7 @@ This folder stores product design documents for NFS Scanner Professional.
 | Release 030 | Cross-Page Workflow UI Verification | [release/Release_030_Cross_Page_Workflow_UI_Verification/README.md](release/Release_030_Cross_Page_Workflow_UI_Verification/README.md) |
 | Release 031 | Verification Performance & Isolation | [release/Release_031_Verification_Performance_Isolation/README.md](release/Release_031_Verification_Performance_Isolation/README.md) |
 | Release 032 | Migrate Legacy Verify Scripts to Isolated Runtime | [release/Release_032_Migrate_Legacy_Verify_Scripts_To_Isolated_Runtime/README.md](release/Release_032_Migrate_Legacy_Verify_Scripts_To_Isolated_Runtime/README.md) |
+| Release 036 | Analysis Page ScanTask Selection Integration | [release/Release_036_Analysis_Page_ScanTask_Selection_Integration/README.md](release/Release_036_Analysis_Page_ScanTask_Selection_Integration/README.md) |
 | Release 035 | Scan Task Workspace Integration | [release/Release_035_Scan_Task_Workspace_Integration/README.md](release/Release_035_Scan_Task_Workspace_Integration/README.md) |
 | Release 034 | Project Workspace UI Verification | [release/Release_034_Project_Workspace_UI_Verification/README.md](release/Release_034_Project_Workspace_UI_Verification/README.md) |
 | Release 033 | Release Verification Script Generator | [release/Release_033_Release_Verification_Script_Generator/README.md](release/Release_033_Release_Verification_Script_Generator/README.md) |
