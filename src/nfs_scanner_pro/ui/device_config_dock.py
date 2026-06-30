@@ -1,24 +1,25 @@
-"""设备配置 Dock。"""
+"""设备配置面板 — QWidget 内容（由 MainWindow 单一 Dock 挂载）。"""
 
 from __future__ import annotations
 
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QDockWidget, QScrollArea, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QScrollArea, QVBoxLayout, QWidget
 
-from nfs_scanner_pro.ui.scan_parameter_dock import apply_dock_width_policy
 from nfs_scanner_pro.ui.widgets.device_profile_panel import DeviceProfilePanel
 
 
-class DeviceConfigDock(QDockWidget):
+class DeviceConfigPanel(QWidget):
+    """设备配置面板 — 非 QDockWidget。"""
+
     DOCK_WIDTH = 360
 
     def __init__(self, parent: QWidget | None = None) -> None:
-        super().__init__("设备配置", parent)
-        self.setObjectName("deviceConfigDock")
-        apply_dock_width_policy(self)
-        self.setAllowedAreas(
-            Qt.DockWidgetArea.LeftDockWidgetArea | Qt.DockWidgetArea.RightDockWidgetArea
-        )
+        super().__init__(parent)
+        self.setObjectName("deviceConfigPanel")
+
+        outer = QVBoxLayout(self)
+        outer.setContentsMargins(0, 0, 0, 0)
+        outer.setSpacing(0)
 
         scroll = QScrollArea(self)
         scroll.setWidgetResizable(True)
@@ -34,4 +35,7 @@ class DeviceConfigDock(QDockWidget):
         layout.addWidget(DeviceProfilePanel(content))
 
         scroll.setWidget(content)
-        self.setWidget(scroll)
+        outer.addWidget(scroll)
+
+
+DeviceConfigDock = DeviceConfigPanel

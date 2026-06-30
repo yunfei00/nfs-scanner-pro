@@ -1,4 +1,4 @@
-"""右侧扫描参数 Dock — QDockWidget + 分组表单 Mock。"""
+"""右侧扫描参数面板 — QWidget 内容（由 MainWindow 单一 Dock 挂载）。"""
 
 from __future__ import annotations
 
@@ -37,21 +37,18 @@ def _configure_form_field(field: QLineEdit | QComboBox) -> None:
     field.setMinimumWidth(0)
 
 
-class ScanParameterDock(QDockWidget):
+class ScanParameterPanel(QWidget):
+    """扫描参数面板 — 非 QDockWidget，仅供 right_dock.setWidget 使用。"""
+
     DOCK_WIDTH = DOCK_DEFAULT_WIDTH
 
     def __init__(self, parent: QWidget | None = None) -> None:
-        super().__init__("扫描参数", parent)
-        self.setObjectName("scanParamDock")
-        apply_dock_width_policy(self)
-        self.setAllowedAreas(
-            Qt.DockWidgetArea.LeftDockWidgetArea | Qt.DockWidgetArea.RightDockWidgetArea
-        )
-        self.setFeatures(
-            QDockWidget.DockWidgetFeature.DockWidgetMovable
-            | QDockWidget.DockWidgetFeature.DockWidgetClosable
-            | QDockWidget.DockWidgetFeature.DockWidgetFloatable
-        )
+        super().__init__(parent)
+        self.setObjectName("scanParameterPanel")
+
+        outer = QVBoxLayout(self)
+        outer.setContentsMargins(0, 0, 0, 0)
+        outer.setSpacing(0)
 
         scroll = QScrollArea(self)
         scroll.setWidgetResizable(True)
@@ -75,7 +72,7 @@ class ScanParameterDock(QDockWidget):
         layout.addWidget(self._build_placeholder_group("advancedSettingsGroup", "高级设置"))
 
         scroll.setWidget(content)
-        self.setWidget(scroll)
+        outer.addWidget(scroll)
         self.set_fields_locked(False)
 
     @staticmethod
@@ -202,3 +199,7 @@ class ScanParameterDock(QDockWidget):
                 field.setProperty("scanLocked", locked)
             field.style().unpolish(field)
             field.style().polish(field)
+
+
+# 兼容旧引用名
+ScanParameterDock = ScanParameterPanel

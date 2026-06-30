@@ -117,7 +117,43 @@ DEVICE_TOOLTIPS = {
 }
 
 BREADCRUMB_SCAN = f"项目 > {REGION_NAME} > Hx 探头 > {FREQUENCY} > {POINTS} 点"
-BREADCRUMB_ANALYSIS = f"项目 > {REGION_NAME} > 扫描任务 {SCAN_TASK} > 迹线 1 > {FREQUENCY}"
+BREADCRUMB_ANALYSIS = (
+    f"项目 > {REGION_NAME} > ScanTask {SCAN_TASK} > Trace 1 > {FREQUENCY}"
+)
+
+ANALYSIS_TASK = {
+    "scan_task": SCAN_TASK,
+    "trace": "Trace 1",
+    "frequency": FREQUENCY,
+    "points": POINTS,
+    "probe": PROBE_NAME,
+    "mode": "幅度",
+    "lut": "Turbo",
+    "vmin": -90,
+    "vmax": -10,
+    "opacity": 72,
+}
+
+ANALYSIS_CURSOR = {
+    "x": 45.20,
+    "y": -28.30,
+    "z": 5.00,
+    "frequency": FREQUENCY,
+    "amp": -23.45,
+    "phase": 112.3,
+}
+
+ANALYSIS_FREQUENCIES = [
+    "1.000 GHz",
+    "2.450 GHz",
+    "3.500 GHz",
+    "6.000 GHz",
+]
+
+ANALYSIS_TRACES = [
+    "Trace 1",
+    "Trace 2",
+]
 
 DATE = "2025-06-16"
 TIME = "14:31:10"
@@ -137,8 +173,8 @@ STATUS_DEVICE = {
 
 STATUS_ANALYSIS = {
     "state": "分析就绪",
-    "extra1": "热力图：已加载",
-    "extra2": f"扫描任务：{SCAN_TASK} · {POINTS} 点",
+    "extra1": "Heatmap：已加载",
+    "extra2": f"ScanTask：{SCAN_TASK} · {POINTS} pts",
 }
 
 STATUS_REPORT = {

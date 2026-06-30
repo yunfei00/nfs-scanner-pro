@@ -1,4 +1,4 @@
-"""报告设置 Dock。"""
+"""报告设置面板 — QWidget 内容（由 MainWindow 单一 Dock 挂载）。"""
 
 from __future__ import annotations
 
@@ -6,7 +6,6 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QCheckBox,
     QComboBox,
-    QDockWidget,
     QFormLayout,
     QGroupBox,
     QLabel,
@@ -15,19 +14,19 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from nfs_scanner_pro.ui.scan_parameter_dock import apply_dock_width_policy
 
+class ReportSettingsPanel(QWidget):
+    """报告设置面板 — 非 QDockWidget。"""
 
-class ReportSettingsDock(QDockWidget):
     DOCK_WIDTH = 360
 
     def __init__(self, parent: QWidget | None = None) -> None:
-        super().__init__("报告设置", parent)
-        self.setObjectName("reportSettingsDock")
-        apply_dock_width_policy(self)
-        self.setAllowedAreas(
-            Qt.DockWidgetArea.LeftDockWidgetArea | Qt.DockWidgetArea.RightDockWidgetArea
-        )
+        super().__init__(parent)
+        self.setObjectName("reportSettingsPanel")
+
+        outer = QVBoxLayout(self)
+        outer.setContentsMargins(0, 0, 0, 0)
+        outer.setSpacing(0)
 
         scroll = QScrollArea(self)
         scroll.setWidgetResizable(True)
@@ -68,4 +67,7 @@ class ReportSettingsDock(QDockWidget):
         layout.addStretch()
 
         scroll.setWidget(content)
-        self.setWidget(scroll)
+        outer.addWidget(scroll)
+
+
+ReportSettingsDock = ReportSettingsPanel

@@ -259,13 +259,16 @@ QLabel#minimapOverlay {
     padding: 2px;
 }
 
+QDockWidget#rightDock,
 QDockWidget#scanParamDock,
 QDockWidget#deviceConfigDock,
 QDockWidget#analysisParameterDock,
 QDockWidget#reportSettingsDock {
     color: #EAF2FF;
+    background-color: #0B1724;
 }
 
+QDockWidget#rightDock::title,
 QDockWidget#scanParamDock::title {
     background-color: #0B1724;
     border-bottom: 1px solid #1E2D3D;
@@ -273,9 +276,15 @@ QDockWidget#scanParamDock::title {
     text-align: left;
     font-size: 16px;
     font-weight: 600;
+    color: #EAF2FF;
 }
 
-QDockWidget QWidget#scanParameterContent {
+QDockWidget#rightDock QWidget#rightDockStack,
+QDockWidget QWidget#rightDockStack,
+QDockWidget QWidget#scanParameterContent,
+QDockWidget QWidget#deviceConfigContent,
+QDockWidget QWidget#analysisParameterContent,
+QDockWidget QWidget#reportSettingsContent {
     background-color: #0B1724;
 }
 
@@ -416,6 +425,56 @@ QWidget#devicePage,
 QWidget#analysisPage,
 QWidget#reportPage {
     background-color: #07111D;
+}
+
+QDockWidget#analysisParameterDock QPushButton[variant="secondary"] {
+    background-color: #132337;
+    color: #EAF2FF;
+    border: 1px solid #243647;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 13px;
+    min-height: 32px;
+}
+
+QDockWidget#analysisParameterDock QPushButton[variant="secondary"]:hover {
+    background-color: #1A3048;
+    border-color: #1A8CFF;
+}
+
+QComboBox#lutSelector,
+QComboBox#analysisTraceCombo,
+QComboBox#analysisFreqCombo,
+QComboBox#analysisModeCombo {
+    background-color: #0A1622;
+    color: #EAF2FF;
+    border: 1px solid #243647;
+    border-radius: 5px;
+    padding: 4px 8px;
+    min-height: 28px;
+}
+
+QSlider#analysisOpacitySlider::groove:horizontal {
+    background: #132337;
+    height: 6px;
+    border-radius: 3px;
+}
+
+QSlider#analysisOpacitySlider::handle:horizontal {
+    background: #1A8CFF;
+    width: 14px;
+    margin: -4px 0;
+    border-radius: 7px;
+}
+
+QLabel#cursorReadoutValue {
+    color: #EAF2FF;
+    font-size: 13px;
+}
+
+QLabel#analysisOpacityLabel {
+    color: #A8B3C2;
+    font-size: 13px;
 }
 
 QWidget#deviceCenter {
@@ -574,6 +633,7 @@ QLabel[role="pdfSummary"] {
     padding-top: 12px;
 }
 
+QDockWidget#rightDock::title,
 QDockWidget#deviceConfigDock::title,
 QDockWidget#analysisParameterDock::title,
 QDockWidget#reportSettingsDock::title {

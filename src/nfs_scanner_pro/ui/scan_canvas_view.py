@@ -111,6 +111,11 @@ class ColorScaleWidget(QWidget):
         super().__init__(parent)
         self.setObjectName("colorScaleWidget")
         self.setFixedSize(80, 286)
+        self._title = "幅度(dBm)"
+
+    def set_title(self, title: str) -> None:
+        self._title = title
+        self.update()
 
     def paintEvent(self, event) -> None:  # noqa: N802
         painter = QPainter(self)
@@ -126,7 +131,7 @@ class ColorScaleWidget(QWidget):
         painter.drawText(
             title_rect,
             Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop,
-            "幅度(dBm)",
+            self._title,
         )
 
         bar = self.rect().adjusted(12, 28, -38, -10)
@@ -154,7 +159,13 @@ class ColorScaleWidget(QWidget):
 class ScanCanvasView(QGraphicsView):
     mouse_scene_moved = Signal(float, float)
 
-    def __init__(self, parent: QWidget | None = None, *, show_handles: bool = True) -> None:
+    def __init__(
+        self,
+        parent: QWidget | None = None,
+        *,
+        show_handles: bool = True,
+        show_crosshair: bool = False,
+    ) -> None:
         super().__init__(parent)
         self.setObjectName("scanCanvasView")
         self.setRenderHint(QPainter.RenderHint.Antialiasing, True)
@@ -164,6 +175,8 @@ class ScanCanvasView(QGraphicsView):
         self.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.setBackgroundBrush(QColor("#0A1018"))
         self._show_handles = show_handles
+        self._show_crosshair = show_crosshair
+        self._grid_lines: list[QGraphicsLineItem] = []
 
         self._scene = QGraphicsScene(self)
         self._scene.setObjectName("scanScene")
@@ -260,10 +273,26 @@ class ScanCanvasView(QGraphicsView):
             line = QGraphicsLineItem(gx, REGION_Y, gx, REGION_Y + REGION_H)
             line.setPen(grid_pen)
             self._scene.addItem(line)
+            self._grid_lines.append(line)
         for gy in range(int(REGION_Y), int(REGION_Y + REGION_H) + 1, 40):
             line = QGraphicsLineItem(REGION_X, gy, REGION_X + REGION_W, gy)
             line.setPen(grid_pen)
             self._scene.addItem(line)
+            self._grid_lines.append(line)
+
+        cross_pen = QPen(QColor("#1A8CFF"), 1.2)
+        cross_pen.setStyle(Qt.PenStyle.DashLine)
+        cross_pen.setCosmetic(True)
+        self._crosshair_h = QGraphicsLineItem(REGION_X, REGION_Y, REGION_X + REGION_W, REGION_Y)
+        self._crosshair_h.setPen(cross_pen)
+        self._crosshair_h.setZValue(12)
+        self._crosshair_h.setVisible(self._show_crosshair)
+        self._scene.addItem(self._crosshair_h)
+        self._crosshair_v = QGraphicsLineItem(REGION_X, REGION_Y, REGION_X, REGION_Y + REGION_H)
+        self._crosshair_v.setPen(cross_pen)
+        self._crosshair_v.setZValue(12)
+        self._crosshair_v.setVisible(self._show_crosshair)
+        self._scene.addItem(self._crosshair_v)
 
         if self._show_handles:
             handle_pen = QPen(QColor("#1a8cff"), 2)
@@ -373,6 +402,21 @@ class ScanCanvasView(QGraphicsView):
         self._clear_scanned_overlay()
         self._heat_item.setOpacity(0.68)
 
+    def set_heatmap_opacity(self, opacity: float) -> None:
+        self._heat_item.setOpacity(max(0.0, min(1.0, opacity)))
+
+    def set_grid_visible(self, visible: bool) -> None:
+        for line in self._grid_lines:
+            line.setVisible(visible)
+
+    def set_crosshair_position(self, sx: float, sy: float) -> None:
+        if not self._show_crosshair:
+            return
+        self._crosshair_h.setLine(REGION_X, sy, REGION_X + REGION_W, sy)
+        self._crosshair_v.setLine(sx, REGION_Y, sx, REGION_Y + REGION_H)
+        self._crosshair_h.setVisible(True)
+        self._crosshair_v.setVisible(True)
+
 
 class PcbCanvasWidget(QWidget):
     def __init__(
@@ -383,6 +427,7 @@ class PcbCanvasWidget(QWidget):
         show_minimap: bool = True,
         show_handles: bool = True,
         overlay_mode: str = "coord",
+        show_crosshair: bool = False,
         parent: QWidget | None = None,
     ) -> None:
         super().__init__(parent)
@@ -401,7 +446,11 @@ class PcbCanvasWidget(QWidget):
         cl = QVBoxLayout(self._canvas_container)
         cl.setContentsMargins(0, 0, 0, 0)
 
-        self._view = ScanCanvasView(self._canvas_container, show_handles=show_handles)
+        self._view = ScanCanvasView(
+            self._canvas_container,
+            show_handles=show_handles,
+            show_crosshair=show_crosshair,
+        )
         cl.addWidget(self._view)
 
         self._color_scale = ColorScaleWidget(self._canvas_container)
@@ -492,25 +541,42 @@ class PcbCanvasWidget(QWidget):
         )
 
     def _update_position_overlay(
-        self, x: float, y: float, *, z: float | None = None, amp: float | None = None
+        self, x: float, y: float, *, z: float | None = None, amp: float | None = None,
+        frequency: str | None = None, phase: float | None = None,
     ) -> None:
         pos = mock_data.POSITION
         z_val = pos["z"] if z is None else z
         amp_val = pos["amp"] if amp is None else amp
+        freq = mock_data.FREQUENCY if frequency is None else frequency
+        phase_val = 112.3 if phase is None else phase
         if self._overlay_mode == "cursor":
             text = (
                 "光标读数\n"
-                f"X：{x:.2f} mm · Y：{y:.2f} mm\n"
-                f"幅度：{amp_val:.2f} dBm · 相位：112.3°"
+                f"X：{x:.2f} mm · Y：{y:.2f} mm · Z：{z_val:.2f} mm\n"
+                f"频率：{freq}\n"
+                f"幅度：{amp_val:.2f} dBm · 相位：{phase_val:.1f}°"
             )
         else:
             text = (
                 "当前坐标\n"
                 f"X：{x:.2f} mm\nY：{y:.2f} mm\nZ：{z_val:.2f} mm\n"
-                f"频率：{mock_data.FREQUENCY}\n幅度：{amp_val:.2f} dBm"
+                f"频率：{freq}\n幅度：{amp_val:.2f} dBm"
             )
         self._position_overlay.setText(text)
         self._position_overlay.adjustSize()
+
+    def update_cursor_readout(
+        self,
+        x: float,
+        y: float,
+        z: float,
+        frequency: str,
+        amp: float,
+        phase: float,
+    ) -> None:
+        self._update_position_overlay(
+            x, y, z=z, amp=amp, frequency=frequency, phase=phase
+        )
 
 
 class ScanCanvasWidget(PcbCanvasWidget):

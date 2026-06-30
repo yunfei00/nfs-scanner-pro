@@ -15,6 +15,7 @@ related_docs:
     - docs/product-spec/release/Release_011_MainWindow_PySide6_Prototype/README.md
     - docs/product-spec/release/Release_012_Device_Module_Mock/README.md
     - docs/product-spec/release/Release_013_Scan_Module_Mock/README.md
+    - docs/product-spec/release/Release_014_Analysis_Module_Mock/README.md
   wireframe_008:
     - docs/product-spec/ui-wireframe/README.md
   ai_layer:
