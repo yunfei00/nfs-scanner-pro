@@ -28,6 +28,8 @@ This folder stores product design documents for NFS Scanner Professional.
 | Release 012 | Device Module Mock | [release/Release_012_Device_Module_Mock/README.md](release/Release_012_Device_Module_Mock/README.md) |
 | Release 013 | Scan Module Mock | [release/Release_013_Scan_Module_Mock/README.md](release/Release_013_Scan_Module_Mock/README.md) |
 | Release 014 | Analysis Module Mock | [release/Release_014_Analysis_Module_Mock/README.md](release/Release_014_Analysis_Module_Mock/README.md) |
+| Release 015 | Report Module Mock | [release/Release_015_Report_Module_Mock/README.md](release/Release_015_Report_Module_Mock/README.md) |
+| Release 016 | Project File System Mock | [release/Release_016_Project_File_System_Mock/README.md](release/Release_016_Project_File_System_Mock/README.md) |
 
 ## 高保真设计（Release 010 / 010.5）
 

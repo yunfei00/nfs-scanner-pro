@@ -108,6 +108,27 @@ spec/AI_INDEX.md
 → src/nfs_scanner_pro/ui/analysis_mock.py
 ```
 
+### 5.1e 做报告页 Mock（Release 015）
+
+```text
+spec/AI_INDEX.md
+→ docs/product-spec/release/Release_015_Report_Module_Mock/README.md
+→ docs/product-spec/high-fidelity/pages/report/Report_Page_High_Fidelity.md
+→ src/nfs_scanner_pro/ui/pages/report_page.py
+→ src/nfs_scanner_pro/ui/report_mock.py
+```
+
+### 5.1f 做项目文件菜单 Mock（Release 016）
+
+```text
+spec/AI_INDEX.md
+→ docs/product-spec/release/Release_016_Project_File_System_Mock/README.md
+→ docs/product-spec/decision/ADR-0018-Project-As-Folder-Domain.md
+→ docs/product-spec/domain/02_Core_Objects/Project.md
+→ src/nfs_scanner_pro/project_mock.py
+→ src/nfs_scanner_pro/ui/main_window.py
+```
+
 ### 5.2 做领域模型 / Mock JSON / 状态机
 
 ```text

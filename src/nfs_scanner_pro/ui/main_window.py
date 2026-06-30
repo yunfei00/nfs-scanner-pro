@@ -9,7 +9,9 @@ from PySide6.QtGui import QAction
 from PySide6.QtWidgets import (
     QDockWidget,
     QHBoxLayout,
+    QLabel,
     QMainWindow,
+    QMenu,
     QMenuBar,
     QMessageBox,
     QStackedWidget,
@@ -18,6 +20,10 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
+
+from nfs_scanner_pro import project_mock
+from nfs_scanner_pro.ui import mock_data
+from nfs_scanner_pro.ui.dialogs.project_dialogs import NewProjectDialog, OpenProjectDialog
 
 from nfs_scanner_pro.ui.analysis_parameter_dock import AnalysisParameterPanel
 from nfs_scanner_pro.ui.device_config_dock import DeviceConfigPanel
@@ -30,6 +36,7 @@ from nfs_scanner_pro.ui.pages.scan_page import ScanPage
 from nfs_scanner_pro.ui.report_settings_dock import ReportSettingsPanel
 from nfs_scanner_pro.ui.scan_parameter_dock import ScanParameterPanel, apply_dock_width_policy
 from nfs_scanner_pro.ui.scan_state import ScanState
+from nfs_scanner_pro.ui.widgets.recent_project_menu import populate_recent_project_menu
 from nfs_scanner_pro.ui.widgets.status_bar import AppStatusBar
 from nfs_scanner_pro.ui.widgets.top_menu_bar import TopMenuBar
 
@@ -104,31 +111,26 @@ class MainWindow(QMainWindow):
         self._scan_page.scan_state_changed.connect(self._on_scan_state_changed)
         self._scan_page.scan_status_updated.connect(self._on_scan_status_updated)
         self._analysis_page.analysis_status_updated.connect(self._on_analysis_status_updated)
+        self._report_page.report_status_updated.connect(self._on_report_status_updated)
         self._switch_page(self.PAGE_SCAN)
         self._sync_scan_toolbar()
+        self._refresh_project_ui()
 
     def _build_menu_bar(self, menu_bar: QMenuBar) -> None:
         menu_bar.setObjectName("menuBar")
 
         file_menu = menu_bar.addMenu("文件(F)")
-        file_actions = [
-            ("新建项目", self._mock_file_action),
-            ("打开项目", self._mock_file_action),
-            ("打开最近项目", self._mock_file_action),
-            ("保存项目", self._mock_file_action),
-            None,
-            ("关闭项目", self._mock_file_action),
-            ("打开项目文件夹", self._mock_file_action),
-            None,
-            ("退出", self.close),
-        ]
-        for item in file_actions:
-            if item is None:
-                file_menu.addSeparator()
-            else:
-                label, slot = item
-                act = file_menu.addAction(label)
-                act.triggered.connect(slot)
+        file_menu.addAction("新建项目", self._on_new_project)
+        file_menu.addAction("打开项目", self._on_open_project)
+        self._recent_project_menu = QMenu("打开最近项目", self)
+        populate_recent_project_menu(self._recent_project_menu, self._on_open_recent_project)
+        file_menu.addMenu(self._recent_project_menu)
+        file_menu.addAction("保存项目", self._on_save_project)
+        file_menu.addSeparator()
+        file_menu.addAction("关闭项目", self._on_close_project)
+        file_menu.addAction("打开项目文件夹", self._on_open_project_folder)
+        file_menu.addSeparator()
+        file_menu.addAction("退出", self.close)
 
         menu_bar.addMenu("编辑(E)")
         view_menu = menu_bar.addMenu("视图(V)")
@@ -186,6 +188,16 @@ class MainWindow(QMainWindow):
                 btn.clicked.connect(self._on_toolbar_grid)
             elif obj_name == "toolbarMeasureButton":
                 btn.clicked.connect(self._on_toolbar_measure)
+            elif obj_name == "toolbarNewReportButton":
+                btn.clicked.connect(self._on_report_new)
+            elif obj_name == "toolbarPreviewButton":
+                btn.clicked.connect(self._on_report_preview)
+            elif obj_name == "toolbarExportPdfButton":
+                btn.clicked.connect(lambda: self._on_report_export("PDF"))
+            elif obj_name == "toolbarExportWordButton":
+                btn.clicked.connect(lambda: self._on_report_export("Word"))
+            elif obj_name == "toolbarExportExcelButton":
+                btn.clicked.connect(lambda: self._on_report_export("Excel"))
             else:
                 btn.clicked.connect(self._toolbar_action(log_msg))
             self._tool_bar.addWidget(btn)
@@ -354,6 +366,8 @@ class MainWindow(QMainWindow):
         self._status.apply_page(page_index)
         if page_index == self.PAGE_ANALYSIS:
             self._status._progress_wrap.setVisible(False)
+        if page_index == self.PAGE_REPORT:
+            self._status._progress_wrap.setVisible(False)
         self._mount_page_dock(page_index)
         if self._right_dock is not None:
             self._sync_param_action(self._right_dock.isVisible())
@@ -423,6 +437,36 @@ class MainWindow(QMainWindow):
         print("[Mock UI] 测量", flush=True)
         self._status.set_state("Mock：测量工具已启用")
 
+    def _on_report_status_updated(
+        self, state_text: str, extra1: str, extra2: str
+    ) -> None:
+        if self._current_page != self.PAGE_REPORT:
+            return
+        self._status.set_state(state_text)
+        self._status._extra1.setText(extra1)
+        self._status._extra2.setText(extra2)
+        self._status._extra1.setVisible(bool(extra1))
+        self._status._extra2.setVisible(bool(extra2))
+        self._status._progress_wrap.setVisible(False)
+
+    def _on_report_new(self) -> None:
+        print("[Mock UI] 新建报告", flush=True)
+        if self._current_page != self.PAGE_REPORT:
+            return
+        self._report_page.create_draft()
+
+    def _on_report_preview(self) -> None:
+        print("[Mock UI] 预览", flush=True)
+        if self._current_page != self.PAGE_REPORT:
+            return
+        self._report_page.refresh_preview()
+
+    def _on_report_export(self, fmt: str) -> None:
+        print(f"[Mock UI] 导出 {fmt}", flush=True)
+        if self._current_page != self.PAGE_REPORT:
+            return
+        self._report_page.export_report(fmt)
+
     def _on_analysis_status_updated(
         self, state_text: str, extra1: str, extra2: str
     ) -> None:
@@ -457,16 +501,112 @@ class MainWindow(QMainWindow):
         self._scan_start_btn.setEnabled(state.start_enabled())
         self._scan_stop_btn.setEnabled(state.stop_enabled())
 
+    def _set_project_status(self, message: str) -> None:
+        self._status.set_state(message)
+        self._sync_project_status_extras()
+
+    def _sync_project_status_extras(self) -> None:
+        project = project_mock.get_current_project()
+        if project.get("status") == "closed":
+            self._status._extra1.setText("")
+            self._status._extra2.setText("")
+            self._status._extra1.setVisible(False)
+            self._status._extra2.setVisible(False)
+        else:
+            self._status._extra1.setText(f"项目：{project_mock.project_display_name()}")
+            path = project.get("path", "")
+            self._status._extra2.setText(f"路径：{path}" if path else "")
+            self._status._extra1.setVisible(True)
+            self._status._extra2.setVisible(bool(path))
+
+    def _refresh_project_ui(self) -> None:
+        project = project_mock.get_current_project()
+        mock_data.apply_project(project)
+        populate_recent_project_menu(
+            self._recent_project_menu, self._on_open_recent_project
+        )
+        self._update_all_breadcrumbs()
+        suffix = mock_data.PROJECT_NAME
+        self.setWindowTitle(
+            f"{self.WINDOW_TITLE} — {suffix}"
+            if suffix != "未打开项目"
+            else self.WINDOW_TITLE
+        )
+        self._sync_project_status_extras()
+
+    def _update_all_breadcrumbs(self) -> None:
+        scan_crumb = self._scan_page.findChild(QLabel, "breadcrumbBar")
+        if scan_crumb is not None:
+            scan_crumb.setText(mock_data.get_breadcrumb_scan())
+
+        analysis_crumb = self._analysis_page.findChild(QLabel, "breadcrumbBar")
+        if analysis_crumb is not None:
+            analysis_crumb.setText(mock_data.get_breadcrumb_analysis())
+
+        report_crumb = self._report_page.findChild(QLabel, "breadcrumbBar")
+        if report_crumb is not None:
+            report_name = self._report_page._mock.current_report.get("name", "")
+            report_crumb.setText(mock_data.get_breadcrumb_report(report_name))
+
+        preview = getattr(self._report_page, "_preview", None)
+        if preview is not None:
+            report = self._report_page._mock.current_report
+            updated = dict(report)
+            updated["project"] = mock_data.PROJECT_NAME
+            preview.show_report(updated)
+
+    def _on_new_project(self) -> None:
+        dlg = NewProjectDialog(self)
+        if dlg.exec() != NewProjectDialog.DialogCode.Accepted:
+            return
+        name, path, pcb, region = dlg.values()
+        if not name:
+            return
+        project_mock.create_project_mock(name, path, pcb, region)
+        print(f"[Mock UI] 新建项目 {name}", flush=True)
+        self._refresh_project_ui()
+        self._set_project_status(f"Mock：项目 {name} 已创建")
+
+    def _on_open_project(self) -> None:
+        dlg = OpenProjectDialog(self)
+        if dlg.exec() != OpenProjectDialog.DialogCode.Accepted:
+            return
+        name = dlg.selected_project_name()
+        if not name:
+            return
+        project_mock.open_project_mock(name)
+        print(f"[Mock UI] 打开项目 {name}", flush=True)
+        self._refresh_project_ui()
+        self._set_project_status(f"Mock：已打开项目 {name}")
+
+    def _on_open_recent_project(self, project_name: str) -> None:
+        project_mock.open_project_mock(project_name)
+        print(f"[Mock UI] 打开最近项目 {project_name}", flush=True)
+        self._refresh_project_ui()
+        self._set_project_status(f"Mock：已打开项目 {project_name}")
+
+    def _on_save_project(self) -> None:
+        project_mock.save_project_mock()
+        print("[Mock UI] 保存项目", flush=True)
+        self._set_project_status("Mock：项目已保存")
+
+    def _on_close_project(self) -> None:
+        project_mock.close_project_mock()
+        print("[Mock UI] 关闭项目", flush=True)
+        self._refresh_project_ui()
+        self._set_project_status("Mock：项目已关闭")
+
+    def _on_open_project_folder(self) -> None:
+        project = project_mock.get_current_project()
+        path = project.get("path") or "D:/NFS_Projects"
+        print(f"[Mock UI] 打开项目文件夹 {path}", flush=True)
+        self._set_project_status(f"Mock：打开项目文件夹 {path}")
+
     def _toolbar_action(self, log_msg: str):
         def handler(*_args) -> None:
             print(f"[Mock UI] {log_msg}", flush=True)
 
         return handler
-
-    def _mock_file_action(self) -> None:
-        action = self.sender()
-        if isinstance(action, QAction):
-            self._show_mock(action.text())
 
     def _mock_log(self, message: str):
         def handler(*_args) -> None:

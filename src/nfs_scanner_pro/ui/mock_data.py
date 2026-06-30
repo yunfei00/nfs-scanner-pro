@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from nfs_scanner_pro import project_mock
+
 PROJECT_NAME = "iPhone16_Mainboard"
 REGION_NAME = "CPU_Area"
 PROBE_NAME = "Hx(100 μm)"
@@ -121,6 +123,40 @@ BREADCRUMB_ANALYSIS = (
     f"项目 > {REGION_NAME} > ScanTask {SCAN_TASK} > Trace 1 > {FREQUENCY}"
 )
 
+
+def apply_project(project: dict | None = None) -> None:
+    """从 project_mock 同步全局 Mock 名称与 Breadcrumb 字符串。"""
+    global PROJECT_NAME, REGION_NAME, BREADCRUMB_SCAN, BREADCRUMB_ANALYSIS
+    if project is None:
+        project = project_mock.get_current_project()
+    if project.get("status") == "closed":
+        PROJECT_NAME = "未打开项目"
+    else:
+        PROJECT_NAME = project.get("pcb") or project.get("name") or "未打开项目"
+    if project.get("default_region"):
+        REGION_NAME = project["default_region"]
+    BREADCRUMB_SCAN = get_breadcrumb_scan()
+    BREADCRUMB_ANALYSIS = get_breadcrumb_analysis()
+
+
+def get_breadcrumb_scan() -> str:
+    label = project_mock.project_display_name()
+    return f"{label} > {REGION_NAME} > Hx 探头 > {FREQUENCY} > {POINTS} 点"
+
+
+def get_breadcrumb_analysis() -> str:
+    label = project_mock.project_display_name()
+    return f"{label} > {REGION_NAME} > ScanTask {SCAN_TASK} > Trace 1 > {FREQUENCY}"
+
+
+def get_breadcrumb_report(report_name: str) -> str:
+    label = project_mock.project_display_name()
+    return f"报告 > {label} > {report_name}"
+
+
+# 启动时与 project_mock 默认项目对齐
+apply_project()
+
 ANALYSIS_TASK = {
     "scan_task": SCAN_TASK,
     "trace": "Trace 1",
@@ -205,23 +241,60 @@ REGION_SETTINGS = {
 REPORTS = [
     {
         "id": "r1",
+        "name": "CPU_Area_Hx_2.45GHz_报告",
         "title": "CPU_Area_Hx_2.45GHz_报告",
+        "time": "2025-06-16 14:20",
         "meta": "2025-06-16 14:20 · Hx",
+        "probe": "Hx",
+        "project": "iPhone16_Mainboard",
+        "region": "CPU_Area",
+        "frequency": "2.450 GHz",
         "scan_time": "2025-06-16 14:20:33",
-        "probe": PROBE_NAME,
+        "summary": (
+            "CPU 区域在 2.450 GHz 出现局部辐射峰值（-23.45 dBm），"
+            "位于 U2-CPU 封装右侧约 12 mm 处。建议进一步 Hx / Hy 对比分析。"
+        ),
     },
     {
         "id": "r2",
+        "name": "CPU_Area_Hy_2.45GHz_报告",
         "title": "CPU_Area_Hy_2.45GHz_报告",
+        "time": "2025-06-15 09:45",
         "meta": "2025-06-15 09:45 · Hy",
+        "probe": "Hy",
+        "project": "iPhone16_Mainboard",
+        "region": "CPU_Area",
+        "frequency": "2.450 GHz",
         "scan_time": "2025-06-15 09:45:12",
-        "probe": "Hy(100 μm)",
+        "summary": (
+            "Hy 方向扫描显示 CPU 区域存在次级峰值，建议与 Hx 扫描结果叠加对比。"
+        ),
     },
     {
         "id": "r3",
+        "name": "全板初扫摘要",
         "title": "全板初扫_摘要",
+        "time": "2025-06-10 16:30",
         "meta": "2025-06-10 16:30 · Hx",
+        "probe": "Hx",
+        "project": "iPhone16_Mainboard",
+        "region": "FullBoard",
+        "frequency": "2.450 GHz",
         "scan_time": "2025-06-10 16:30:00",
-        "probe": PROBE_NAME,
+        "summary": (
+            "全板初扫显示 CPU 区域、射频模块附近存在明显热点，建议进入局部精扫。"
+        ),
     },
 ]
+
+REPORT_SETTINGS = {
+    "template": "标准 EMC 报告",
+    "logo": "公司默认",
+    "pdf_quality": "印刷（300 DPI）",
+    "formats": ["PDF", "Word", "Excel"],
+    "include_heatmap": True,
+    "include_device_info": True,
+    "include_scan_params": True,
+    "include_raw_data": False,
+    "include_summary": True,
+}
