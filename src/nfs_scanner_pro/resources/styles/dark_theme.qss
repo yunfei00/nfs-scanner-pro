@@ -228,6 +228,23 @@ QLabel#canvasPositionOverlay {
     font-size: 13px;
 }
 
+QLabel#scanCompletionToast {
+    background-color: rgba(16, 48, 32, 0.94);
+    color: #86EFAC;
+    border: 1px solid #22C55E;
+    border-radius: 8px;
+    padding: 12px 28px;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+QDockWidget QLineEdit[scanLocked="true"],
+QDockWidget QComboBox[scanLocked="true"],
+QDockWidget QCheckBox[scanLocked="true"],
+QDockWidget QGroupBox[scanLocked="true"] {
+    color: #6B8299;
+}
+
 QWidget#colorScaleWidget,
 QWidget#colorScaleOverlay {
     background-color: rgba(8, 16, 26, 0.92);

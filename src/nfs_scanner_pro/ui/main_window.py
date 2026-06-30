@@ -30,16 +30,17 @@ from nfs_scanner_pro.ui.pages.report_page import ReportPage
 from nfs_scanner_pro.ui.pages.scan_page import ScanPage
 from nfs_scanner_pro.ui.report_settings_dock import ReportSettingsDock
 from nfs_scanner_pro.ui.scan_parameter_dock import ScanParameterDock
+from nfs_scanner_pro.ui.scan_state import ScanState
 from nfs_scanner_pro.ui.widgets.status_bar import AppStatusBar
 from nfs_scanner_pro.ui.widgets.top_menu_bar import TopMenuBar
 
 _SCAN_TOOLBAR = (
-    ("toolbarStartScanButton", "开始扫描", "primary", "开始扫描", "扫描中（原型）"),
-    ("toolbarStopScanButton", "停止扫描", "danger", "停止扫描", "准备就绪"),
-    ("toolbarCaptureButton", "拍照", "secondary", "拍照", None),
-    ("toolbarAlignButton", "区域对齐", "secondary", "区域对齐", None),
-    ("toolbarGridButton", "网格", "secondary", "网格", None),
-    ("toolbarMeasureButton", "测量", "secondary", "测量", None),
+    ("toolbarStartScanButton", "开始扫描", "primary", "开始扫描"),
+    ("toolbarStopScanButton", "停止扫描", "danger", "停止扫描"),
+    ("toolbarCaptureButton", "拍照", "secondary", "拍照"),
+    ("toolbarAlignButton", "区域对齐", "secondary", "区域对齐"),
+    ("toolbarGridButton", "网格", "secondary", "网格"),
+    ("toolbarMeasureButton", "测量", "secondary", "测量"),
 )
 
 _REPORT_TOOLBAR = (
@@ -96,8 +97,14 @@ class MainWindow(QMainWindow):
         self._build_docks()
         self._status = AppStatusBar(self)
         self._wire_view_menu()
+        self._scan_start_btn: QToolButton | None = None
+        self._scan_stop_btn: QToolButton | None = None
         self._rebuild_toolbar(self.PAGE_SCAN)
+        self._scan_page.bind_parameter_dock(self._scan_dock)
+        self._scan_page.scan_state_changed.connect(self._on_scan_state_changed)
+        self._scan_page.scan_status_updated.connect(self._on_scan_status_updated)
         self._switch_page(self.PAGE_SCAN)
+        self._sync_scan_toolbar()
 
     def _build_menu_bar(self, menu_bar: QMenuBar) -> None:
         menu_bar.setObjectName("menuBar")
@@ -153,20 +160,31 @@ class MainWindow(QMainWindow):
 
     def _rebuild_toolbar(self, page_index: int) -> None:
         self._tool_bar.clear()
+        self._scan_start_btn = None
+        self._scan_stop_btn = None
         spec = _REPORT_TOOLBAR if page_index == self.PAGE_REPORT else _SCAN_TOOLBAR
-        for index, (obj_name, text, variant, log_msg, state_msg) in enumerate(spec):
+        for index, (obj_name, text, variant, log_msg) in enumerate(spec):
             btn = QToolButton(self)
             btn.setObjectName(obj_name)
             btn.setText(text)
             btn.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextOnly)
             btn.setProperty("variant", variant)
             btn.setFixedHeight(36)
-            btn.clicked.connect(self._toolbar_action(log_msg, state_msg))
+            if obj_name == "toolbarStartScanButton":
+                btn.clicked.connect(self._on_start_scan)
+                self._scan_start_btn = btn
+            elif obj_name == "toolbarStopScanButton":
+                btn.clicked.connect(self._on_stop_scan)
+                self._scan_stop_btn = btn
+            else:
+                btn.clicked.connect(self._toolbar_action(log_msg))
             self._tool_bar.addWidget(btn)
             btn.style().unpolish(btn)
             btn.style().polish(btn)
             if index == 1:
                 self._tool_bar.addSeparator()
+        if page_index != self.PAGE_REPORT:
+            self._sync_scan_toolbar()
 
     def _build_central(self) -> None:
         central = QWidget(self)
@@ -283,18 +301,52 @@ class MainWindow(QMainWindow):
     def _device_action(self, text: str) -> None:
         self._status.set_state(f"设备操作：{text}（原型）")
 
+    def _on_start_scan(self) -> None:
+        print("[Mock UI] 开始扫描", flush=True)
+        if self._current_page != self.PAGE_SCAN:
+            self._status.set_state("请切换到扫描页后开始扫描")
+            return
+        self._scan_page.start_scan_mock()
+
+    def _on_stop_scan(self) -> None:
+        print("[Mock UI] 停止扫描", flush=True)
+        if self._current_page != self.PAGE_SCAN:
+            self._status.set_state("请切换到扫描页后停止扫描")
+            return
+        self._scan_page.stop_scan_mock()
+
+    def _on_scan_state_changed(self, state: ScanState) -> None:
+        self._sync_scan_toolbar()
+
+    def _on_scan_status_updated(
+        self, state_text: str, progress: int, extra1: str, extra2: str
+    ) -> None:
+        if self._current_page != self.PAGE_SCAN:
+            return
+        self._status.set_state(state_text)
+        self._status.set_progress(progress)
+        self._status._extra1.setText(extra1)
+        self._status._extra2.setText(extra2)
+        self._status._extra1.setVisible(bool(extra1))
+        self._status._extra2.setVisible(bool(extra2))
+
+    def _sync_scan_toolbar(self) -> None:
+        if self._scan_start_btn is None or self._scan_stop_btn is None:
+            return
+        state = self._scan_page.current_scan_state()
+        self._scan_start_btn.setEnabled(state.start_enabled())
+        self._scan_stop_btn.setEnabled(state.stop_enabled())
+
+    def _toolbar_action(self, log_msg: str):
+        def handler(*_args) -> None:
+            print(f"[Mock UI] {log_msg}", flush=True)
+
+        return handler
+
     def _mock_file_action(self) -> None:
         action = self.sender()
         if isinstance(action, QAction):
             self._show_mock(action.text())
-
-    def _toolbar_action(self, log_msg: str, state_msg: str | None):
-        def handler(*_args) -> None:
-            print(f"[Mock UI] {log_msg}", flush=True)
-            if state_msg is not None:
-                self._status.set_state(state_msg)
-
-        return handler
 
     def _mock_log(self, message: str):
         def handler(*_args) -> None:

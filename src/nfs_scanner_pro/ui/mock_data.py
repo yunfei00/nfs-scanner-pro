@@ -11,6 +11,24 @@ GRID_X = 91
 GRID_Y = 71
 SCAN_TASK = "ST-001"
 
+SCAN_TOTAL_POINTS = 6461
+SCAN_DEFAULT_REMAINING = "00:12:31"
+SCAN_START_POSITION = {
+    "x": 10.00,
+    "y": -150.00,
+    "z": 5.00,
+}
+SCAN_END_POSITION = {
+    "x": 190.00,
+    "y": -10.00,
+    "z": 5.00,
+}
+SCAN_STEP = {
+    "x": 2.00,
+    "y": 2.00,
+    "z": 0.00,
+}
+
 DEVICE_PROFILE = {
     "name": "Lab_Default_v1",
     "motion": "COM6 · 115200",
@@ -139,9 +157,9 @@ SCAN_SETTINGS = {
 }
 
 REGION_SETTINGS = {
-    "start": {"x": 10.00, "y": -150.00, "z": 5.00},
-    "end": {"x": 190.00, "y": -10.00, "z": 5.00},
-    "step": {"x": 2.00, "y": 2.00, "z": 0.00},
+    "start": SCAN_START_POSITION,
+    "end": SCAN_END_POSITION,
+    "step": SCAN_STEP,
     "points_label": f"{GRID_X} × {GRID_Y} = {POINTS}",
     "area_mm2": "36000 mm²",
     "path_length": "16.20 m",

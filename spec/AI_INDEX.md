@@ -88,6 +88,16 @@ spec/AI_INDEX.md
 → src/nfs_scanner_pro/ui/pages/device_page.py
 ```
 
+### 5.1c 做扫描页 Mock（Release 013）
+
+```text
+spec/AI_INDEX.md
+→ docs/product-spec/release/Release_013_Scan_Module_Mock/README.md
+→ docs/product-spec/domain/04_State_Machines/Scan_State_Machine.md
+→ src/nfs_scanner_pro/ui/pages/scan_page.py
+→ src/nfs_scanner_pro/ui/scan_task_mock.py
+```
+
 ### 5.2 做领域模型 / Mock JSON / 状态机
 
 ```text

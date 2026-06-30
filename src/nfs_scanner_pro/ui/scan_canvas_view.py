@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from PySide6.QtCore import QPointF, Qt, Signal, QRectF
+from PySide6.QtCore import QPointF, Qt, QTimer, Signal, QRectF
 from PySide6.QtGui import (
     QBrush,
     QColor,
@@ -231,10 +231,28 @@ class ScanCanvasView(QGraphicsView):
         region.setPen(QPen(QColor("#FFFFFF"), 2.5))
         self._scene.addItem(region)
 
-        heat_item = QGraphicsPixmapItem(_build_radial_heatmap_pixmap(int(REGION_W), int(REGION_H)))
-        heat_item.setPos(REGION_X, REGION_Y)
-        heat_item.setOpacity(0.68)
-        self._scene.addItem(heat_item)
+        self._heat_item = QGraphicsPixmapItem(
+            _build_radial_heatmap_pixmap(int(REGION_W), int(REGION_H))
+        )
+        self._heat_item.setPos(REGION_X, REGION_Y)
+        self._heat_item.setOpacity(0.68)
+        self._scene.addItem(self._heat_item)
+
+        self._scanned_overlay = QGraphicsPixmapItem(
+            QPixmap(int(REGION_W), int(REGION_H))
+        )
+        self._scanned_overlay.setPos(REGION_X, REGION_Y)
+        self._scanned_overlay.setOpacity(0.55)
+        self._scanned_overlay.setZValue(5)
+        self._scene.addItem(self._scanned_overlay)
+        self._scanned_image = None
+
+        self._current_point_marker = QGraphicsEllipseItem(-6, -6, 12, 12)
+        self._current_point_marker.setBrush(QBrush(QColor("#FFFFFF")))
+        self._current_point_marker.setPen(QPen(QColor("#1A8CFF"), 2))
+        self._current_point_marker.setZValue(10)
+        self._current_point_marker.setVisible(False)
+        self._scene.addItem(self._current_point_marker)
 
         grid_pen = QPen(QColor(255, 255, 255, 40))
         grid_pen.setStyle(Qt.PenStyle.DotLine)
@@ -295,6 +313,66 @@ class ScanCanvasView(QGraphicsView):
         self.mouse_scene_moved.emit(scene_pos.x(), scene_pos.y())
         super().mouseMoveEvent(event)
 
+    def set_scan_progress(
+        self,
+        point: int,
+        total: int,
+        scene_x: float,
+        scene_y: float,
+        *,
+        scanning: bool,
+    ) -> None:
+        """更新当前扫描点高亮与已扫描区域 Mock。"""
+        if scanning and point > 0:
+            self._current_point_marker.setRect(scene_x - 6, scene_y - 6, 12, 12)
+            self._current_point_marker.setVisible(True)
+            self._paint_scanned_overlay(point, total)
+            progress = point / max(1, total)
+            self._heat_item.setOpacity(0.68 + progress * 0.17)
+        else:
+            self._current_point_marker.setVisible(False)
+            if point <= 0:
+                self._clear_scanned_overlay()
+                self._heat_item.setOpacity(0.68)
+
+    def _ensure_scanned_image(self) -> None:
+        if self._scanned_image is None:
+            self._scanned_image = QImage(
+                int(REGION_W), int(REGION_H), QImage.Format.Format_ARGB32_Premultiplied
+            )
+            self._scanned_image.fill(Qt.GlobalColor.transparent)
+
+    def _paint_scanned_overlay(self, point: int, total: int) -> None:
+        from nfs_scanner_pro.ui.scan_task_mock import point_to_grid, point_to_scene
+
+        self._ensure_scanned_image()
+        assert self._scanned_image is not None
+        painter = QPainter(self._scanned_image)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        brush = QBrush(QColor(255, 255, 255, 55))
+        pen = QPen(Qt.PenStyle.NoPen)
+        painter.setPen(pen)
+        painter.setBrush(brush)
+        step = max(1, total // 800)
+        for idx in range(0, point, step):
+            row, col = point_to_grid(idx + 1)
+            sx, sy = point_to_scene(row, col)
+            lx = sx - REGION_X
+            ly = sy - REGION_Y
+            painter.drawEllipse(QPointF(lx, ly), 2.5, 2.5)
+        painter.end()
+        self._scanned_overlay.setPixmap(QPixmap.fromImage(self._scanned_image))
+
+    def _clear_scanned_overlay(self) -> None:
+        if self._scanned_image is not None:
+            self._scanned_image.fill(Qt.GlobalColor.transparent)
+            self._scanned_overlay.setPixmap(QPixmap.fromImage(self._scanned_image))
+
+    def reset_scan_visual(self) -> None:
+        self._current_point_marker.setVisible(False)
+        self._clear_scanned_overlay()
+        self._heat_item.setOpacity(0.68)
+
 
 class PcbCanvasWidget(QWidget):
     def __init__(
@@ -343,8 +421,18 @@ class PcbCanvasWidget(QWidget):
         self._position_overlay = QLabel(self._canvas_container)
         self._position_overlay.setObjectName("canvasPositionOverlay")
         self._overlay_mode = overlay_mode
+        self._scan_coords_locked = False
         self._update_position_overlay(mock_data.POSITION["x"], mock_data.POSITION["y"])
         self._view.mouse_scene_moved.connect(self._on_mouse_moved)
+
+        self._completion_toast = QLabel(self._canvas_container)
+        self._completion_toast.setObjectName("scanCompletionToast")
+        self._completion_toast.setText("扫描完成")
+        self._completion_toast.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self._completion_toast.hide()
+        self._toast_timer = QTimer(self)
+        self._toast_timer.setSingleShot(True)
+        self._toast_timer.timeout.connect(self._completion_toast.hide)
 
         layout.addWidget(self._canvas_container, stretch=1)
 
@@ -365,26 +453,61 @@ class PcbCanvasWidget(QWidget):
         overlay_y = ch - self._position_overlay.height() - margin
         self._position_overlay.move(max(margin, overlay_x), max(margin, overlay_y))
 
+        if self._completion_toast.isVisible():
+            tw = self._completion_toast.width()
+            th = self._completion_toast.height()
+            self._completion_toast.move(max(margin, (cw - tw) // 2), max(margin, (ch - th) // 2))
+
     def _on_mouse_moved(self, sx: float, sy: float) -> None:
+        if self._scan_coords_locked:
+            return
         rel_x = (sx - REGION_X) / REGION_W if REGION_W else 0
         rel_y = (sy - REGION_Y) / REGION_H if REGION_H else 0
         x = mock_data.POSITION["x"] + rel_x * 20.0
         y = mock_data.POSITION["y"] + rel_y * 20.0
         self._update_position_overlay(x, y)
 
-    def _update_position_overlay(self, x: float, y: float) -> None:
+    def update_scan_coordinates(
+        self, x: float, y: float, z: float, amp: float, *, lock: bool
+    ) -> None:
+        self._scan_coords_locked = lock
+        self._update_position_overlay(x, y, z=z, amp=amp)
+
+    def update_scan_visual(
+        self, point: int, total: int, scene_x: float, scene_y: float, *, scanning: bool
+    ) -> None:
+        self._view.set_scan_progress(point, total, scene_x, scene_y, scanning=scanning)
+
+    def show_scan_complete_toast(self) -> None:
+        self._completion_toast.adjustSize()
+        self._completion_toast.show()
+        self._completion_toast.raise_()
+        self._toast_timer.start(2000)
+
+    def reset_scan_visual(self) -> None:
+        self._scan_coords_locked = False
+        self._view.reset_scan_visual()
+        self._update_position_overlay(
+            mock_data.POSITION["x"], mock_data.POSITION["y"]
+        )
+
+    def _update_position_overlay(
+        self, x: float, y: float, *, z: float | None = None, amp: float | None = None
+    ) -> None:
         pos = mock_data.POSITION
+        z_val = pos["z"] if z is None else z
+        amp_val = pos["amp"] if amp is None else amp
         if self._overlay_mode == "cursor":
             text = (
                 "光标读数\n"
                 f"X：{x:.2f} mm · Y：{y:.2f} mm\n"
-                f"幅度：{pos['amp']:.2f} dBm · 相位：112.3°"
+                f"幅度：{amp_val:.2f} dBm · 相位：112.3°"
             )
         else:
             text = (
                 "当前坐标\n"
-                f"X：{x:.2f} mm\nY：{y:.2f} mm\nZ：{pos['z']:.2f} mm\n"
-                f"频率：{mock_data.FREQUENCY}\n幅度：{pos['amp']:.2f} dBm"
+                f"X：{x:.2f} mm\nY：{y:.2f} mm\nZ：{z_val:.2f} mm\n"
+                f"频率：{mock_data.FREQUENCY}\n幅度：{amp_val:.2f} dBm"
             )
         self._position_overlay.setText(text)
         self._position_overlay.adjustSize()

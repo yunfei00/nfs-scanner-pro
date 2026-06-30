@@ -66,6 +66,8 @@ class ScanParameterDock(QDockWidget):
         layout.setContentsMargins(8, 8, 8, 8)
         layout.setSpacing(8)
 
+        self._lockable_fields: list[QLineEdit | QComboBox | QCheckBox | QGroupBox] = []
+
         layout.addWidget(self._build_scan_settings())
         layout.addWidget(self._build_region_settings())
         layout.addWidget(self._build_placeholder_group("displaySettingsGroup", "显示设置"))
@@ -74,6 +76,7 @@ class ScanParameterDock(QDockWidget):
 
         scroll.setWidget(content)
         self.setWidget(scroll)
+        self.set_fields_locked(False)
 
     @staticmethod
     def _configure_form(form: QFormLayout) -> None:
@@ -100,9 +103,9 @@ class ScanParameterDock(QDockWidget):
 
         mode = QComboBox(group)
         mode.addItem(s["mode"])
-        mode.setEnabled(False)
         _configure_form_field(mode)
         form.addRow("扫描模式", mode)
+        self._lockable_fields.append(mode)
 
         for label, val in (
             ("驻留时间 (ms)", str(s["dwell_ms"])),
@@ -110,19 +113,19 @@ class ScanParameterDock(QDockWidget):
             ("扫描速度 (mm/min)", str(s["speed_mm_min"])),
         ):
             field = QLineEdit(val, group)
-            field.setReadOnly(True)
             _configure_form_field(field)
             form.addRow(label, field)
+            self._lockable_fields.append(field)
 
         return_home = QCheckBox("扫描完成后回零", group)
         return_home.setChecked(s["return_home"])
-        return_home.setEnabled(False)
         form.addRow("", return_home)
+        self._lockable_fields.append(return_home)
 
         live_heatmap = QCheckBox("实时显示热力图", group)
         live_heatmap.setChecked(s["live_heatmap"])
-        live_heatmap.setEnabled(False)
         form.addRow("", live_heatmap)
+        self._lockable_fields.append(live_heatmap)
 
         return group
 
@@ -140,9 +143,9 @@ class ScanParameterDock(QDockWidget):
             ("步长 X / Y / Z (mm)", "step"),
         ):
             field = QLineEdit(self._xyz_text(r[key]), group)
-            field.setReadOnly(True)
             _configure_form_field(field)
             form.addRow(label, field)
+            self._lockable_fields.append(field)
 
         stats = QGridLayout()
         stats.setHorizontalSpacing(8)
@@ -184,4 +187,18 @@ class ScanParameterDock(QDockWidget):
 
         group.toggled.connect(sync_collapsed)
         sync_collapsed(False)
+        self._lockable_fields.append(group)
         return group
+
+    def set_fields_locked(self, locked: bool) -> None:
+        """扫描中锁定参数；完成/停止后恢复可编辑。"""
+        for field in self._lockable_fields:
+            if isinstance(field, QLineEdit):
+                field.setReadOnly(locked)
+                field.setEnabled(not locked)
+                field.setProperty("scanLocked", locked)
+            elif isinstance(field, (QComboBox, QCheckBox, QGroupBox)):
+                field.setEnabled(not locked)
+                field.setProperty("scanLocked", locked)
+            field.style().unpolish(field)
+            field.style().polish(field)

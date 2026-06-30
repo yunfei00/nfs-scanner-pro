@@ -26,6 +26,7 @@ This folder stores product design documents for NFS Scanner Professional.
 | **Release 010.5** | **High Fidelity Completion（四页 + 状态补全）** | [release/Release_010_5_High_Fidelity_Completion/README.md](release/Release_010_5_High_Fidelity_Completion/README.md) |
 | Release 011 | MainWindow PySide6 Prototype | [release/Release_011_MainWindow_PySide6_Prototype/README.md](release/Release_011_MainWindow_PySide6_Prototype/README.md) |
 | Release 012 | Device Module Mock | [release/Release_012_Device_Module_Mock/README.md](release/Release_012_Device_Module_Mock/README.md) |
+| Release 013 | Scan Module Mock | [release/Release_013_Scan_Module_Mock/README.md](release/Release_013_Scan_Module_Mock/README.md) |
 
 ## 高保真设计（Release 010 / 010.5）
 
