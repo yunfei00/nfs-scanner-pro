@@ -614,6 +614,10 @@ class MainWindow(QMainWindow):
             else self.WINDOW_TITLE
         )
         self._sync_project_status_extras()
+        if hasattr(self, "_scan_page") and self._scan_page is not None:
+            from nfs_scanner_pro.scan import ScanTaskConfig
+
+            self._scan_page._engine.prepare(ScanTaskConfig.from_current_project())
 
     def _update_all_breadcrumbs(self) -> None:
         scan_crumb = self._scan_page.findChild(QLabel, "breadcrumbBar")

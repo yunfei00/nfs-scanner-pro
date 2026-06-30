@@ -134,7 +134,7 @@ def apply_project(project: dict | None = None) -> None:
     if project.get("status") == "closed":
         PROJECT_NAME = "未打开项目"
     else:
-        PROJECT_NAME = project.get("pcb") or project.get("name") or "未打开项目"
+        PROJECT_NAME = project.get("name") or project.get("pcb") or "未打开项目"
     if project.get("default_region"):
         REGION_NAME = project["default_region"]
     BREADCRUMB_SCAN = get_breadcrumb_scan()

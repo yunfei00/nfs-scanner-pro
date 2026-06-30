@@ -222,7 +222,7 @@ def check_verify_all_cli(report: verification_report.VerificationReport) -> None
     if list_proc.returncode != 0:
         failures.append("--list failed")
     else:
-        for num in range(22, 35):
+        for num in range(22, 36):
             if f"({num:03d})" not in list_text:
                 failures.append(f"--list missing {num:03d}")
 
@@ -239,12 +239,10 @@ def check_verify_all_cli(report: verification_report.VerificationReport) -> None
     running = [ln for ln in from_text.splitlines() if ln.startswith("Running ")]
     if from_proc.returncode != 0 or "RESULT: PASS" not in from_text:
         failures.append("--from 032 failed")
-    elif len(running) != 3:
-        failures.append(f"--from 032 runs={len(running)} expected 3")
-    elif not any("Release 033" in ln for ln in running):
-        failures.append("--from 032 missing Release 033")
-    elif not any("Release 034" in ln for ln in running):
-        failures.append("--from 032 missing Release 034")
+    elif len(running) != 4:
+        failures.append(f"--from 034 runs={len(running)} expected 4")
+    elif not any("Release 035" in ln for ln in running):
+        failures.append("--from 034 missing Release 035")
 
     if failures:
         report.fail_check("verify_all_cli", "; ".join(failures))

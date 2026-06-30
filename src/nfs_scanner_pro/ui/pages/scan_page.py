@@ -37,7 +37,7 @@ class ScanPage(ScanCanvasWidget):
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self._engine: ScanEngineMock = get_scan_engine()
-        self._engine.prepare(ScanTaskConfig.from_mock_data())
+        self._engine.prepare(ScanTaskConfig.from_current_project())
         self._engine.on_state_changed(self._on_engine_state_changed)
         self._engine.on_progress(self._on_engine_progress)
         self._engine.on_message(self._on_engine_message)
@@ -59,7 +59,7 @@ class ScanPage(ScanCanvasWidget):
         if not self._engine.state.start_enabled():
             return
         self.reset_scan_visual()
-        config = ScanTaskConfig.from_mock_data()
+        config = ScanTaskConfig.from_current_project()
         self._engine.prepare(config)
         self._engine.start()
         self._timer.start()

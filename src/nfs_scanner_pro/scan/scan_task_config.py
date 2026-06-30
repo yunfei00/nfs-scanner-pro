@@ -57,5 +57,34 @@ class ScanTaskConfig:
             speed_mm_min=mock_data.MOTION_STATE["speed"],
         )
 
+    @classmethod
+    def from_current_project(cls) -> ScanTaskConfig:
+        from nfs_scanner_pro import project_mock
+
+        project = project_mock.get_current_project()
+        if project.get("status") == "closed":
+            return cls.from_mock_data()
+        start = mock_data.SCAN_START_POSITION
+        end = mock_data.SCAN_END_POSITION
+        step = mock_data.SCAN_STEP
+        return cls(
+            project_name=project.get("name") or mock_data.PROJECT_NAME,
+            region_name=project.get("default_region") or mock_data.REGION_NAME,
+            probe_name=mock_data.PROBE_NAME,
+            frequency=mock_data.FREQUENCY,
+            trace="Trace 1",
+            start_x=start["x"],
+            start_y=start["y"],
+            start_z=start["z"],
+            end_x=end["x"],
+            end_y=end["y"],
+            end_z=end["z"],
+            step_x=step["x"],
+            step_y=step["y"],
+            step_z=step["z"],
+            total_points=mock_data.SCAN_TOTAL_POINTS,
+            speed_mm_min=mock_data.MOTION_STATE["speed"],
+        )
+
     def as_dict(self) -> dict:
         return {field.name: getattr(self, field.name) for field in fields(self)}

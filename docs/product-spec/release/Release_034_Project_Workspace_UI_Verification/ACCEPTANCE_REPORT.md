@@ -2,7 +2,7 @@
 
 ## 执行时间
 
-2026-06-30 15:53:49 UTC
+2026-06-30 22:51:33 UTC
 
 ## 执行命令
 
@@ -14,20 +14,20 @@ python scripts/verify_all.py
 
 ## 检查项
 
-- [PASS] `compileall` (0.23s)
-- [PASS] `runtime_isolation` (0.08s) — runtime/verification/R034/workspace_state_mock.json; ok
-- [PASS] `mainwindow_boot` (0.44s) — menus=6
+- [PASS] `compileall` (0.45s)
+- [PASS] `runtime_isolation` (0.10s) — runtime/verification/R034/workspace_state_mock.json; ok
+- [PASS] `mainwindow_boot` (0.55s) — menus=6
 - [PASS] `file_menu_project_actions` (0.45s)
-- [PASS] `create_project_dialog` (0.67s)
-- [PASS] `open_project_dialog` (0.70s)
-- [PASS] `recent_project_menu` (0.62s)
-- [PASS] `save_close_open_folder_mock` (1.36s)
-- [PASS] `breadcrumb_sync` (1.04s)
+- [PASS] `create_project_dialog` (0.73s)
+- [PASS] `open_project_dialog` (0.69s)
+- [PASS] `recent_project_menu` (0.67s)
+- [PASS] `save_close_open_folder_mock` (1.11s)
+- [PASS] `breadcrumb_sync` (0.92s)
 - [PASS] `workspace_state_persistence` (0.01s) — runtime/verification/R034/workspace_state_mock.json
-- [PASS] `mainwindow_restore` (2.12s)
-- [PASS] `page_switch_regression` (1.82s)
+- [PASS] `mainwindow_restore` (1.86s)
+- [PASS] `page_switch_regression` (1.63s)
 - [PASS] `no_real_device_access` (0.01s)
-- [PASS] `no_high_fidelity_changes` (0.05s)
+- [PASS] `no_high_fidelity_changes` (0.06s)
 
 ## 结果
 

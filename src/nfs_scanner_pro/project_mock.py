@@ -139,13 +139,15 @@ def close_project_mock() -> dict:
 def project_display_name() -> str:
     if CURRENT_PROJECT.get("status") == "closed":
         return "未打开项目"
-    return CURRENT_PROJECT.get("pcb") or CURRENT_PROJECT.get("name") or "未打开项目"
+    return CURRENT_PROJECT.get("name") or CURRENT_PROJECT.get("pcb") or "未打开项目"
 
 
 def get_scan_project_name() -> str:
     """扫描结果持久化使用的 Mock 项目名。"""
-    name = project_display_name()
-    return name if name != "未打开项目" else "Mock_Project"
+    project = get_current_project()
+    if project.get("status") == "closed":
+        return "Mock_Project"
+    return project.get("name") or project.get("pcb") or "Mock_Project"
 
 
 def _upsert_recent(project: dict) -> None:
