@@ -527,6 +527,18 @@ class PcbCanvasWidget(QWidget):
     ) -> None:
         self._view.set_scan_progress(point, total, scene_x, scene_y, scanning=scanning)
 
+    def set_current_scan_point(
+        self,
+        point: int,
+        total: int,
+        scene_x: float,
+        scene_y: float,
+        *,
+        scanning: bool = True,
+    ) -> None:
+        """高亮画布当前扫描点（Release 019）。"""
+        self.update_scan_visual(point, total, scene_x, scene_y, scanning=scanning)
+
     def show_scan_complete_toast(self) -> None:
         self._completion_toast.adjustSize()
         self._completion_toast.show()

@@ -15,6 +15,7 @@ SCAN_TASK = "ST-001"
 
 SCAN_TOTAL_POINTS = 6461
 SCAN_DEFAULT_REMAINING = "00:12:31"
+# 扫描运行时状态由 scan/ScanEngineMock 驱动，UI QTimer 调用 tick()。
 SCAN_START_POSITION = {
     "x": 10.00,
     "y": -150.00,

@@ -20,6 +20,7 @@ related_docs:
     - docs/product-spec/release/Release_016_Project_File_System_Mock/README.md
     - docs/product-spec/release/Release_017_Workspace_Persistence_Mock/README.md
     - docs/product-spec/release/Release_018_Device_Abstraction_Mock/README.md
+    - docs/product-spec/release/Release_019_Scan_Engine_Abstraction_Mock/README.md
   wireframe_008:
     - docs/product-spec/ui-wireframe/README.md
   ai_layer:

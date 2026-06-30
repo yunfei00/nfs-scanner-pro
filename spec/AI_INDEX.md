@@ -149,6 +149,16 @@ spec/AI_INDEX.md
 → src/nfs_scanner_pro/ui/pages/device_page.py
 ```
 
+### 5.1i 做扫描引擎抽象 Mock（Release 019）
+
+```text
+spec/AI_INDEX.md
+→ docs/product-spec/release/Release_019_Scan_Engine_Abstraction_Mock/README.md
+→ docs/product-spec/domain/04_State_Machines/Scan_State_Machine.md
+→ src/nfs_scanner_pro/scan/scan_engine_mock.py
+→ src/nfs_scanner_pro/ui/pages/scan_page.py
+```
+
 ### 5.2 做领域模型 / Mock JSON / 状态机
 
 ```text

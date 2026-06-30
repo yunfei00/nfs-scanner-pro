@@ -1,121 +1,187 @@
-"""扫描页 — Scan Module Mock（Release 013）。"""
+"""扫描页 — Scan Engine Mock 集成（Release 013/019）。"""
 
 from __future__ import annotations
 
-from PySide6.QtCore import Signal
+from PySide6.QtCore import QTimer, Signal
 from PySide6.QtWidgets import QWidget
 
+from nfs_scanner_pro.scan import ScanEngineMock, ScanState as EngineScanState, ScanTaskConfig, get_scan_engine
 from nfs_scanner_pro.ui import mock_data
-from nfs_scanner_pro.ui.scan_canvas_view import ScanCanvasWidget
-from nfs_scanner_pro.ui.scan_state import ScanState
-from nfs_scanner_pro.ui.scan_task_mock import ScanTaskMock, ScanTick
+from nfs_scanner_pro.ui.scan_canvas_view import REGION_H, REGION_W, REGION_X, REGION_Y, ScanCanvasWidget
+from nfs_scanner_pro.ui.scan_state import ScanState as UiScanState
+
+
+def _to_ui_state(state: EngineScanState) -> UiScanState:
+    if state is EngineScanState.PAUSED:
+        return UiScanState.SCANNING
+    mapping = {
+        EngineScanState.NOT_READY: UiScanState.NOT_READY,
+        EngineScanState.READY: UiScanState.READY,
+        EngineScanState.SCANNING: UiScanState.SCANNING,
+        EngineScanState.STOPPING: UiScanState.STOPPING,
+        EngineScanState.COMPLETED: UiScanState.COMPLETED,
+        EngineScanState.ERROR: UiScanState.ERROR,
+    }
+    return mapping.get(state, UiScanState.READY)
 
 
 class ScanPage(ScanCanvasWidget):
-    """扫描页：画布 + Mock 扫描任务状态机。"""
+    """扫描页：画布 + ScanEngineMock（UI QTimer 驱动 tick）。"""
 
     scan_state_changed = Signal(object)
     scan_status_updated = Signal(str, int, str, str)
 
+    TICK_MS = 100
+    STOP_DELAY_MS = 500
+
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
-        self._task = ScanTaskMock(self)
-        self._task.state_changed.connect(self._on_state_changed)
-        self._task.tick_updated.connect(self._on_tick)
-        self._task.finished.connect(self._on_finished)
+        self._engine: ScanEngineMock = get_scan_engine()
+        self._engine.prepare(ScanTaskConfig.from_mock_data())
+        self._engine.on_state_changed(self._on_engine_state_changed)
+        self._engine.on_progress(self._on_engine_progress)
         self._param_dock = None
+
+        self._timer = QTimer(self)
+        self._timer.setInterval(self.TICK_MS)
+        self._timer.timeout.connect(self._on_timer_tick)
+
+        self._stop_timer = QTimer(self)
+        self._stop_timer.setSingleShot(True)
+        self._stop_timer.timeout.connect(self._on_finalize_stop)
 
     def bind_parameter_dock(self, dock) -> None:
         self._param_dock = dock
-        self._apply_params_editable(self._task.state.params_editable())
+        self._apply_params_editable(self._engine.state.params_editable())
 
     def start_scan_mock(self) -> None:
-        if not self._task.state.start_enabled():
+        if not self._engine.state.start_enabled():
             return
         self.reset_scan_visual()
-        self._task.start()
+        config = ScanTaskConfig.from_mock_data()
+        self._engine.prepare(config)
+        self._engine.start()
+        self._timer.start()
+        self._emit_status_from_engine()
 
     def stop_scan_mock(self) -> None:
-        self._task.stop()
+        if not self._engine.state.stop_enabled():
+            return
+        self._timer.stop()
+        self._engine.stop()
+        self._stop_timer.start(self.STOP_DELAY_MS)
 
-    def current_scan_state(self) -> ScanState:
-        return self._task.state
+    def current_scan_state(self) -> UiScanState:
+        return _to_ui_state(self._engine.state)
 
-    def _on_state_changed(self, state: ScanState) -> None:
-        scanning = state is ScanState.SCANNING
-        self._apply_params_editable(state.params_editable())
-        if state is ScanState.READY and self._task.current_point == 0:
-            self.reset_scan_visual()
-        self.scan_state_changed.emit(state)
-        tick = self._task.current_point
-        total = mock_data.SCAN_TOTAL_POINTS
-        self.scan_status_updated.emit(
-            self._task.status_message(),
-            int(tick * 100 / total) if total else 0,
-            f"扫描点：{tick} / {total}",
-            self._eta_for_state(state, tick, total),
+    def _on_timer_tick(self) -> None:
+        still_running = self._engine.tick()
+        if not still_running and self._engine.state is EngineScanState.STOPPING:
+            self._timer.stop()
+            self._stop_timer.start(self.STOP_DELAY_MS)
+
+    def _on_finalize_stop(self) -> None:
+        if self._engine.state is not EngineScanState.STOPPING:
+            return
+        stopped_by_user = self._engine.stopped_by_user
+        self._engine.finalize_stop()
+        progress = self._engine.current_progress()
+        point = progress.current_point or self._engine.path.get_point(progress.current_index)
+        sx, sy = self._point_to_scene(progress.current_index)
+        scanning = self._engine.state is EngineScanState.SCANNING
+        self.set_current_scan_point(
+            progress.current_index,
+            progress.total_points,
+            sx,
+            sy,
+            scanning=scanning,
         )
-        if state is ScanState.SCANNING and tick == 0:
-            self.update_scan_visual(0, total, 0, 0, scanning=False)
-
-    def _on_tick(self, tick: ScanTick) -> None:
-        self.update_scan_coordinates(tick.x, tick.y, tick.z, tick.amp, lock=True)
-        self.update_scan_visual(
-            tick.point, tick.total, tick.scene_x, tick.scene_y, scanning=True
-        )
-        self.scan_status_updated.emit(
-            ScanState.SCANNING.status_label,
-            tick.percent,
-            f"扫描点：{tick.point} / {tick.total}",
-            f"预计剩余时间：{tick.eta}",
-        )
-
-    def _on_finished(self, completed_naturally: bool) -> None:
-        total = mock_data.SCAN_TOTAL_POINTS
-        from nfs_scanner_pro.ui.scan_task_mock import build_tick
-
-        if completed_naturally:
-            last = build_tick(total)
-            self.update_scan_visual(
-                total, total, last.scene_x, last.scene_y, scanning=False
-            )
+        self.update_scan_coordinates(point.x, point.y, point.z, point.amplitude, lock=scanning)
+        if self._engine.state is EngineScanState.COMPLETED:
             self.show_scan_complete_toast()
-            self.scan_status_updated.emit(
-                ScanState.COMPLETED.status_label,
+            self._emit_status(
+                "扫描完成",
                 100,
-                f"扫描点：{total} / {total}",
+                f"扫描点：{progress.total_points} / {progress.total_points}",
                 "预计剩余时间：00:00:00",
             )
-        else:
-            point = self._task.current_point
-            total = mock_data.SCAN_TOTAL_POINTS
-            percent = int(point * 100 / total) if total else 0
-            from nfs_scanner_pro.ui.scan_task_mock import build_tick
-
-            last = build_tick(point)
-            self.update_scan_visual(
-                point, total, last.scene_x, last.scene_y, scanning=False
-            )
-            self.scan_status_updated.emit(
+        elif stopped_by_user:
+            self._emit_status(
                 "已停止",
-                percent,
-                f"扫描点：{point} / {total}",
-                f"预计剩余时间：{last.eta}",
+                progress.percent,
+                f"扫描点：{progress.current_index} / {progress.total_points}",
+                f"预计剩余时间：{progress.remaining_time}",
             )
+        self._apply_params_editable(self._engine.state.params_editable())
+
+    def _on_engine_state_changed(self, state: EngineScanState) -> None:
+        self._apply_params_editable(state.params_editable())
+        if state is EngineScanState.READY and self._engine.progress.current_index == 0:
+            self.reset_scan_visual()
+        self.scan_state_changed.emit(_to_ui_state(state))
+        self._emit_status_from_engine()
+
+    def _on_engine_progress(self, progress) -> None:
+        point = progress.current_point
+        if point is None:
+            return
+        sx, sy = self._point_to_scene(progress.current_index)
+        self.update_scan_coordinates(point.x, point.y, point.z, point.amplitude, lock=True)
+        self.set_current_scan_point(
+            progress.current_index,
+            progress.total_points,
+            sx,
+            sy,
+            scanning=True,
+        )
+        self._emit_status(
+            "扫描中",
+            progress.percent,
+            f"扫描点：{progress.current_index} / {progress.total_points}",
+            f"预计剩余时间：{progress.remaining_time}",
+        )
+
+    def _emit_status_from_engine(self) -> None:
+        progress = self._engine.current_progress()
+        state = self._engine.state
+        if state is EngineScanState.SCANNING and progress.current_index == 0:
+            self.set_current_scan_point(0, progress.total_points, REGION_X, REGION_Y, scanning=False)
+        label = progress.as_status_text()
+        if state is EngineScanState.COMPLETED:
+            label = "扫描完成"
+        self._emit_status(
+            label,
+            progress.percent,
+            f"扫描点：{progress.current_index} / {progress.total_points}",
+            self._eta_text(state, progress),
+        )
+
+    def _emit_status(self, state_text: str, percent: int, points: str, eta: str) -> None:
+        self.scan_status_updated.emit(state_text, percent, points, eta)
+
+    @staticmethod
+    def _eta_text(state: EngineScanState, progress) -> str:
+        if state is EngineScanState.COMPLETED:
+            return "预计剩余时间：00:00:00"
+        if state is EngineScanState.SCANNING:
+            return f"预计剩余时间：{progress.remaining_time}"
+        if state is EngineScanState.STOPPING:
+            return "预计剩余时间：—"
+        if state is EngineScanState.READY and progress.current_index > 0:
+            return f"预计剩余时间：{progress.remaining_time}"
+        return f"预计剩余时间：{mock_data.SCAN_DEFAULT_REMAINING}"
+
+    def _point_to_scene(self, index: int) -> tuple[float, float]:
+        row, col = self._engine.path.index_to_grid(index)
+        cols = max(1, self._engine.path.col_count)
+        rows = max(1, self._engine.path.row_count)
+        rel_x = col / max(1, cols - 1)
+        rel_y = row / max(1, rows - 1)
+        return REGION_X + rel_x * REGION_W, REGION_Y + rel_y * REGION_H
 
     def _apply_params_editable(self, editable: bool) -> None:
         if self._param_dock is not None:
             self._param_dock.set_fields_locked(not editable)
-
-    @staticmethod
-    def _eta_for_state(state: ScanState, point: int, total: int) -> str:
-        if state is ScanState.COMPLETED:
-            return "预计剩余时间：00:00:00"
-        if state is ScanState.SCANNING:
-            return f"预计剩余时间：{mock_data.SCAN_DEFAULT_REMAINING}"
-        if state is ScanState.STOPPING:
-            return "预计剩余时间：—"
-        return f"预计剩余时间：{mock_data.SCAN_DEFAULT_REMAINING}"
 
 
 __all__ = ["ScanPage", "ScanCanvasWidget"]
