@@ -41,6 +41,7 @@ This folder stores product design documents for NFS Scanner Professional.
 | Release 025 | CI Verification Integration | [release/Release_025_CI_Verification_Integration/README.md](release/Release_025_CI_Verification_Integration/README.md) |
 | Release 026 | Scan Page UI Interaction Verification | [release/Release_026_Scan_Page_UI_Interaction_Verification/README.md](release/Release_026_Scan_Page_UI_Interaction_Verification/README.md) |
 | Release 027 | Analysis Page UI Interaction Verification | [release/Release_027_Analysis_Page_UI_Interaction_Verification/README.md](release/Release_027_Analysis_Page_UI_Interaction_Verification/README.md) |
+| Release 028 | Report Page UI Interaction Verification | [release/Release_028_Report_Page_UI_Interaction_Verification/README.md](release/Release_028_Report_Page_UI_Interaction_Verification/README.md) |
 
 ## 高保真设计（Release 010 / 010.5）
 

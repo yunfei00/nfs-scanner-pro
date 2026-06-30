@@ -235,6 +235,17 @@ spec/AI_INDEX.md
 → src/nfs_scanner_pro/analysis/analysis_data_source_mock.py
 ```
 
+### 5.1r 做报告页 UI 交互验收（Release 028）
+
+```text
+spec/AI_INDEX.md
+→ docs/product-spec/release/Release_028_Report_Page_UI_Interaction_Verification/README.md
+→ scripts/verify_release_028.py
+→ src/nfs_scanner_pro/ui/pages/report_page.py
+→ src/nfs_scanner_pro/report/report_data_source_mock.py
+→ src/nfs_scanner_pro/report/report_persistence_mock.py
+```
+
 ### 5.2 做领域模型 / Mock JSON / 状态机
 
 ```text

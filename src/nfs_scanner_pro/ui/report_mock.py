@@ -88,7 +88,7 @@ class ReportMock(QObject):
                 "",
             )
             self.preview_model_changed.emit(
-                ReportPreviewModel.empty(
+                ReportPreviewModel.create_empty(
                     "未发现 Mock 扫描结果，请先完成一次 Mock 扫描。"
                 )
             )
@@ -134,7 +134,7 @@ class ReportMock(QObject):
             self._emit_current_preview()
         else:
             self.preview_model_changed.emit(
-                ReportPreviewModel.empty(
+                ReportPreviewModel.create_empty(
                     "未发现 Mock 扫描结果，请先完成一次 Mock 扫描。"
                 )
             )
@@ -221,7 +221,7 @@ class ReportMock(QObject):
     def _emit_current_preview(self) -> None:
         if not self._reports:
             self.preview_model_changed.emit(
-                ReportPreviewModel.empty(
+                ReportPreviewModel.create_empty(
                     "未发现 Mock 扫描结果，请先完成一次 Mock 扫描。"
                 )
             )

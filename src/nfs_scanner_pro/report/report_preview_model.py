@@ -66,7 +66,7 @@ class ReportPreviewModel:
         return cls.from_draft(draft)
 
     @classmethod
-    def empty(cls, message: str) -> ReportPreviewModel:
+    def create_empty(cls, message: str) -> ReportPreviewModel:
         return cls(
             title="报告预览",
             empty=True,
