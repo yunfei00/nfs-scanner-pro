@@ -35,6 +35,7 @@ This folder stores product design documents for NFS Scanner Professional.
 | Release 019 | Scan Engine Abstraction Mock | [release/Release_019_Scan_Engine_Abstraction_Mock/README.md](release/Release_019_Scan_Engine_Abstraction_Mock/README.md) |
 | Release 020 | Scan Result Persistence Mock | [release/Release_020_Scan_Result_Persistence_Mock/README.md](release/Release_020_Scan_Result_Persistence_Mock/README.md) |
 | Release 021 | Analysis Data Source Mock | [release/Release_021_Analysis_Data_Source_Mock/README.md](release/Release_021_Analysis_Data_Source_Mock/README.md) |
+| Release 022 | Report Data Source Mock | [release/Release_022_Report_Data_Source_Mock/README.md](release/Release_022_Report_Data_Source_Mock/README.md) |
 
 ## 高保真设计（Release 010 / 010.5）
 

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import (
     QCheckBox,
     QComboBox,
@@ -20,6 +20,7 @@ class ReportSettingsPanel(QWidget):
     """报告设置面板 — 非 QDockWidget。"""
 
     DOCK_WIDTH = 360
+    settings_changed = Signal(dict)
 
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
@@ -50,6 +51,21 @@ class ReportSettingsPanel(QWidget):
         scroll.setWidget(content)
         outer.addWidget(scroll)
 
+    def get_settings(self) -> dict:
+        return {
+            "template": self._template_combo.currentText(),
+            "logo": self._logo_combo.currentText(),
+            "pdf_quality": self._quality_combo.currentText(),
+            "include_heatmap": self._cb_heatmap.isChecked(),
+            "include_device_info": self._cb_device.isChecked(),
+            "include_scan_params": self._cb_scan.isChecked(),
+            "include_raw_data": self._cb_raw.isChecked(),
+            "include_summary": self._cb_summary.isChecked(),
+        }
+
+    def _emit_settings(self) -> None:
+        self.settings_changed.emit(self.get_settings())
+
     def _build_template_group(self) -> QGroupBox:
         s = mock_data.REPORT_SETTINGS
         group = QGroupBox("模板", self)
@@ -61,11 +77,13 @@ class ReportSettingsPanel(QWidget):
             ["标准 EMC 报告", "快速扫描摘要", "客户交付版"]
         )
         self._template_combo.setCurrentText(s["template"])
+        self._template_combo.currentTextChanged.connect(lambda _: self._emit_settings())
         form.addRow("报告模板", self._template_combo)
 
         self._logo_combo = QComboBox(group)
         self._logo_combo.addItems(["公司默认", "无 Logo", "自定义占位"])
         self._logo_combo.setCurrentText(s["logo"])
+        self._logo_combo.currentTextChanged.connect(lambda _: self._emit_settings())
         form.addRow("页眉 Logo", self._logo_combo)
         return group
 
@@ -78,6 +96,7 @@ class ReportSettingsPanel(QWidget):
         self._quality_combo = QComboBox(group)
         self._quality_combo.addItems(["屏幕预览", "标准", "印刷（300 DPI）"])
         self._quality_combo.setCurrentText(s["pdf_quality"])
+        self._quality_combo.currentTextChanged.connect(lambda _: self._emit_settings())
         form.addRow("PDF 质量", self._quality_combo)
 
         self._format_combo = QComboBox(group)
@@ -110,6 +129,7 @@ class ReportSettingsPanel(QWidget):
             self._cb_raw,
             self._cb_summary,
         ):
+            cb.toggled.connect(lambda _=False: self._emit_settings())
             layout.addWidget(cb)
         return group
 

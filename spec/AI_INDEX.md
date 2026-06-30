@@ -178,6 +178,16 @@ spec/AI_INDEX.md
 → src/nfs_scanner_pro/ui/pages/analysis_page.py
 ```
 
+### 5.1l 做报告数据源 Mock（Release 022）
+
+```text
+spec/AI_INDEX.md
+→ docs/product-spec/release/Release_022_Report_Data_Source_Mock/README.md
+→ src/nfs_scanner_pro/report/report_data_source_mock.py
+→ src/nfs_scanner_pro/ui/pages/report_page.py
+→ src/nfs_scanner_pro/ui/report_mock.py
+```
+
 ### 5.2 做领域模型 / Mock JSON / 状态机
 
 ```text

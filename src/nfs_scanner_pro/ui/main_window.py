@@ -334,6 +334,7 @@ class MainWindow(QMainWindow):
         self._report_panel = ReportSettingsPanel(self._dock_stack)
         self._analysis_page.bind_control_panel(self._analysis_panel.control_panel)
         self._analysis_page.bind_data_source_panel(self._analysis_panel.data_source_panel)
+        self._report_page.bind_settings_panel(self._report_panel)
         self._analysis_page.refresh_data_source()
 
         self._page_panels = [
@@ -444,6 +445,7 @@ class MainWindow(QMainWindow):
             self._analysis_page.refresh_data_source()
         if page_index == self.PAGE_REPORT:
             self._status._progress_wrap.setVisible(False)
+            self._report_page.refresh_data_source()
         self._mount_page_dock(page_index)
         if self._right_dock is not None:
             self._sync_param_action(self._right_dock.isVisible())
@@ -625,10 +627,14 @@ class MainWindow(QMainWindow):
         report_crumb = self._report_page.findChild(QLabel, "breadcrumbBar")
         if report_crumb is not None:
             report_name = self._report_page._mock.current_report.get("name", "")
-            report_crumb.setText(mock_data.get_breadcrumb_report(report_name))
+            if report_name:
+                report_crumb.setText(mock_data.get_breadcrumb_report(report_name))
+            else:
+                label = project_mock.project_display_name()
+                report_crumb.setText(f"报告 > {label}")
 
         preview = getattr(self._report_page, "_preview", None)
-        if preview is not None:
+        if preview is not None and self._report_page._mock.current_report:
             report = self._report_page._mock.current_report
             updated = dict(report)
             updated["project"] = mock_data.PROJECT_NAME

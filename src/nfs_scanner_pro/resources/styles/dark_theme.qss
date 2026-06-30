@@ -668,6 +668,21 @@ QLabel[role="pdfSummary"] {
     padding-top: 12px;
 }
 
+QLabel[role="pdfFooter"] {
+    color: #9CA3AF;
+    font-size: 12px;
+    padding-top: 16px;
+}
+
+QLabel#reportPreviewEmpty[role="emptyOverlay"] {
+    color: #6B7280;
+    font-size: 15px;
+    padding: 48px 24px;
+    background-color: #F9FAFB;
+    border: 1px dashed #D1D5DB;
+    border-radius: 4px;
+}
+
 QDockWidget#rightDock::title,
 QDockWidget#deviceConfigDock::title,
 QDockWidget#analysisParameterDock::title,
