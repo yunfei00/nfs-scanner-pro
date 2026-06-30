@@ -34,6 +34,7 @@ related_docs:
     - docs/product-spec/release/Release_030_Cross_Page_Workflow_UI_Verification/README.md
     - docs/product-spec/release/Release_031_Verification_Performance_Isolation/README.md
     - docs/product-spec/release/Release_032_Migrate_Legacy_Verify_Scripts_To_Isolated_Runtime/README.md
+    - docs/product-spec/release/Release_036_Real_Device_Adapter_Inventory_And_Bridge/README.md
     - docs/product-spec/release/Release_036_Analysis_Page_ScanTask_Selection_Integration/README.md
     - docs/product-spec/release/Release_035_Scan_Task_Workspace_Integration/README.md
     - docs/product-spec/release/Release_034_Project_Workspace_UI_Verification/README.md

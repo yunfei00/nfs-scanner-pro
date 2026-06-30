@@ -1,0 +1,120 @@
+"""真实设备管理器 — 仅安全连接与查询（Release 036）。"""
+
+from __future__ import annotations
+
+from typing import Any
+
+from nfs_scanner_pro.devices.device_snapshot import build_device_snapshot
+from nfs_scanner_pro.devices.device_types import DeviceType, device_type_label
+from nfs_scanner_pro.devices.real.camera_adapter import CameraAdapter
+from nfs_scanner_pro.devices.real.hardware_config import (
+    DISABLED_MESSAGE,
+    HardwareConfig,
+    is_real_hardware_enabled,
+    load_hardware_config,
+)
+from nfs_scanner_pro.devices.real.motion_grbl_adapter import MotionGrblAdapter
+from nfs_scanner_pro.devices.real.servo_adapter import ServoAdapter
+from nfs_scanner_pro.devices.real.spectrum_scpi_adapter import SpectrumScpiAdapter
+
+_manager: RealDeviceManager | None = None
+
+
+def get_real_device_manager() -> RealDeviceManager:
+    global _manager
+    if _manager is None:
+        _manager = RealDeviceManager()
+    return _manager
+
+
+class RealDeviceManager:
+    def __init__(self, config: HardwareConfig | None = None) -> None:
+        self.config = config or load_hardware_config()
+        self.motion = MotionGrblAdapter(self.config.motion)
+        self.spectrum = SpectrumScpiAdapter(self.config.spectrum)
+        self.camera = CameraAdapter(self.config.camera)
+        self.servo = ServoAdapter(self.config.servo)
+        self._devices = {
+            DeviceType.MOTION: self.motion,
+            DeviceType.SPECTRUM: self.spectrum,
+            DeviceType.CAMERA: self.camera,
+            DeviceType.SERVO: self.servo,
+        }
+
+    @property
+    def enabled(self) -> bool:
+        return is_real_hardware_enabled()
+
+    @property
+    def disabled_reason(self) -> str:
+        if self.enabled:
+            return ""
+        return DISABLED_MESSAGE
+
+    def connect_all_safe(self) -> dict[str, str]:
+        if not self.enabled:
+            return {"status": "disabled", "message": DISABLED_MESSAGE}
+        return {
+            "motion": self.motion.connect(),
+            "spectrum": self.spectrum.connect(),
+            "camera": self.camera.connect(),
+            "servo": self.servo.connect(),
+        }
+
+    def disconnect_all(self) -> dict[str, str]:
+        return {
+            "motion": self.motion.disconnect(),
+            "spectrum": self.spectrum.disconnect(),
+            "camera": self.camera.disconnect(),
+            "servo": self.servo.disconnect(),
+        }
+
+    def test_all_safe(self) -> dict[str, str]:
+        if not self.enabled:
+            return {"status": "disabled", "message": DISABLED_MESSAGE}
+        results = self.connect_all_safe()
+        if self.motion.is_connected():
+            results["motion_status"] = self.motion.query_status()
+            results["motion_position"] = self.motion.refresh_position()
+        if self.spectrum.is_connected():
+            results["spectrum_idn"] = self.spectrum.query_idn()
+            results["spectrum_freq"] = self.spectrum.get_current_frequency()
+            results["spectrum_trace"] = self.spectrum.read_trace_info()
+        if self.camera.is_connected():
+            results["camera_devices"] = ", ".join(self.camera.enumerate_devices()) or "—"
+        return results
+
+    def get_device_status(self) -> list[dict[str, str]]:
+        details = {
+            DeviceType.MOTION: self.motion.port,
+            DeviceType.SPECTRUM: self.spectrum.model,
+            DeviceType.CAMERA: self.camera.interface,
+            DeviceType.SERVO: self.servo.current_probe,
+        }
+        rows: list[dict[str, str]] = []
+        for device_type, device in self._devices.items():
+            if not self.enabled:
+                status = "disabled"
+            else:
+                status = device.state.value if hasattr(device, "state") else "unknown"
+            rows.append(
+                {
+                    "name": device_type_label(device_type),
+                    "detail": details[device_type],
+                    "status": status,
+                }
+            )
+        return rows
+
+    def get_snapshot(self) -> dict[str, Any]:
+        return build_device_snapshot(
+            self.motion.snapshot(),
+            self.spectrum.snapshot(),
+            self.camera.snapshot(),
+            self.servo.snapshot(),
+        )
+
+    def is_all_ready(self) -> bool:
+        if not self.enabled:
+            return False
+        return all(device.is_connected() for device in self._devices.values())

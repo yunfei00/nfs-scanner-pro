@@ -455,14 +455,31 @@ spec/AI_INDEX.md
 
 
 
-### 5.1 做 Analysis Page ScanTask Selection Integration（Release 036）
+### 5.1 做 Real Device Adapter Inventory And Bridge（Release 036）
 
 ```text
 spec/AI_INDEX.md
-→ docs/product-spec/release/Release_036_Analysis_Page_ScanTask_Selection_Integration/README.md
+→ docs/product-spec/release/Release_036_Real_Device_Adapter_Inventory_And_Bridge/README.md
+→ src/nfs_scanner_pro/devices/real/
+→ scripts/check_real_devices_safe.py
 → scripts/verify_release_036.py
-→ scripts/scaffold_verify_release.py
 ```
+
+（历史：Analysis Page ScanTask Selection 验收见 Release_036_Analysis_Page_ScanTask_Selection_Integration/）
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -118,6 +118,17 @@ def check_module_imports(check: CheckResult, modules: tuple[str, ...], name: str
     return ok
 
 
+REAL_HARDWARE_DIR = ROOT / "src/nfs_scanner_pro/devices/real"
+
+
+def _skip_forbidden_pattern_scan(path: Path) -> bool:
+    try:
+        rel = path.relative_to(ROOT).as_posix()
+    except ValueError:
+        return False
+    return rel.startswith("src/nfs_scanner_pro/devices/real/")
+
+
 def check_no_real_device_access(
     check: CheckResult,
     *,
@@ -130,7 +141,7 @@ def check_no_real_device_access(
             continue
         paths = [base] if base.is_file() else base.rglob("*.py")
         for path in paths:
-            if not path.is_file():
+            if not path.is_file() or _skip_forbidden_pattern_scan(path):
                 continue
             text = path.read_text(encoding="utf-8")
             for pattern in FORBIDDEN_PATTERNS:
