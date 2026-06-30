@@ -216,6 +216,15 @@ spec/AI_INDEX.md
 → scripts/verify_all.py
 ```
 
+### 5.1p 做扫描页 UI 交互验收（Release 026）
+
+```text
+spec/AI_INDEX.md
+→ docs/product-spec/release/Release_026_Scan_Page_UI_Interaction_Verification/README.md
+→ scripts/verify_release_026.py
+→ src/nfs_scanner_pro/ui/pages/scan_page.py
+```
+
 ### 5.2 做领域模型 / Mock JSON / 状态机
 
 ```text
