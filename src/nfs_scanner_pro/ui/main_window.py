@@ -5,7 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from PySide6.QtCore import Qt, QSize
-from PySide6.QtGui import QAction
+from PySide6.QtGui import QAction, QCloseEvent, QShowEvent
 from PySide6.QtWidgets import (
     QDockWidget,
     QHBoxLayout,
@@ -23,6 +23,7 @@ from PySide6.QtWidgets import (
 
 from nfs_scanner_pro import project_mock
 from nfs_scanner_pro.ui import mock_data
+from nfs_scanner_pro import workspace_state_mock
 from nfs_scanner_pro.ui.dialogs.project_dialogs import NewProjectDialog, OpenProjectDialog
 
 from nfs_scanner_pro.ui.analysis_parameter_dock import AnalysisParameterPanel
@@ -112,9 +113,80 @@ class MainWindow(QMainWindow):
         self._scan_page.scan_status_updated.connect(self._on_scan_status_updated)
         self._analysis_page.analysis_status_updated.connect(self._on_analysis_status_updated)
         self._report_page.report_status_updated.connect(self._on_report_status_updated)
-        self._switch_page(self.PAGE_SCAN)
+        self._restoring_workspace = False
+        self._window_state_applied = False
+        self._restored_maximized = True
+        self._restored_width = self.DEFAULT_WIDTH
+        self._restored_height = self.DEFAULT_HEIGHT
+        self._nav.expanded_changed.connect(self._on_navigation_expanded_changed)
+        self._restore_workspace_state()
         self._sync_scan_toolbar()
+
+    def _restore_workspace_state(self) -> None:
+        self._restoring_workspace = True
+        state, ok = workspace_state_mock.load_workspace_state()
+        project_mock.apply_workspace_state(
+            state["current_project"],
+            state.get("recent_projects", []),
+        )
         self._refresh_project_ui()
+
+        self._nav.set_expanded(state.get("navigation_expanded", False), animate=False)
+
+        dock_visible = state.get("right_dock_visible", True)
+        self._action_param_panel.blockSignals(True)
+        self._action_param_panel.setChecked(dock_visible)
+        self._action_param_panel.blockSignals(False)
+
+        page_index = workspace_state_mock.page_name_to_index(state.get("last_page", "scan"))
+        self._switch_page(page_index)
+        if self._right_dock is not None:
+            self._right_dock.setVisible(dock_visible)
+            self._sync_param_action(dock_visible)
+
+        window = state.get("window", {})
+        self._restored_maximized = bool(window.get("maximized", True))
+        self._restored_width = int(window.get("width", self.DEFAULT_WIDTH))
+        self._restored_height = int(window.get("height", self.DEFAULT_HEIGHT))
+        self._window_state_applied = False
+
+        self._restoring_workspace = False
+        if ok:
+            self._status.set_state("Mock：已恢复工作区状态")
+        else:
+            self._status.set_state("Mock：工作区状态恢复失败，已使用默认配置")
+        self._sync_project_status_extras()
+
+    def _capture_and_save_workspace(self) -> None:
+        if self._restoring_workspace:
+            return
+        workspace_state_mock.snapshot_from_runtime(
+            current_project=project_mock.get_current_project(),
+            recent_projects=project_mock.get_recent_project_names(),
+            last_page=workspace_state_mock.page_index_to_name(self._current_page),
+            navigation_expanded=self._nav.is_expanded,
+            right_dock_visible=(
+                self._right_dock.isVisible() if self._right_dock is not None else True
+            ),
+            width=self.width(),
+            height=self.height(),
+            maximized=self.isMaximized(),
+        )
+
+    def _on_navigation_expanded_changed(self, _expanded: bool) -> None:
+        self._capture_and_save_workspace()
+
+    def showEvent(self, event: QShowEvent) -> None:  # noqa: N802
+        super().showEvent(event)
+        if not self._window_state_applied:
+            self._window_state_applied = True
+            if not self._restored_maximized:
+                self.showNormal()
+                self.resize(self._restored_width, self._restored_height)
+
+    def closeEvent(self, event: QCloseEvent) -> None:  # noqa: N802
+        self._capture_and_save_workspace()
+        super().closeEvent(event)
 
     def _build_menu_bar(self, menu_bar: QMenuBar) -> None:
         menu_bar.setObjectName("menuBar")
@@ -158,7 +230,8 @@ class MainWindow(QMainWindow):
         view_menu.addAction(reset_act)
 
         menu_bar.addMenu("工具(T)")
-        menu_bar.addMenu("设置(S)")
+        settings_menu = menu_bar.addMenu("设置(S)")
+        settings_menu.addAction("重置工作区状态", self._on_reset_workspace_state)
         menu_bar.addMenu("帮助(H)")
 
     def _rebuild_toolbar(self, page_index: int) -> None:
@@ -371,6 +444,8 @@ class MainWindow(QMainWindow):
         self._mount_page_dock(page_index)
         if self._right_dock is not None:
             self._sync_param_action(self._right_dock.isVisible())
+        if not self._restoring_workspace:
+            self._capture_and_save_workspace()
 
     def _wire_view_menu(self) -> None:
         self._action_param_panel.triggered.connect(self._toggle_param_dock)
@@ -385,6 +460,7 @@ class MainWindow(QMainWindow):
     def _on_dock_visibility_changed(self, visible: bool) -> None:
         if self.sender() is self._right_dock:
             self._sync_param_action(visible)
+            self._capture_and_save_workspace()
 
     def _sync_param_action(self, visible: bool) -> None:
         self._action_param_panel.blockSignals(True)
@@ -566,6 +642,7 @@ class MainWindow(QMainWindow):
         print(f"[Mock UI] 新建项目 {name}", flush=True)
         self._refresh_project_ui()
         self._set_project_status(f"Mock：项目 {name} 已创建")
+        self._capture_and_save_workspace()
 
     def _on_open_project(self) -> None:
         dlg = OpenProjectDialog(self)
@@ -578,29 +655,70 @@ class MainWindow(QMainWindow):
         print(f"[Mock UI] 打开项目 {name}", flush=True)
         self._refresh_project_ui()
         self._set_project_status(f"Mock：已打开项目 {name}")
+        self._capture_and_save_workspace()
 
     def _on_open_recent_project(self, project_name: str) -> None:
         project_mock.open_project_mock(project_name)
         print(f"[Mock UI] 打开最近项目 {project_name}", flush=True)
         self._refresh_project_ui()
         self._set_project_status(f"Mock：已打开项目 {project_name}")
+        self._capture_and_save_workspace()
 
     def _on_save_project(self) -> None:
         project_mock.save_project_mock()
         print("[Mock UI] 保存项目", flush=True)
         self._set_project_status("Mock：项目已保存")
+        self._capture_and_save_workspace()
 
     def _on_close_project(self) -> None:
         project_mock.close_project_mock()
         print("[Mock UI] 关闭项目", flush=True)
         self._refresh_project_ui()
         self._set_project_status("Mock：项目已关闭")
+        self._capture_and_save_workspace()
 
     def _on_open_project_folder(self) -> None:
         project = project_mock.get_current_project()
         path = project.get("path") or "D:/NFS_Projects"
         print(f"[Mock UI] 打开项目文件夹 {path}", flush=True)
         self._set_project_status(f"Mock：打开项目文件夹 {path}")
+
+    def _on_reset_workspace_state(self) -> None:
+        state = workspace_state_mock.reset_workspace_state()
+        self._restoring_workspace = True
+        project_mock.apply_workspace_state(
+            state["current_project"],
+            state.get("recent_projects", []),
+        )
+        self._refresh_project_ui()
+        self._nav.set_expanded(state.get("navigation_expanded", False), animate=False)
+
+        dock_visible = state.get("right_dock_visible", True)
+        self._action_param_panel.blockSignals(True)
+        self._action_param_panel.setChecked(dock_visible)
+        self._action_param_panel.blockSignals(False)
+
+        page_index = workspace_state_mock.page_name_to_index(state.get("last_page", "scan"))
+        self._switch_page(page_index)
+        if self._right_dock is not None:
+            self._right_dock.setVisible(dock_visible)
+            self._sync_param_action(dock_visible)
+
+        window = state.get("window", {})
+        self._restored_maximized = bool(window.get("maximized", True))
+        self._restored_width = int(window.get("width", self.DEFAULT_WIDTH))
+        self._restored_height = int(window.get("height", self.DEFAULT_HEIGHT))
+        self._window_state_applied = False
+        if self._restored_maximized:
+            self.showMaximized()
+        else:
+            self.showNormal()
+            self.resize(self._restored_width, self._restored_height)
+
+        self._restoring_workspace = False
+        self._status.set_state("Mock：工作区状态已重置")
+        self._sync_project_status_extras()
+        print("[Mock UI] 重置工作区状态", flush=True)
 
     def _toolbar_action(self, log_msg: str):
         def handler(*_args) -> None:

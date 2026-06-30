@@ -21,6 +21,7 @@ class LeftNavigationBar(QWidget):
     """四页导航：扫描 / 设备 / 分析 / 报告。"""
 
     page_changed = Signal(int)
+    expanded_changed = Signal(bool)
 
     _NAV_ITEMS = (
         ("navScanButton", "扫描", QStyle.StandardPixmap.SP_MediaPlay),
@@ -96,10 +97,33 @@ class LeftNavigationBar(QWidget):
 
     navWidth = Property(float, get_nav_width, set_nav_width)
 
+    @property
+    def is_expanded(self) -> bool:
+        return self._expanded
+
+    def set_expanded(self, expanded: bool, *, animate: bool = True) -> None:
+        if expanded == self._expanded and (
+            (expanded and self.width() >= NAV_EXPANDED - 2)
+            or (not expanded and self.width() <= NAV_COLLAPSED + 2)
+        ):
+            return
+        self._expanded = expanded
+        target = NAV_EXPANDED if expanded else NAV_COLLAPSED
+        if animate:
+            self._animate_to(target, expanded=expanded)
+        else:
+            self._anim.stop()
+            self.set_nav_width(float(target))
+            self.setProperty("expanded", expanded)
+            self.style().unpolish(self)
+            self.style().polish(self)
+        self._update_toggle_button()
+        self.expanded_changed.emit(self._expanded)
+
     def toggle_collapsed(self) -> None:
-        self._expanded = not self._expanded
-        target = NAV_EXPANDED if self._expanded else NAV_COLLAPSED
-        self._animate_to(target, expanded=self._expanded)
+        self.set_expanded(not self._expanded)
+
+    def _update_toggle_button(self) -> None:
         if self._expanded:
             self._toggle_btn.setText("⟨")
             self._toggle_btn.setToolTip("折叠导航")

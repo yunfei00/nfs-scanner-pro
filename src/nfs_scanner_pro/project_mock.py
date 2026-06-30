@@ -33,6 +33,8 @@ RECENT_PROJECTS: list[dict] = [
     },
 ]
 
+_KNOWN_PROJECTS: dict[str, dict] = {p["name"]: deepcopy(p) for p in RECENT_PROJECTS}
+
 _CLOSED_PROJECT: dict = {
     "name": "",
     "path": "",
@@ -57,6 +59,52 @@ def get_recent_projects() -> list[dict]:
     return deepcopy(RECENT_PROJECTS)
 
 
+def get_recent_project_names() -> list[str]:
+    return [p["name"] for p in RECENT_PROJECTS]
+
+
+def apply_workspace_state(current_project: dict, recent_names: list[str]) -> None:
+    """从 workspace JSON 恢复项目 Mock 内存态。"""
+    global CURRENT_PROJECT, RECENT_PROJECTS
+    CURRENT_PROJECT = deepcopy(current_project)
+    RECENT_PROJECTS = []
+    for name in recent_names:
+        entry = _resolve_project_entry(name)
+        if entry is not None:
+            RECENT_PROJECTS.append(deepcopy(entry))
+    if CURRENT_PROJECT.get("name"):
+        _register_known_project(CURRENT_PROJECT)
+
+
+def _resolve_project_entry(name: str) -> dict | None:
+    if not name:
+        return None
+    if name in _KNOWN_PROJECTS:
+        return _KNOWN_PROJECTS[name]
+    entry = _stub_project(name)
+    _KNOWN_PROJECTS[name] = entry
+    return entry
+
+
+def _stub_project(name: str) -> dict:
+    return {
+        "name": name,
+        "path": f"D:/NFS_Projects/{name}",
+        "pcb": name,
+        "default_region": "CPU_Area",
+    }
+
+
+def _register_known_project(project: dict) -> None:
+    entry = {
+        "name": project["name"],
+        "path": project.get("path", f"D:/NFS_Projects/{project['name']}"),
+        "pcb": project.get("pcb", project["name"]),
+        "default_region": project.get("default_region", "CPU_Area"),
+    }
+    _KNOWN_PROJECTS[entry["name"]] = deepcopy(entry)
+
+
 def create_project_mock(name: str, path: str, pcb: str, region: str) -> dict:
     project = {
         "name": name,
@@ -66,6 +114,7 @@ def create_project_mock(name: str, path: str, pcb: str, region: str) -> dict:
         "status": "opened",
     }
     set_current_project(project)
+    _register_known_project(project)
     _upsert_recent(project)
     return get_current_project()
 
@@ -102,3 +151,4 @@ def _upsert_recent(project: dict) -> None:
     }
     global RECENT_PROJECTS
     RECENT_PROJECTS = [entry] + [p for p in RECENT_PROJECTS if p["name"] != entry["name"]]
+    _KNOWN_PROJECTS[entry["name"]] = deepcopy(entry)

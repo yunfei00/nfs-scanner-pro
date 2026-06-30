@@ -129,6 +129,16 @@ spec/AI_INDEX.md
 → src/nfs_scanner_pro/ui/main_window.py
 ```
 
+### 5.1g 做工作区持久化 Mock（Release 017）
+
+```text
+spec/AI_INDEX.md
+→ docs/product-spec/release/Release_017_Workspace_Persistence_Mock/README.md
+→ src/nfs_scanner_pro/workspace_state_mock.py
+→ src/nfs_scanner_pro/app_paths.py
+→ src/nfs_scanner_pro/ui/main_window.py
+```
+
 ### 5.2 做领域模型 / Mock JSON / 状态机
 
 ```text
