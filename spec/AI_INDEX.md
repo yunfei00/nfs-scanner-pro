@@ -269,6 +269,17 @@ spec/AI_INDEX.md
 → src/nfs_scanner_pro/report/report_data_source_mock.py
 ```
 
+### 5.1u 做验收性能与隔离（Release 031）
+
+```text
+spec/AI_INDEX.md
+→ docs/product-spec/release/Release_031_Verification_Performance_Isolation/README.md
+→ scripts/verification_runtime.py
+→ scripts/verification_report.py
+→ scripts/verify_all.py
+→ scripts/verify_release_031.py
+```
+
 ### 5.2 做领域模型 / Mock JSON / 状态机
 
 ```text

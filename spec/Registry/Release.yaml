@@ -32,6 +32,7 @@ related_docs:
     - docs/product-spec/release/Release_028_Report_Page_UI_Interaction_Verification/README.md
     - docs/product-spec/release/Release_029_Device_Page_UI_Interaction_Verification/README.md
     - docs/product-spec/release/Release_030_Cross_Page_Workflow_UI_Verification/README.md
+    - docs/product-spec/release/Release_031_Verification_Performance_Isolation/README.md
   wireframe_008:
     - docs/product-spec/ui-wireframe/README.md
   ai_layer:

@@ -1,4 +1,7 @@
-"""共享验收工具 — Release_023。"""
+"""共享验收工具 — Release_023。
+
+Release_031+：隔离 runtime 数据请优先使用 verification_runtime.py（runtime/verification/Rxxx/）。
+"""
 
 from __future__ import annotations
 
