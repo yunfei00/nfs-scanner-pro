@@ -206,6 +206,16 @@ spec/AI_INDEX.md
 → scripts/verify_all.py
 ```
 
+### 5.1o 做 CI 自动验收集成（Release 025）
+
+```text
+spec/AI_INDEX.md
+→ docs/product-spec/release/Release_025_CI_Verification_Integration/README.md
+→ .github/workflows/verify.yml
+→ scripts/verify_release_025.py
+→ scripts/verify_all.py
+```
+
 ### 5.2 做领域模型 / Mock JSON / 状态机
 
 ```text
