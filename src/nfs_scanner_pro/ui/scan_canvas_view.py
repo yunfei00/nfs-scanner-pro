@@ -483,6 +483,12 @@ class PcbCanvasWidget(QWidget):
         self._toast_timer.setSingleShot(True)
         self._toast_timer.timeout.connect(self._completion_toast.hide)
 
+        self._empty_overlay = QLabel(self._canvas_container)
+        self._empty_overlay.setObjectName("analysisEmptyOverlay")
+        self._empty_overlay.setText("未加载扫描结果")
+        self._empty_overlay.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self._empty_overlay.hide()
+
         layout.addWidget(self._canvas_container, stretch=1)
 
     def resizeEvent(self, event) -> None:  # noqa: N802
@@ -506,6 +512,17 @@ class PcbCanvasWidget(QWidget):
             tw = self._completion_toast.width()
             th = self._completion_toast.height()
             self._completion_toast.move(max(margin, (cw - tw) // 2), max(margin, (ch - th) // 2))
+
+        if self._empty_overlay.isVisible():
+            self._empty_overlay.setFixedSize(max(200, cw - margin * 2), 48)
+            self._empty_overlay.move(margin, max(margin, (ch - 48) // 2))
+
+    def set_analysis_empty_state(self, empty: bool) -> None:
+        """分析页空状态提示（Release 021）。"""
+        self._empty_overlay.setVisible(empty)
+        if empty:
+            self._empty_overlay.raise_()
+        self._empty_overlay.adjustSize()
 
     def _on_mouse_moved(self, sx: float, sy: float) -> None:
         if self._scan_coords_locked:

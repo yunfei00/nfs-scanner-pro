@@ -142,6 +142,12 @@ def project_display_name() -> str:
     return CURRENT_PROJECT.get("pcb") or CURRENT_PROJECT.get("name") or "未打开项目"
 
 
+def get_scan_project_name() -> str:
+    """扫描结果持久化使用的 Mock 项目名。"""
+    name = project_display_name()
+    return name if name != "未打开项目" else "Mock_Project"
+
+
 def _upsert_recent(project: dict) -> None:
     entry = {
         "name": project["name"],

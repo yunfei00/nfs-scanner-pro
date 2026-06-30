@@ -333,6 +333,8 @@ class MainWindow(QMainWindow):
         self._analysis_panel = AnalysisParameterPanel(self._dock_stack)
         self._report_panel = ReportSettingsPanel(self._dock_stack)
         self._analysis_page.bind_control_panel(self._analysis_panel.control_panel)
+        self._analysis_page.bind_data_source_panel(self._analysis_panel.data_source_panel)
+        self._analysis_page.refresh_data_source()
 
         self._page_panels = [
             self._scan_panel,
@@ -439,6 +441,7 @@ class MainWindow(QMainWindow):
         self._status.apply_page(page_index)
         if page_index == self.PAGE_ANALYSIS:
             self._status._progress_wrap.setVisible(False)
+            self._analysis_page.refresh_data_source()
         if page_index == self.PAGE_REPORT:
             self._status._progress_wrap.setVisible(False)
         self._mount_page_dock(page_index)

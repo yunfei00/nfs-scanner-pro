@@ -159,6 +159,25 @@ spec/AI_INDEX.md
 → src/nfs_scanner_pro/ui/pages/scan_page.py
 ```
 
+### 5.1j 做扫描结果持久化 Mock（Release 020）
+
+```text
+spec/AI_INDEX.md
+→ docs/product-spec/release/Release_020_Scan_Result_Persistence_Mock/README.md
+→ src/nfs_scanner_pro/scan/scan_result_persistence_mock.py
+→ src/nfs_scanner_pro/scan/scan_engine_mock.py
+→ src/nfs_scanner_pro/app_paths.py
+```
+
+### 5.1k 做分析数据源 Mock（Release 021）
+
+```text
+spec/AI_INDEX.md
+→ docs/product-spec/release/Release_021_Analysis_Data_Source_Mock/README.md
+→ src/nfs_scanner_pro/analysis/analysis_data_source_mock.py
+→ src/nfs_scanner_pro/ui/pages/analysis_page.py
+```
+
 ### 5.2 做领域模型 / Mock JSON / 状态机
 
 ```text

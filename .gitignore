@@ -1,3 +1,42 @@
 # Mock 运行时状态（不提交 Git）
 runtime/
-runtime/*.json
+runtime/**/*.json
+runtime/**/*.csv
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Python build / package
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Test / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDE / editor
+.vscode/
+.idea/
+
+# Runtime mock data
+runtime/
+runtime/**/*.json
+runtime/**/*.csv
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db

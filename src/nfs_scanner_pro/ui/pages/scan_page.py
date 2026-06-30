@@ -40,6 +40,7 @@ class ScanPage(ScanCanvasWidget):
         self._engine.prepare(ScanTaskConfig.from_mock_data())
         self._engine.on_state_changed(self._on_engine_state_changed)
         self._engine.on_progress(self._on_engine_progress)
+        self._engine.on_message(self._on_engine_message)
         self._param_dock = None
 
         self._timer = QTimer(self)
@@ -100,7 +101,7 @@ class ScanPage(ScanCanvasWidget):
         if self._engine.state is EngineScanState.COMPLETED:
             self.show_scan_complete_toast()
             self._emit_status(
-                "扫描完成",
+                "扫描完成，Mock 结果已保存",
                 100,
                 f"扫描点：{progress.total_points} / {progress.total_points}",
                 "预计剩余时间：00:00:00",
@@ -120,6 +121,9 @@ class ScanPage(ScanCanvasWidget):
             self.reset_scan_visual()
         self.scan_state_changed.emit(_to_ui_state(state))
         self._emit_status_from_engine()
+
+    def _on_engine_message(self, message: str) -> None:
+        print(f"[Mock UI] {message}", flush=True)
 
     def _on_engine_progress(self, progress) -> None:
         point = progress.current_point

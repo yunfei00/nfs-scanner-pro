@@ -138,7 +138,11 @@ def apply_project(project: dict | None = None) -> None:
     if project.get("default_region"):
         REGION_NAME = project["default_region"]
     BREADCRUMB_SCAN = get_breadcrumb_scan()
-    BREADCRUMB_ANALYSIS = get_breadcrumb_analysis()
+    BREADCRUMB_ANALYSIS = get_breadcrumb_analysis(
+        task_id=SCAN_TASK,
+        trace="Trace 1",
+        frequency=FREQUENCY,
+    )
 
 
 def get_breadcrumb_scan() -> str:
@@ -146,9 +150,17 @@ def get_breadcrumb_scan() -> str:
     return f"{label} > {REGION_NAME} > Hx 探头 > {FREQUENCY} > {POINTS} 点"
 
 
-def get_breadcrumb_analysis() -> str:
+def get_breadcrumb_analysis(
+    *,
+    task_id: str | None = None,
+    trace: str = "Trace 1",
+    frequency: str | None = None,
+) -> str:
     label = project_mock.project_display_name()
-    return f"{label} > {REGION_NAME} > ScanTask {SCAN_TASK} > Trace 1 > {FREQUENCY}"
+    region = REGION_NAME
+    task = task_id or SCAN_TASK
+    freq = frequency or FREQUENCY
+    return f"{label} > {region} > ScanTask {task} > {trace} > {freq}"
 
 
 def get_breadcrumb_report(report_name: str) -> str:

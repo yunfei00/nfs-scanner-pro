@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import random
+from datetime import datetime
 from typing import Any, Callable
 from uuid import uuid4
 
@@ -11,6 +12,7 @@ from nfs_scanner_pro.scan.scan_path_mock import ScanPathMock
 from nfs_scanner_pro.scan.scan_point import ScanPointMock
 from nfs_scanner_pro.scan.scan_progress import ScanProgressMock
 from nfs_scanner_pro.scan.scan_result_mock import ScanResultMock
+from nfs_scanner_pro.scan.scan_result_persistence_mock import ScanResultPersistenceMock
 from nfs_scanner_pro.scan.scan_state import ScanState
 from nfs_scanner_pro.scan.scan_task_config import ScanTaskConfig
 
@@ -43,6 +45,8 @@ class ScanEngineMock:
         self._device_snapshot: dict[str, Any] = {}
         self._stopped_by_user = False
         self._task_id = ""
+        self._started_at = ""
+        self._persistence = ScanResultPersistenceMock()
         self._progress_callbacks: list[ProgressCallback] = []
         self._state_callbacks: list[StateCallback] = []
         self._message_callbacks: list[MessageCallback] = []
@@ -73,6 +77,7 @@ class ScanEngineMock:
         if not self.state.start_enabled():
             return
         self._task_id = f"ST-{uuid4().hex[:6].upper()}"
+        self._started_at = datetime.now().isoformat(timespec="seconds")
         self._device_snapshot = self.device_manager.get_snapshot()
         self._stopped_by_user = False
         self.progress.reset(self.config.total_points, state=ScanState.SCANNING)
@@ -110,7 +115,15 @@ class ScanEngineMock:
             device_snapshot=self._device_snapshot,
             final_index=self.config.total_points,
             status="completed",
+            path=self.path,
+            started_at=self._started_at,
         )
+        self.result.preview_points = self._persistence.generate_preview_points(self.path)
+        ok, detail = self._persistence.save_result(self.result)
+        if ok:
+            self._emit_message(f"Mock：扫描结果已保存到 {detail}")
+        else:
+            self._emit_message(f"Mock：扫描结果保存失败：{detail}")
         self._emit_progress()
         self._emit_state()
         self._emit_message("Mock：扫描完成")

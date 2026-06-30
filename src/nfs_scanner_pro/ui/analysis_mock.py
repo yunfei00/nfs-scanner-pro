@@ -8,6 +8,7 @@ from dataclasses import dataclass
 
 from PySide6.QtCore import QObject, QTimer, Signal
 
+from nfs_scanner_pro.analysis.analysis_dataset_mock import AnalysisDatasetMock
 from nfs_scanner_pro.ui import mock_data
 from nfs_scanner_pro.ui.analysis_state import AnalysisState
 
@@ -63,11 +64,13 @@ class AnalysisMock(QObject):
         super().__init__(parent)
         self._state = AnalysisState.READY
         self._params = AnalysisDisplayParams.from_task()
+        self._dataset = AnalysisDatasetMock.empty()
         self._cursor = copy.deepcopy(mock_data.ANALYSIS_CURSOR)
         self._cursor_locked = False
         self._export_timer = QTimer(self)
         self._export_timer.setSingleShot(True)
         self._export_timer.timeout.connect(self._finish_export)
+        self._last_lut = self._params.lut
 
     @property
     def state(self) -> AnalysisState:
@@ -76,6 +79,10 @@ class AnalysisMock(QObject):
     @property
     def params(self) -> AnalysisDisplayParams:
         return self._params
+
+    @property
+    def dataset(self) -> AnalysisDatasetMock:
+        return self._dataset
 
     @property
     def cursor(self) -> dict:
@@ -94,7 +101,36 @@ class AnalysisMock(QObject):
     def lut_label(self) -> str:
         return _LUT_TITLES.get(self._params.lut, self._params.lut)
 
+    def apply_dataset(self, dataset: AnalysisDatasetMock) -> None:
+        self._dataset = dataset
+        if dataset.is_empty():
+            self._set_state(AnalysisState.NOT_LOADED)
+            self._emit_ready_status(found=False)
+            return
+        if dataset.frequency:
+            self._params.frequency = dataset.frequency
+        if dataset.trace:
+            self._params.trace = dataset.trace
+        self._cursor.update(dataset.cursor_readout(0))
+        self._set_state(AnalysisState.LOADED)
+        self.display_changed.emit(self._params)
+        self.cursor_changed.emit(self.cursor)
+        self._emit_ready_status(found=True)
+
+    def select_scan_task(self, task_id: str) -> None:
+        if self._dataset.task_id == task_id:
+            return
+        self._dataset.task_id = task_id
+        self.status_message.emit(
+            f"Mock：已加载分析数据源 {task_id}",
+            self._status_extra1(),
+            self._status_extra2(),
+        )
+
     def apply_params(self, **kwargs) -> None:
+        lut_changed = "lut" in kwargs and kwargs["lut"] != self._params.lut
+        trace_changed = "trace" in kwargs and kwargs.get("trace") != self._params.trace
+        freq_changed = "frequency" in kwargs and kwargs.get("frequency") != self._params.frequency
         for key, val in kwargs.items():
             if hasattr(self._params, key):
                 setattr(self._params, key, val)
@@ -102,7 +138,20 @@ class AnalysisMock(QObject):
         self._set_state(AnalysisState.PARAMS_CHANGED)
         self.display_changed.emit(self._params)
         self.cursor_changed.emit(self.cursor)
-        self._emit_status()
+        if lut_changed:
+            self.status_message.emit(
+                f"Mock：LUT 已切换为 {self.lut_label()}",
+                self._status_extra1(),
+                self._status_extra2(),
+            )
+        elif trace_changed or freq_changed:
+            self.status_message.emit(
+                "Mock：分析参数已更新",
+                self._status_extra1(),
+                self._status_extra2(),
+            )
+        else:
+            self._emit_status()
 
     def update_cursor_position(self, x: float, y: float) -> None:
         if self._cursor_locked:
@@ -147,12 +196,13 @@ class AnalysisMock(QObject):
     def _set_state(self, state: AnalysisState) -> None:
         self._state = state
         self.state_changed.emit(state)
-        if state is AnalysisState.PARAMS_CHANGED:
-            self.status_message.emit(
-                state.status_label,
-                self._status_extra1(),
-                self._status_extra2(),
-            )
+
+    def _emit_ready_status(self, *, found: bool) -> None:
+        if found and self._dataset.task_id:
+            text = f"分析就绪，已加载 Mock 扫描结果 {self._dataset.task_id}"
+        else:
+            text = "分析就绪，未发现 Mock 扫描结果"
+        self.status_message.emit(text, self._status_extra1(), self._status_extra2())
 
     def _emit_status(self) -> None:
         self.status_message.emit(
@@ -162,8 +212,12 @@ class AnalysisMock(QObject):
         )
 
     def _status_extra1(self) -> str:
+        if self._dataset.is_empty():
+            return "Heatmap：未加载"
         return "Heatmap：已加载"
 
     def _status_extra2(self) -> str:
-        t = mock_data.ANALYSIS_TASK
-        return f"ScanTask：{t['scan_task']} · {t['points']} pts"
+        if self._dataset.is_empty():
+            return "ScanTask：—"
+        points = self._dataset.total_points or mock_data.POINTS
+        return f"ScanTask：{self._dataset.task_id} · {points} pts"
