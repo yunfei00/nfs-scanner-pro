@@ -19,6 +19,7 @@ VERIFY_SCRIPTS = (
     ("Release 027", SCRIPTS / "verify_release_027.py"),
     ("Release 028", SCRIPTS / "verify_release_028.py"),
     ("Release 029", SCRIPTS / "verify_release_029.py"),
+    ("Release 030", SCRIPTS / "verify_release_030.py"),
 )
 
 

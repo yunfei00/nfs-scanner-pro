@@ -257,6 +257,18 @@ spec/AI_INDEX.md
 → src/nfs_scanner_pro/ui/device_status_bar.py
 ```
 
+### 5.1t 做跨页面工作流 UI 验收（Release 030）
+
+```text
+spec/AI_INDEX.md
+→ docs/product-spec/release/Release_030_Cross_Page_Workflow_UI_Verification/README.md
+→ scripts/verify_release_030.py
+→ src/nfs_scanner_pro/ui/main_window.py
+→ src/nfs_scanner_pro/scan/scan_engine_mock.py
+→ src/nfs_scanner_pro/analysis/analysis_data_source_mock.py
+→ src/nfs_scanner_pro/report/report_data_source_mock.py
+```
+
 ### 5.2 做领域模型 / Mock JSON / 状态机
 
 ```text
