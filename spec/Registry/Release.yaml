@@ -24,6 +24,7 @@ related_docs:
     - docs/product-spec/release/Release_020_Scan_Result_Persistence_Mock/README.md
     - docs/product-spec/release/Release_021_Analysis_Data_Source_Mock/README.md
     - docs/product-spec/release/Release_022_Report_Data_Source_Mock/README.md
+    - docs/product-spec/release/Release_023_End_to_End_Mock_Verification/README.md
   wireframe_008:
     - docs/product-spec/ui-wireframe/README.md
   ai_layer:

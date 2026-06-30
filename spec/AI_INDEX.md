@@ -188,6 +188,15 @@ spec/AI_INDEX.md
 → src/nfs_scanner_pro/ui/report_mock.py
 ```
 
+### 5.1m 做端到端自动验收（Release 023）
+
+```text
+spec/AI_INDEX.md
+→ docs/product-spec/release/Release_023_End_to_End_Mock_Verification/README.md
+→ scripts/verify_release_023.py
+→ scripts/verify_all.py
+```
+
 ### 5.2 做领域模型 / Mock JSON / 状态机
 
 ```text
