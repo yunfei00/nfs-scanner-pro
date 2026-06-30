@@ -1,7 +1,8 @@
-"""应用路径 — Mock 运行时目录（Release 017）。"""
+"""应用路径 — Mock 运行时目录（Release 017 / 032）。"""
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 
@@ -10,7 +11,11 @@ def get_project_root() -> Path:
 
 
 def get_runtime_dir() -> Path:
-    runtime = get_project_root() / "runtime"
+    override = os.environ.get("NFS_SCANNER_RUNTIME_DIR")
+    if override:
+        runtime = Path(override)
+    else:
+        runtime = get_project_root() / "runtime"
     runtime.mkdir(parents=True, exist_ok=True)
     return runtime
 

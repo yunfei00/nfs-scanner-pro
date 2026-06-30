@@ -205,3 +205,61 @@ def gitignore_covers_runtime(path: Path) -> bool:
     if "runtime/" in gitignore and rel.startswith("runtime/"):
         return True
     return False
+
+
+def runtime_export_files(
+    extensions: frozenset[str] | None = None,
+) -> set[Path]:
+    """在当前 active runtime（含 NFS_SCANNER_RUNTIME_DIR）下查找导出类文件。"""
+    from nfs_scanner_pro.app_paths import get_runtime_dir
+
+    exts = extensions or frozenset({".pdf", ".docx", ".xlsx", ".png"})
+    runtime = get_runtime_dir()
+    if not runtime.is_dir():
+        return set()
+    return {
+        p.resolve()
+        for p in runtime.rglob("*")
+        if p.is_file() and p.suffix.lower() in exts
+    }
+
+
+def _runtime_rel(path: Path) -> str:
+    try:
+        return path.relative_to(ROOT).as_posix()
+    except ValueError:
+        return str(path)
+
+
+def describe_mock_scan_dir(project_name: str, task_id: str) -> str:
+    """返回当前 active runtime 下 mock 扫描目录的仓库相对路径。"""
+    setup_path()
+    from nfs_scanner_pro.app_paths import get_mock_scan_dir
+
+    return _runtime_rel(get_mock_scan_dir(project_name, task_id))
+
+
+def describe_mock_report_draft(project_name: str, report_id: str) -> str:
+    """返回当前 active runtime 下 report_draft.json 的仓库相对路径。"""
+    setup_path()
+    from nfs_scanner_pro.app_paths import get_mock_project_dir
+
+    safe_id = "".join(c if c.isalnum() or c in "-_." else "_" for c in report_id.strip())
+    path = get_mock_project_dir(project_name) / "reports" / (safe_id or "RP-UNKNOWN") / "report_draft.json"
+    return _runtime_rel(path)
+
+
+def describe_mock_reports_dir(project_name: str) -> str:
+    """返回当前 active runtime 下 mock 报告目录的仓库相对路径。"""
+    setup_path()
+    from nfs_scanner_pro.app_paths import get_mock_project_dir
+
+    return _runtime_rel(get_mock_project_dir(project_name) / "reports")
+
+
+def describe_workspace_state() -> str:
+    """返回当前 active runtime 下 workspace_state_mock.json 的仓库相对路径。"""
+    setup_path()
+    from nfs_scanner_pro.app_paths import get_workspace_state_path
+
+    return _runtime_rel(get_workspace_state_path())

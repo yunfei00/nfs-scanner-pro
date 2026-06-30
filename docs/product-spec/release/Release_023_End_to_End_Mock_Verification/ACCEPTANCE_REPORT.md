@@ -9,7 +9,7 @@ python scripts/verify_all.py
 
 ## 验收时间
 
-2026-06-30 14:26:39 UTC
+2026-06-30 15:15:01 UTC
 
 ## 检查项
 
@@ -21,9 +21,9 @@ python scripts/verify_all.py
 - [PASS] `workspace_persistence` — file=workspace_state_mock.json gitignored=True
 - [PASS] `device_manager_mock`
 - [PASS] `scan_engine_mock` — state=已完成 qtimer=False
-- [PASS] `scan_result_persistence` — dir=D:\code_2026\nfs-scanner-pro\runtime\mock_projects\iPhone16_Mainboard\scans\ST-VERIFY-023 csv_rows=100
-- [PASS] `analysis_data_source` — tasks=['ST-027FA7', 'ST-04973B', 'ST-0AE55E', 'ST-0F358C', 'ST-2F507F', 'ST-33A2D9', 'ST-3FB3B2', 'ST-42B130', 'ST-491977', 'ST-555F01', 'ST-5DC26E', 'ST-6EBD6B', 'ST-8A1B9F', 'ST-9847D3', 'ST-C6FE67', 'ST-CECCD6', 'ST-CF3710', 'ST-CF6B68', 'ST-F08427', 'ST-F145AF', 'ST-F15656', 'ST-F4EA0B', 'ST-F8038E', 'ST-VERIFY-001', 'ST-VERIFY-023'] empty_ok=True
-- [PASS] `report_data_source` — D:\code_2026\nfs-scanner-pro\runtime\mock_projects\iPhone16_Mainboard\reports\RP-VERIFY-023\report_draft.json
+- [PASS] `scan_result_persistence` — dir=D:\code_2026\nfs-scanner-pro\runtime\verification\R023\mock_projects\iPhone16_Mainboard\scans\ST-VERIFY-023 csv_rows=100
+- [PASS] `analysis_data_source` — tasks=['ST-752385', 'ST-BFDA81', 'ST-VERIFY-023'] empty_ok=True
+- [PASS] `report_data_source` — D:\code_2026\nfs-scanner-pro\runtime\verification\R023\mock_projects\iPhone16_Mainboard\reports\RP-VERIFY-023\report_draft.json
 - [PASS] `no_real_device_access`
 
 ## 结果
@@ -32,9 +32,9 @@ PASS
 
 ## runtime Mock 文件
 
-- `runtime/mock_projects/iPhone16_Mainboard/scans/ST-VERIFY-023/`
-- `runtime/mock_projects/iPhone16_Mainboard/reports/RP-VERIFY-023/report_draft.json`
-- `runtime/workspace_state_mock.json`
+- `runtime/verification/R023/mock_projects/iPhone16_Mainboard/scans/ST-VERIFY-023/`
+- `runtime/verification/R023/mock_projects/iPhone16_Mainboard/reports/RP-VERIFY-023/report_draft.json`
+- `runtime/verification/R023/workspace_state_mock.json`
 
 ## 是否接真实设备
 

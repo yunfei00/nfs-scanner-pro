@@ -22,6 +22,9 @@ from verification_utils import (  # noqa: E402
     REPORT_TOOLBAR,
     ROOT,
     CheckResult,
+    describe_mock_report_draft,
+    describe_mock_scan_dir,
+    describe_workspace_state,
     gitignore_covers_runtime,
     setup_offscreen,
     setup_path,
@@ -465,15 +468,15 @@ def write_acceptance_report(check: CheckResult, ctx: WorkflowSmokeContext) -> Pa
             "",
             "## runtime 产物",
             "",
-            f"- `runtime/workspace_state_mock.json`",
+            f"- `{describe_workspace_state()}`",
         ]
     )
     if ctx.task_id:
         lines.append(
-            f"- `runtime/mock_projects/{ctx.project_name}/scans/{ctx.task_id}/`"
+            f"- `{describe_mock_scan_dir(ctx.project_name, ctx.task_id)}/`"
         )
     lines.append(
-        f"- `runtime/mock_projects/{ctx.project_name}/reports/{REPORT_DRAFT_ID}/report_draft.json`"
+        f"- `{describe_mock_report_draft(ctx.project_name, REPORT_DRAFT_ID)}`"
     )
     lines.extend(
         [

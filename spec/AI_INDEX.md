@@ -280,6 +280,18 @@ spec/AI_INDEX.md
 → scripts/verify_release_031.py
 ```
 
+### 5.1v 迁移旧验收脚本到隔离 runtime（Release 032）
+
+```text
+spec/AI_INDEX.md
+→ docs/product-spec/release/Release_032_Migrate_Legacy_Verify_Scripts_To_Isolated_Runtime/README.md
+→ scripts/verification_runtime.py
+→ scripts/verify_all.py
+→ scripts/verify_release_032.py
+→ src/nfs_scanner_pro/app_paths.py  # NFS_SCANNER_RUNTIME_DIR
+→ runtime/verification/Rxxx/
+```
+
 ### 5.2 做领域模型 / Mock JSON / 状态机
 
 ```text

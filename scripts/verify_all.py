@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""统一验收入口 — 运行所有 verify_release_xxx.py（Release_031 增强）。"""
+"""统一验收入口 — 运行所有 verify_release_xxx.py（Release_031/032 隔离）。"""
 
 from __future__ import annotations
 
@@ -12,6 +12,10 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 SCRIPTS = ROOT / "scripts"
+if str(SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(SCRIPTS))
+
+import verification_runtime  # noqa: E402
 
 VERIFY_SCRIPTS: tuple[tuple[int, str, Path], ...] = (
     (22, "Release 022", SCRIPTS / "verify_release_022.py"),
@@ -24,6 +28,7 @@ VERIFY_SCRIPTS: tuple[tuple[int, str, Path], ...] = (
     (29, "Release 029", SCRIPTS / "verify_release_029.py"),
     (30, "Release 030", SCRIPTS / "verify_release_030.py"),
     (31, "Release 031", SCRIPTS / "verify_release_031.py"),
+    (32, "Release 032", SCRIPTS / "verify_release_032.py"),
 )
 
 TAIL_LINES = 80
@@ -36,6 +41,7 @@ class RunOutcome:
     status: str
     elapsed_s: float
     exit_code: int
+    runtime_path: str
     stdout: str
     stderr: str
 
@@ -61,6 +67,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help="Continue running after a failure (default: stop on first FAIL)",
     )
     parser.add_argument(
+        "--keep-runtime",
+        action="store_true",
+        help="Do not clean runtime/verification/Rxxx before each script",
+    )
+    parser.add_argument(
         "--list",
         action="store_true",
         help="List registered scripts and exit",
@@ -83,7 +94,8 @@ def list_scripts() -> None:
     print("Registered verification scripts:\n")
     for number, label, path in VERIFY_SCRIPTS:
         exists = "ok" if path.is_file() else "MISSING"
-        print(f"  {label} ({number:03d})  {path.name}  [{exists}]")
+        runtime = verification_runtime.runtime_display_path(f"{number:03d}")
+        print(f"  {label} ({number:03d})  {path.name}  [{exists}]  runtime={runtime}")
     print(f"\nTotal: {len(VERIFY_SCRIPTS)}")
 
 
@@ -109,7 +121,15 @@ def tail_output(text: str, lines: int = TAIL_LINES) -> str:
     return "\n".join(parts[-lines:])
 
 
-def run_script(number: int, label: str, path: Path) -> RunOutcome:
+def run_script(
+    number: int,
+    label: str,
+    path: Path,
+    *,
+    keep_runtime: bool,
+) -> RunOutcome:
+    release_id = f"{number:03d}"
+    runtime_path = verification_runtime.runtime_display_path(release_id)
     if not path.is_file():
         return RunOutcome(
             label=label,
@@ -117,11 +137,17 @@ def run_script(number: int, label: str, path: Path) -> RunOutcome:
             status="SKIPPED",
             elapsed_s=0.0,
             exit_code=0,
+            runtime_path=runtime_path,
             stdout="",
             stderr=f"missing {path}",
         )
 
+    if not keep_runtime:
+        verification_runtime.clean_release_runtime(release_id)
+
+    env = verification_runtime.build_release_env(release_id)
     print(f"Running {label} ...", flush=True)
+    print(f"Runtime: {runtime_path}", flush=True)
     started = time.perf_counter()
     proc = subprocess.run(
         [sys.executable, str(path)],
@@ -130,6 +156,7 @@ def run_script(number: int, label: str, path: Path) -> RunOutcome:
         text=True,
         encoding="utf-8",
         errors="replace",
+        env=env,
     )
     elapsed = time.perf_counter() - started
     status = parse_result(proc.stdout, proc.returncode)
@@ -139,18 +166,24 @@ def run_script(number: int, label: str, path: Path) -> RunOutcome:
         status=status,
         elapsed_s=elapsed,
         exit_code=proc.returncode,
+        runtime_path=runtime_path,
         stdout=proc.stdout,
         stderr=proc.stderr,
     )
 
 
+def _safe_console(text: str) -> str:
+    encoding = sys.stdout.encoding or "utf-8"
+    return text.encode(encoding, errors="replace").decode(encoding, errors="replace")
+
+
 def print_failure_tail(outcome: RunOutcome) -> None:
     print(f"\n--- Failure tail: {outcome.label} (exit {outcome.exit_code}) ---")
     if outcome.stdout.strip():
-        print(tail_output(outcome.stdout))
+        print(_safe_console(tail_output(outcome.stdout)))
     if outcome.stderr.strip():
         print("--- stderr ---", file=sys.stderr)
-        print(tail_output(outcome.stderr), file=sys.stderr)
+        print(_safe_console(tail_output(outcome.stderr)), file=sys.stderr)
     print("--- end failure tail ---\n")
 
 
@@ -169,7 +202,7 @@ def main(argv: list[str] | None = None) -> int:
     exit_code = 0
 
     for number, label, path in scripts:
-        outcome = run_script(number, label, path)
+        outcome = run_script(number, label, path, keep_runtime=args.keep_runtime)
         outcomes.append(outcome)
         print(f"{label}: {outcome.status}  {outcome.elapsed_s:.2f}s")
         if outcome.status == "FAIL" or (outcome.status != "SKIPPED" and outcome.exit_code != 0):

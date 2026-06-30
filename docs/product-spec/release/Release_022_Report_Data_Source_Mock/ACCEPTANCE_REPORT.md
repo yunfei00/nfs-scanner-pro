@@ -2,7 +2,7 @@
 
 ## 验收时间
 
-2026-06-30 14:26:38 UTC
+2026-06-30 15:15:00 UTC
 
 ## 执行命令
 
@@ -15,12 +15,12 @@ python scripts/verify_release_022.py
 - [PASS] `compileall`
 - [PASS] `module_imports`
 - [PASS] `gitignore_runtime` — ok
-- [PASS] `mock_scan_result_ready` — D:\code_2026\nfs-scanner-pro\runtime\mock_projects\iPhone16_Mainboard\scans\ST-VERIFY-001
-- [PASS] `analysis_dataset_load` — projects=2 tasks=['ST-04973B', 'ST-0AE55E', 'ST-0F358C', 'ST-2F507F', 'ST-33A2D9', 'ST-3FB3B2', 'ST-42B130', 'ST-491977', 'ST-555F01', 'ST-5DC26E', 'ST-6EBD6B', 'ST-8A1B9F', 'ST-9847D3', 'ST-C6FE67', 'ST-CECCD6', 'ST-CF3710', 'ST-CF6B68', 'ST-F08427', 'ST-F145AF', 'ST-F15656', 'ST-F4EA0B', 'ST-F8038E', 'ST-VERIFY-001', 'ST-VERIFY-023'] empty=False
+- [PASS] `mock_scan_result_ready` — D:\code_2026\nfs-scanner-pro\runtime\verification\R022\mock_projects\iPhone16_Mainboard\scans\ST-VERIFY-001
+- [PASS] `analysis_dataset_load` — projects=1 tasks=['ST-VERIFY-001'] empty=False
 - [PASS] `analysis_cursor_readout` — keys=['amp', 'frequency', 'phase', 'x', 'y', 'z']
 - [PASS] `report_context_build` — default_name='CPU_Area_Hx_2.45GHz_报告' has_data=True
 - [PASS] `report_draft_fields` — CPU_Area_Hx_2.45GHz_报告
-- [PASS] `report_draft_save` — D:\code_2026\nfs-scanner-pro\runtime\mock_projects\iPhone16_Mainboard\reports\RP-VERIFY-022\report_draft.json
+- [PASS] `report_draft_save` — D:\code_2026\nfs-scanner-pro\runtime\verification\R022\mock_projects\iPhone16_Mainboard\reports\RP-VERIFY-022\report_draft.json
 - [PASS] `no_real_export_files` — unexpected=[]
 - [PASS] `no_real_device_access`
 - [PASS] `mainwindow_single_right_dock` — count=1
@@ -35,8 +35,8 @@ PASS
 
 ## runtime Mock 文件
 
-- 扫描：`runtime/mock_projects/iPhone16_Mainboard/scans/ST-VERIFY-001/`
-- 报告草稿：`D:/code_2026/nfs-scanner-pro/runtime/mock_projects/iPhone16_Mainboard/reports/RP-VERIFY-022/report_draft.json`
+- 扫描：`runtime/verification/R022/mock_projects/iPhone16_Mainboard/scans/ST-VERIFY-001/`
+- 报告草稿：`D:/code_2026/nfs-scanner-pro/runtime/verification/R022/mock_projects/iPhone16_Mainboard/reports/RP-VERIFY-022/report_draft.json`
 
 ## 是否生成真实 PDF / Word / Excel
 

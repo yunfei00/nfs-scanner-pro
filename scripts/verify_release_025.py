@@ -89,12 +89,21 @@ def check_gitignore_runtime(check: CheckResult) -> None:
 
 
 def run_previous_release_verifications(check: CheckResult) -> None:
+    import verification_runtime
+
     setup_offscreen()
     failed: list[str] = []
+    release_map = {
+        "verify_release_022.py": "022",
+        "verify_release_023.py": "023",
+        "verify_release_024.py": "024",
+    }
     for script in PREVIOUS_VERIFY_SCRIPTS:
         if not script.is_file():
             failed.append(f"missing {script.name}")
             continue
+        release_id = release_map.get(script.name, "022")
+        env = verification_runtime.build_release_env(release_id)
         proc = subprocess.run(
             [sys.executable, str(script)],
             cwd=str(ROOT),
@@ -102,7 +111,7 @@ def run_previous_release_verifications(check: CheckResult) -> None:
             text=True,
             encoding="utf-8",
             errors="replace",
-            env={**os.environ, "QT_QPA_PLATFORM": "offscreen"},
+            env=env,
         )
         if proc.returncode != 0:
             failed.append(f"{script.name} exit={proc.returncode}")

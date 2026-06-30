@@ -65,7 +65,7 @@ def check_compileall(report: verification_report.VerificationReport) -> None:
 def check_runtime_isolation(report: verification_report.VerificationReport) -> None:
     report.start_check("runtime_isolation")
     try:
-        mock_projects = verification_runtime.get_runtime_dir() / "mock_projects"
+        mock_projects = verification_runtime.get_shared_mock_projects_dir()
         mock_projects.mkdir(parents=True, exist_ok=True)
         marker = mock_projects / ".verify_031_keep"
         marker.write_text("keep", encoding="utf-8")
@@ -121,7 +121,7 @@ def check_verify_all_list(report: verification_report.VerificationReport) -> Non
     text = proc.stdout
     ok = proc.returncode == 0 and all(
         f"Release {num:03d}" in text or f"Release 0{num}" in text or f"({num:03d})" in text
-        for num in range(22, 32)
+        for num in range(22, 33)
     )
     if ok:
         report.pass_check("verify_all_list")
@@ -168,7 +168,8 @@ def check_verify_all_from(report: verification_report.VerificationReport) -> Non
         and "RESULT: PASS" in text
         and any("Release 030" in line for line in running)
         and any("Release 031" in line for line in running)
-        and len(running) == 2
+        and any("Release 032" in line for line in running)
+        and len(running) == 3
     )
     if ok:
         report.pass_check("verify_all_from", f"runs={len(running)}")

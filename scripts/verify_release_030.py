@@ -24,6 +24,7 @@ from verification_utils import (  # noqa: E402
     ROOT,
     SCAN_TOOLBAR,
     CheckResult,
+    describe_mock_scan_dir,
     gitignore_covers_runtime,
     setup_offscreen,
     setup_path,
@@ -90,7 +91,9 @@ def _preview_text(panel) -> str:
 
 
 def _runtime_export_files() -> set[Path]:
-    runtime = ROOT / "runtime"
+    from nfs_scanner_pro.app_paths import get_runtime_dir
+
+    runtime = get_runtime_dir()
     if not runtime.is_dir():
         return set()
     return {
@@ -746,7 +749,7 @@ def write_acceptance_report(check: CheckResult, ctx: WorkflowContext) -> Path:
     )
     if ctx.task_id:
         lines.append(
-            f"- `runtime/mock_projects/{ctx.project_name}/scans/{ctx.task_id}/`"
+            f"- `{describe_mock_scan_dir(ctx.project_name, ctx.task_id)}/`"
         )
     lines.extend(["", "## runtime 报告草稿", ""])
     if ctx.report_draft_path:

@@ -25,6 +25,7 @@ from verification_utils import (  # noqa: E402
     ROOT,
     SCAN_TOOLBAR,
     CheckResult,
+    describe_mock_scan_dir,
     gitignore_covers_runtime,
     setup_offscreen,
     setup_path,
@@ -42,6 +43,20 @@ ANALYSIS_IMPORTS = (
 )
 
 WORKFLOW_PAGES = (0, 1, 2, 3, 2)
+
+
+def _runtime_export_files(suffixes: set[str] | None = None) -> set[Path]:
+    from nfs_scanner_pro.app_paths import get_runtime_dir
+
+    suffixes = suffixes or {".png", ".pdf", ".xlsx", ".csv"}
+    runtime_dir = get_runtime_dir()
+    if not runtime_dir.is_dir():
+        return set()
+    return {
+        p.resolve()
+        for p in runtime_dir.rglob("*")
+        if p.is_file() and p.suffix.lower() in suffixes
+    }
 
 
 def _status_text(win) -> str:
@@ -391,12 +406,7 @@ def check_export_mock_actions(check: CheckResult, ctx: AnalysisUiContext) -> boo
             ("exportReadoutButton", "读数"),
             ("saveSnapshotButton", "快照"),
         )
-        runtime_dir = ROOT / "runtime"
-        before = {
-            p.resolve()
-            for p in runtime_dir.rglob("*")
-            if p.is_file() and p.suffix.lower() in {".png", ".pdf", ".xlsx", ".csv"}
-        }
+        before = _runtime_export_files()
         statuses: list[str] = []
         for obj_name, _ in export_actions:
             btn = win._analysis_panel.findChild(QPushButton, obj_name)
@@ -406,11 +416,7 @@ def check_export_mock_actions(check: CheckResult, ctx: AnalysisUiContext) -> boo
                 time.sleep(0.03)
             statuses.append(_status_text(win))
 
-        after = {
-            p.resolve()
-            for p in runtime_dir.rglob("*")
-            if p.is_file() and p.suffix.lower() in {".png", ".pdf", ".xlsx", ".csv"}
-        }
+        after = _runtime_export_files()
         new_files = after - before
         ok = all("Mock" in s for s in statuses) and not new_files
         check.add(
@@ -546,7 +552,7 @@ def write_acceptance_report(check: CheckResult) -> Path:
             "",
             "## runtime 产物",
             "",
-            f"- `runtime/mock_projects/{PROJECT_NAME}/scans/{TASK_ID}/`",
+            f"- `{describe_mock_scan_dir(PROJECT_NAME, TASK_ID)}/`",
             "",
             "## 是否接真实设备",
             "",

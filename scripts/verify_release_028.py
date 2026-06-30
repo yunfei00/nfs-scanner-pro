@@ -25,6 +25,8 @@ from verification_utils import (  # noqa: E402
     ROOT,
     SCAN_TOOLBAR,
     CheckResult,
+    describe_mock_reports_dir,
+    describe_mock_scan_dir,
     gitignore_covers_runtime,
     setup_offscreen,
     setup_path,
@@ -73,7 +75,9 @@ def _preview_text(panel) -> str:
 
 
 def _runtime_export_files() -> set[Path]:
-    runtime = ROOT / "runtime"
+    from nfs_scanner_pro.app_paths import get_runtime_dir
+
+    runtime = get_runtime_dir()
     if not runtime.is_dir():
         return set()
     found: set[Path] = set()
@@ -657,8 +661,8 @@ def write_acceptance_report(check: CheckResult) -> Path:
             "",
             "## runtime 产物",
             "",
-            f"- `runtime/mock_projects/{PROJECT_NAME}/scans/{TASK_ID}/`",
-            f"- `runtime/mock_projects/{PROJECT_NAME}/reports/`（report_draft.json）",
+            f"- `{describe_mock_scan_dir(PROJECT_NAME, TASK_ID)}/`",
+            f"- `{describe_mock_reports_dir(PROJECT_NAME)}/`（report_draft.json）",
             "",
             "## 是否接真实设备",
             "",

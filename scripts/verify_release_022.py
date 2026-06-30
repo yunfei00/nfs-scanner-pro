@@ -96,7 +96,9 @@ def _mock_scan_dir(project: str, task_id: str) -> Path:
 
 
 def _has_any_scan_results() -> bool:
-    runtime = ROOT / "runtime" / "mock_projects"
+    from nfs_scanner_pro.app_paths import get_mock_projects_dir
+
+    runtime = get_mock_projects_dir()
     if not runtime.is_dir():
         return False
     for project_dir in runtime.iterdir():
@@ -471,6 +473,8 @@ def write_acceptance_report(
     task_id: str,
     report_dir: Path | None,
 ) -> Path:
+    from nfs_scanner_pro.app_paths import get_mock_scan_dir
+
     report_path = (
         ROOT
         / "docs/product-spec/release/Release_022_Report_Data_Source_Mock/ACCEPTANCE_REPORT.md"
@@ -506,7 +510,7 @@ def write_acceptance_report(
             "",
             "## runtime Mock 文件",
             "",
-            f"- 扫描：`runtime/mock_projects/{PROJECT_NAME}/scans/{task_id}/`",
+            f"- 扫描：`{get_mock_scan_dir(PROJECT_NAME, task_id).relative_to(ROOT).as_posix()}/`",
         ]
     )
     if report_dir is not None:

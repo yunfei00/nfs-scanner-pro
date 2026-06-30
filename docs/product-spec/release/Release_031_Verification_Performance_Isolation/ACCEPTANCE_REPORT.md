@@ -2,7 +2,7 @@
 
 ## 执行时间
 
-2026-06-30 14:56:28 UTC
+2026-06-30 15:16:00 UTC
 
 ## 执行命令
 
@@ -19,12 +19,12 @@ python scripts/verify_all.py
 - [PASS] `compileall` (0.01s)
 - [PASS] `runtime_isolation` (0.01s) — runtime\verification\R031\mock_projects\iPhone16_Mainboard\scans\ST-VERIFY-031
 - [PASS] `runtime_gitignore` (0.00s) — ok
-- [PASS] `verify_all_list` (0.09s)
-- [PASS] `verify_all_only` (6.97s) — Running Release 030 ...
-- [PASS] `verify_all_from` (7.27s) — runs=2
+- [SKIP] `verify_all_list` — NFS_VERIFY_NESTED=1
+- [SKIP] `verify_all_only` — NFS_VERIFY_NESTED=1
+- [SKIP] `verify_all_from` — NFS_VERIFY_NESTED=1
 - [PASS] `verify_all_summary_format` (0.00s)
 - [PASS] `no_real_device_access` (0.00s)
-- [PASS] `no_high_fidelity_changes` (0.03s)
+- [PASS] `no_high_fidelity_changes` (0.05s)
 
 ## 结果
 
@@ -32,7 +32,7 @@ PASS
 
 ## verify_all.py 总耗时
 
-40.92s（本地全量 `python scripts/verify_all.py`）
+（见 CI / 本地全量运行）
 
 ## runtime 隔离路径
 

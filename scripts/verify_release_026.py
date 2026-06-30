@@ -19,9 +19,11 @@ from verification_utils import (  # noqa: E402
     FORBIDDEN_PATTERNS,
     MOCK_DEVICE_DIRS,
     NAV_LABELS,
+    PROJECT_NAME,
     ROOT,
     SCAN_TOOLBAR,
     CheckResult,
+    describe_mock_scan_dir,
     gitignore_covers_runtime,
     setup_offscreen,
     setup_path,
@@ -448,7 +450,7 @@ def write_acceptance_report(check: CheckResult, task_id: str) -> Path:
         ]
     )
     if task_id:
-        lines.append(f"- `runtime/mock_projects/iPhone16_Mainboard/scans/{task_id}/`")
+        lines.append(f"- `{describe_mock_scan_dir(PROJECT_NAME, task_id)}/`")
     lines.extend(
         [
             "",

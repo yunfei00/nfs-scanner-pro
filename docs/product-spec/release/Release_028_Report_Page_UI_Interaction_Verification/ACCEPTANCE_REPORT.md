@@ -2,7 +2,7 @@
 
 ## 执行时间
 
-2026-06-30 14:38:08 UTC
+2026-06-30 15:15:40 UTC
 
 ## 执行命令
 
@@ -14,13 +14,13 @@ python scripts/verify_all.py
 ## 检查项
 
 - [PASS] `compileall`
-- [PASS] `mock_scan_result_ready` — D:\code_2026\nfs-scanner-pro\runtime\mock_projects\iPhone16_Mainboard\scans\ST-VERIFY-028
+- [PASS] `mock_scan_result_ready` — D:\code_2026\nfs-scanner-pro\runtime\verification\R028\mock_projects\iPhone16_Mainboard\scans\ST-VERIFY-028
 - [PASS] `mainwindow_boot` — docks=1
 - [PASS] `report_navigation` — dock='报告设置' status='状态：报告就绪，已加载 Mock 扫描结果 ST-VERIFY-028'
 - [PASS] `report_toolbar` — report=True scan_restore=True
 - [PASS] `report_settings_dock` — groups=['模板', '导出', '内容', '高级']
-- [PASS] `report_data_source` — tasks=49 name='CPU_Area_Hx_2.45GHz_报告'
-- [PASS] `report_list_ui` — items=11
+- [PASS] `report_data_source` — tasks=1 name='CPU_Area_Hx_2.45GHz_报告'
+- [PASS] `report_list_ui` — items=1
 - [PASS] `report_preview_ui` — title='CPU_Area 近场扫描报告' missing=[]
 - [PASS] `create_report_draft` — drafts+=1 status='状态：Mock：已创建报告草稿 CPU_Area_Hx_2.45GHz_报告'
 - [PASS] `preview_mock_action` — 状态：Mock：报告预览已刷新
@@ -35,8 +35,8 @@ PASS
 
 ## runtime 产物
 
-- `runtime/mock_projects/iPhone16_Mainboard/scans/ST-VERIFY-028/`
-- `runtime/mock_projects/iPhone16_Mainboard/reports/`（report_draft.json）
+- `runtime/verification/R028/mock_projects/iPhone16_Mainboard/scans/ST-VERIFY-028/`
+- `runtime/verification/R028/mock_projects/iPhone16_Mainboard/reports/`（report_draft.json）
 
 ## 是否接真实设备
 
