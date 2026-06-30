@@ -139,6 +139,16 @@ spec/AI_INDEX.md
 → src/nfs_scanner_pro/ui/main_window.py
 ```
 
+### 5.1h 做设备抽象层 Mock（Release 018）
+
+```text
+spec/AI_INDEX.md
+→ docs/product-spec/release/Release_018_Device_Abstraction_Mock/README.md
+→ docs/product-spec/domain/04_State_Machines/Device_State_Machine.md
+→ src/nfs_scanner_pro/devices/device_manager_mock.py
+→ src/nfs_scanner_pro/ui/pages/device_page.py
+```
+
 ### 5.2 做领域模型 / Mock JSON / 状态机
 
 ```text

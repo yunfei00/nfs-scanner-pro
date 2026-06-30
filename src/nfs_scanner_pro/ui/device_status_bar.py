@@ -6,6 +6,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont, QFontMetrics
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QSizePolicy, QWidget
 
+from nfs_scanner_pro.devices import get_device_manager
 from nfs_scanner_pro.ui import mock_data
 
 
@@ -31,6 +32,8 @@ class DeviceStatusBar(QWidget):
         self._layout.setSpacing(self._SPACING_MAX)
 
         self._entries: list[dict] = []
+        self._meta_entries: list[dict] = []
+        self._device_labels: list[QLabel] = []
         indicator_names = [
             "deviceStatusMotionIndicator",
             "deviceStatusSpectrumIndicator",
@@ -38,26 +41,13 @@ class DeviceStatusBar(QWidget):
             "deviceStatusServoIndicator",
         ]
 
-        for device, obj_name in zip(mock_data.DEVICE_STATUS, indicator_names):
-            detail = f"({device['detail']})" if device["detail"] else ""
-            full = f"● {device['name']}{detail}"
-            short = "● 舵机" if device["name"] == "舵机系统" else full
-            label = QLabel(full, self)
+        for obj_name in indicator_names:
+            label = QLabel("", self)
             label.setObjectName(obj_name)
-            label.setProperty("status", device["status"])
             label.setProperty("role", "deviceChip")
             label.setWordWrap(False)
-            label.setToolTip(mock_data.DEVICE_TOOLTIPS.get(device["name"], device["name"]))
             self._layout.addWidget(label)
-            self._entries.append(
-                {
-                    "label": label,
-                    "full": full,
-                    "short": short,
-                    "allow_short": device["name"] == "舵机系统",
-                    "pad": self._DEVICE_PAD,
-                }
-            )
+            self._device_labels.append(label)
 
         self._layout.addStretch(1)
 
@@ -75,7 +65,7 @@ class DeviceStatusBar(QWidget):
                 sep.setProperty("role", "metaSep")
                 sep.setWordWrap(False)
                 self._layout.addWidget(sep)
-                self._entries.append(
+                self._meta_entries.append(
                     {
                         "label": sep,
                         "full": "|",
@@ -93,7 +83,7 @@ class DeviceStatusBar(QWidget):
             meta.setWordWrap(False)
             meta.setTextInteractionFlags(Qt.TextInteractionFlag.NoTextInteraction)
             self._layout.addWidget(meta)
-            self._entries.append(
+            self._meta_entries.append(
                 {
                     "label": meta,
                     "full": text,
@@ -102,6 +92,34 @@ class DeviceStatusBar(QWidget):
                     "pad": self._META_PAD,
                 }
             )
+
+        self.refresh_from_manager()
+
+    def refresh_from_manager(self) -> None:
+        manager = get_device_manager()
+        manager.sync_mock_data()
+        device_entries: list[dict] = []
+        for label, device in zip(self._device_labels, manager.get_device_status()):
+            detail = f"({device['detail']})" if device["detail"] else ""
+            full = f"● {device['name']}{detail}"
+            short = "● 舵机" if device["name"] == "舵机系统" else full
+            label.setProperty("status", device["status"])
+            label.setToolTip(
+                manager.device_tooltips().get(device["name"], device["name"])
+            )
+            label.style().unpolish(label)
+            label.style().polish(label)
+            device_entries.append(
+                {
+                    "label": label,
+                    "full": full,
+                    "short": short,
+                    "allow_short": device["name"] == "舵机系统",
+                    "pad": self._DEVICE_PAD,
+                }
+            )
+        self._entries = device_entries + self._meta_entries
+        self._reflow()
 
     def resizeEvent(self, event) -> None:  # noqa: N802
         super().resizeEvent(event)

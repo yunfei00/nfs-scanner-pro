@@ -194,6 +194,14 @@ QLabel[status="connected"] {
     color: #22C55E;
 }
 
+QLabel[status="disconnected"] {
+    color: #6B8299;
+}
+
+QLabel[status="error"] {
+    color: #EF4444;
+}
+
 QLabel#deviceStatusMetaLabel {
     color: #A8B3C2;
 }

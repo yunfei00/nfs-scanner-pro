@@ -104,6 +104,7 @@ DEVICE_STATUS = [
     {"name": "相机", "detail": "USB3.0", "status": "connected"},
     {"name": "舵机系统", "detail": "", "status": "connected"},
 ]
+# 运行时由 DeviceManagerMock.sync_mock_data() 同步更新。
 
 DEVICE_TOOLTIPS = {
     "运动平台": (
