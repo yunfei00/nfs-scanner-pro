@@ -176,10 +176,10 @@ def check_verify_all_isolated_from(report: verification_report.VerificationRepor
     failures: list[str] = []
     if proc.returncode != 0 or "RESULT: PASS" not in text:
         failures.append(f"exit={proc.returncode}")
-    ok_line, detail = _assert_runtime_lines(text, [29, 30, 31, 32, 33])
+    ok_line, detail = _assert_runtime_lines(text, [29, 30, 31, 32, 33, 34])
     if not ok_line:
         failures.append(detail)
-    for num in (29, 30, 31, 32, 33):
+    for num in (29, 30, 31, 32, 33, 34):
         if not verification_runtime.get_release_runtime_dir(f"{num:03d}").is_dir():
             failures.append(f"R{num:03d} dir missing")
     after = _list_mock_projects_files()
@@ -244,7 +244,7 @@ def check_verify_all_cli(report: verification_report.VerificationReport) -> None
     if list_proc.returncode != 0:
         failures.append("--list failed")
     else:
-        for num in range(22, 34):
+        for num in range(22, 35):
             if f"({num:03d})" not in list_text and f"Release {num:03d}" not in list_text:
                 failures.append(f"--list missing {num:03d}")
 

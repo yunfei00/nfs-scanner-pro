@@ -9,7 +9,7 @@ python scripts/verify_all.py
 
 ## 验收时间
 
-2026-06-30 15:29:45 UTC
+2026-06-30 15:51:09 UTC
 
 ## 检查项
 
@@ -22,7 +22,7 @@ python scripts/verify_all.py
 - [PASS] `device_manager_mock`
 - [PASS] `scan_engine_mock` — state=已完成 qtimer=False
 - [PASS] `scan_result_persistence` — dir=D:\code_2026\nfs-scanner-pro\runtime\verification\R023\mock_projects\iPhone16_Mainboard\scans\ST-VERIFY-023 csv_rows=100
-- [PASS] `analysis_data_source` — tasks=['ST-75490F', 'ST-8B5D70', 'ST-VERIFY-023'] empty_ok=True
+- [PASS] `analysis_data_source` — tasks=['ST-82C699', 'ST-F4DCE9', 'ST-VERIFY-023'] empty_ok=True
 - [PASS] `report_data_source` — D:\code_2026\nfs-scanner-pro\runtime\verification\R023\mock_projects\iPhone16_Mainboard\reports\RP-VERIFY-023\report_draft.json
 - [PASS] `no_real_device_access`
 

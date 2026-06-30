@@ -364,6 +364,58 @@ spec/AI_INDEX.md
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+### 5.1 做 Project Workspace UI Verification（Release 034）
+
+```text
+spec/AI_INDEX.md
+→ docs/product-spec/release/Release_034_Project_Workspace_UI_Verification/README.md
+→ scripts/verify_release_034.py
+→ scripts/scaffold_verify_release.py
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ### 5.2 做领域模型 / Mock JSON / 状态机
 
 ```text
