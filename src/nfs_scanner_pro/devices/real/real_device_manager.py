@@ -97,9 +97,35 @@ class RealDeviceManager:
                     f"({position.get('source', '')})"
                 )
         if self.spectrum.is_connected():
-            results["spectrum_idn"] = self.spectrum.query_idn()
-            results["spectrum_freq"] = self.spectrum.get_current_frequency()
-            results["spectrum_trace"] = self.spectrum.read_trace_info()
+            spectrum_test = self.spectrum.test_connection()
+            if isinstance(spectrum_test, dict):
+                idn = spectrum_test.get("idn", {})
+                freq = spectrum_test.get("frequency", {})
+                trace = spectrum_test.get("trace_info", {})
+                syst = spectrum_test.get("system_error", {})
+                results["spectrum_test"] = "PASS" if spectrum_test.get("ok") else "FAIL"
+                if isinstance(idn, dict):
+                    results["spectrum_idn"] = str(idn.get("idn", idn.get("error", "")))
+                if isinstance(syst, dict):
+                    results["spectrum_syst_err"] = str(
+                        syst.get("error_text", syst.get("error", ""))
+                    )
+                if isinstance(freq, dict) and freq.get("ok"):
+                    results["spectrum_freq"] = (
+                        f"{freq.get('frequency_ghz', 0):.6g} GHz"
+                    )
+                elif isinstance(freq, dict):
+                    results["spectrum_freq"] = str(freq.get("error", ""))
+                if isinstance(trace, dict) and trace.get("ok"):
+                    results["spectrum_trace"] = ", ".join(trace.get("traces", []))
+                elif isinstance(trace, dict):
+                    results["spectrum_trace"] = str(trace.get("error", ""))
+        elif self.enabled:
+            spectrum_test = self.spectrum.test_connection()
+            if isinstance(spectrum_test, dict):
+                results["spectrum_test"] = str(
+                    spectrum_test.get("error", spectrum_test.get("connect", "FAIL"))
+                )
         if self.camera.is_connected():
             results["camera_devices"] = ", ".join(self.camera.enumerate_devices()) or "—"
         return results
@@ -107,7 +133,7 @@ class RealDeviceManager:
     def get_device_status(self) -> list[dict[str, str]]:
         details = {
             DeviceType.MOTION: self.motion.port,
-            DeviceType.SPECTRUM: self.spectrum.model,
+            DeviceType.SPECTRUM: self.spectrum.address,
             DeviceType.CAMERA: self.camera.interface,
             DeviceType.SERVO: self.servo.current_probe,
         }
@@ -115,6 +141,13 @@ class RealDeviceManager:
         for device_type, device in self._devices.items():
             if not self.enabled:
                 status = "disabled"
+            elif device_type is DeviceType.SPECTRUM and hasattr(device, "model"):
+                if not self.enabled:
+                    status = "disabled"
+                elif device.is_connected():
+                    status = device.model or device.state.value
+                else:
+                    status = device.state.value
             elif device_type is DeviceType.MOTION and hasattr(device, "grbl_state"):
                 if device.is_connected():
                     grbl = getattr(device, "grbl_state", "") or device.state.value

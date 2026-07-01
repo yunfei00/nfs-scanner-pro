@@ -37,9 +37,14 @@ class MotionSafetyConfig:
 @dataclass
 class SpectrumConfig:
     backend: str = "socket"
-    address: str = "192.168.1.10:5025"
-    visa_resource: str = "TCPIP0::192.168.1.10::inst0::INSTR"
-    timeout: float = 5.0
+    host: str = "192.168.1.100"
+    port: int = 5025
+    timeout: float = 3.0
+    visa_address: str = "TCPIP0::192.168.1.100::inst0::INSTR"
+
+    @property
+    def address(self) -> str:
+        return f"{self.host}:{self.port}"
 
 
 @dataclass
@@ -88,14 +93,19 @@ def load_hardware_config() -> HardwareConfig:
         timeout=float(os.environ.get("NFS_MOTION_TIMEOUT", "2.0")),
     )
     motion_safety = load_motion_safety_config()
+    host = os.environ.get("NFS_SPECTRUM_HOST", "192.168.1.100")
+    port = int(os.environ.get("NFS_SPECTRUM_PORT", "5025"))
+    legacy_address = os.environ.get("NFS_SPECTRUM_ADDRESS", "")
+    if legacy_address and ":" in legacy_address and not os.environ.get("NFS_SPECTRUM_HOST"):
+        host, _, port_text = legacy_address.rpartition(":")
+        port = int(port_text)
+    visa_default = f"TCPIP0::{host}::inst0::INSTR"
     spectrum = SpectrumConfig(
-        backend=os.environ.get("NFS_SPECTRUM_BACKEND", "socket"),
-        address=os.environ.get("NFS_SPECTRUM_ADDRESS", "192.168.1.10:5025"),
-        visa_resource=os.environ.get(
-            "NFS_SPECTRUM_VISA_RESOURCE",
-            "TCPIP0::192.168.1.10::inst0::INSTR",
-        ),
-        timeout=float(os.environ.get("NFS_SPECTRUM_TIMEOUT", "5.0")),
+        backend=os.environ.get("NFS_SPECTRUM_BACKEND", "socket").strip().lower(),
+        host=host,
+        port=port,
+        visa_address=os.environ.get("NFS_SPECTRUM_VISA_ADDRESS", visa_default),
+        timeout=float(os.environ.get("NFS_SPECTRUM_TIMEOUT", "3.0")),
     )
     camera = CameraConfig(
         backend=os.environ.get("NFS_CAMERA_BACKEND", "opencv"),
@@ -118,6 +128,10 @@ def load_hardware_config() -> HardwareConfig:
 
 DISABLED_MESSAGE = (
     "真实设备未启用，请设置 NFS_ENABLE_REAL_HARDWARE=1 后再进行安全探测。"
+)
+
+SPECTRUM_DISABLED_MESSAGE = (
+    "真实频谱仪未启用，请设置 NFS_ENABLE_REAL_HARDWARE=1"
 )
 
 JOG_DISABLED_MESSAGE = (
