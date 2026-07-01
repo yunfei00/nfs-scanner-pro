@@ -156,26 +156,38 @@ def check_grbl_status_parser(report: verification_report.VerificationReport) -> 
 def check_motion_commands_blocked(report: verification_report.VerificationReport) -> None:
     report.start_check("motion_commands_blocked")
     try:
-        from nfs_scanner_pro.devices.real import MOTION_BLOCKED_MESSAGE, MotionGrblAdapter
+        from nfs_scanner_pro.devices.real import (
+            EMERGENCY_STOP_BLOCKED_MESSAGE,
+            MOTION_BLOCKED_MESSAGE,
+            MotionGrblAdapter,
+        )
 
         adapter = MotionGrblAdapter()
-        results = [
-            adapter.jog("x", "+"),
-            adapter.move_to(1, 2, 3),
-            adapter.home(),
-            adapter.stop(),
-        ]
-        ok = all(
-            isinstance(item, dict)
-            and item.get("blocked") is True
-            and item.get("ok") is False
-            and MOTION_BLOCKED_MESSAGE in str(item.get("message", ""))
-            for item in results
+        jog = adapter.jog("x", "+")
+        move = adapter.move_to(1, 2, 3)
+        home = adapter.home()
+        stop = adapter.stop()
+        ok = (
+            isinstance(jog, dict)
+            and jog.get("blocked") is True
+            and jog.get("ok") is False
+            and isinstance(move, dict)
+            and move.get("blocked") is True
+            and MOTION_BLOCKED_MESSAGE in str(move.get("message", ""))
+            and isinstance(home, dict)
+            and home.get("blocked") is True
+            and MOTION_BLOCKED_MESSAGE in str(home.get("message", ""))
+            and isinstance(stop, dict)
+            and stop.get("blocked") is True
+            and EMERGENCY_STOP_BLOCKED_MESSAGE in str(stop.get("message", ""))
         )
         if ok:
             report.pass_check("motion_commands_blocked")
         else:
-            report.fail_check("motion_commands_blocked", str(results))
+            report.fail_check(
+                "motion_commands_blocked",
+                f"jog={jog} move={move} home={home} stop={stop}",
+            )
     except Exception as exc:  # noqa: BLE001
         report.fail_check("motion_commands_blocked", str(exc))
 

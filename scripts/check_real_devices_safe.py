@@ -14,6 +14,7 @@ if str(SRC) not in sys.path:
 from nfs_scanner_pro.devices.real import (  # noqa: E402
     RealDeviceManager,
     is_real_hardware_enabled,
+    is_real_motion_jog_enabled,
     load_hardware_config,
 )
 
@@ -43,6 +44,11 @@ def main() -> int:
     manager = RealDeviceManager(config)
     print(f"Real hardware enabled: {is_real_hardware_enabled()}")
     print(f"Motion port: {config.motion.port}")
+    if is_real_motion_jog_enabled():
+        print(
+            "真实点动已开启，但本脚本不会执行点动。"
+            "如需手动点动，请使用 scripts/manual_motion_jog_safe.py"
+        )
     print("真实设备安全探测开始（不运动 / 不扫描 / 不控制舵机）")
     print("")
 

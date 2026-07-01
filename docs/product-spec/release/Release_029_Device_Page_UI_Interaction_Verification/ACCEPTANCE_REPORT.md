@@ -2,7 +2,7 @@
 
 ## 执行时间
 
-2026-07-01 16:46:56 UTC
+2026-07-01 23:26:12 UTC
 
 ## 执行命令
 
@@ -18,7 +18,7 @@ python scripts/verify_all.py
 - [PASS] `device_navigation` — dock='设备配置' status='状态：设备就绪'
 - [PASS] `device_config_dock` — groups=['DeviceProfile', '连接策略', '安全限制', '高级']
 - [PASS] `device_manager_mock` — ready=True keys=['timestamp', 'motion', 'spectrum', 'camera', 'servo']
-- [PASS] `device_status_bar` — ● 运动平台(COM6) ● 频谱仪(ZNA67) ● 相机(USB3.0) ● 舵机
+- [PASS] `device_status_bar` — ● 运动平台(COM6) ● 频谱仪(ZNA67) ● 相机(USB3.0) ● 舵机系统
 - [PASS] `motion_card_ui` — card=deviceCardMotion
 - [PASS] `motion_actions` — pos=(45.20,-28.30,5.00) jogs=[True, True, True, True, True, True]
 - [PASS] `spectrum_card_ui` — deviceCardSpectrum

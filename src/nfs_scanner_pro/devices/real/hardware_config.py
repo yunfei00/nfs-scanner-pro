@@ -10,11 +10,28 @@ def is_real_hardware_enabled() -> bool:
     return os.environ.get("NFS_ENABLE_REAL_HARDWARE", "").strip() == "1"
 
 
+def is_real_motion_jog_enabled() -> bool:
+    return os.environ.get("NFS_ENABLE_REAL_MOTION_JOG", "").strip() == "1"
+
+
 @dataclass
 class MotionConfig:
     port: str = "COM6"
     baudrate: int = 115200
     timeout: float = 2.0
+
+
+@dataclass
+class MotionSafetyConfig:
+    x_min: float = 0.0
+    x_max: float = 200.0
+    y_min: float = -200.0
+    y_max: float = 0.0
+    z_min: float = 0.0
+    z_max: float = 50.0
+    max_jog_step_mm: float = 1.0
+    default_jog_step_mm: float = 0.1
+    jog_feed_mm_min: float = 100.0
 
 
 @dataclass
@@ -42,9 +59,26 @@ class ServoConfig:
 @dataclass
 class HardwareConfig:
     motion: MotionConfig = field(default_factory=MotionConfig)
+    motion_safety: MotionSafetyConfig = field(default_factory=MotionSafetyConfig)
     spectrum: SpectrumConfig = field(default_factory=SpectrumConfig)
     camera: CameraConfig = field(default_factory=CameraConfig)
     servo: ServoConfig = field(default_factory=ServoConfig)
+
+
+def load_motion_safety_config() -> MotionSafetyConfig:
+    return MotionSafetyConfig(
+        x_min=float(os.environ.get("NFS_MOTION_X_MIN", "0.0")),
+        x_max=float(os.environ.get("NFS_MOTION_X_MAX", "200.0")),
+        y_min=float(os.environ.get("NFS_MOTION_Y_MIN", "-200.0")),
+        y_max=float(os.environ.get("NFS_MOTION_Y_MAX", "0.0")),
+        z_min=float(os.environ.get("NFS_MOTION_Z_MIN", "0.0")),
+        z_max=float(os.environ.get("NFS_MOTION_Z_MAX", "50.0")),
+        max_jog_step_mm=float(os.environ.get("NFS_MOTION_MAX_JOG_STEP_MM", "1.0")),
+        default_jog_step_mm=float(
+            os.environ.get("NFS_MOTION_DEFAULT_JOG_STEP_MM", "0.1")
+        ),
+        jog_feed_mm_min=float(os.environ.get("NFS_MOTION_JOG_FEED_MM_MIN", "100")),
+    )
 
 
 def load_hardware_config() -> HardwareConfig:
@@ -53,6 +87,7 @@ def load_hardware_config() -> HardwareConfig:
         baudrate=int(os.environ.get("NFS_MOTION_BAUDRATE", "115200")),
         timeout=float(os.environ.get("NFS_MOTION_TIMEOUT", "2.0")),
     )
+    motion_safety = load_motion_safety_config()
     spectrum = SpectrumConfig(
         backend=os.environ.get("NFS_SPECTRUM_BACKEND", "socket"),
         address=os.environ.get("NFS_SPECTRUM_ADDRESS", "192.168.1.10:5025"),
@@ -72,9 +107,19 @@ def load_hardware_config() -> HardwareConfig:
         timeout=float(os.environ.get("NFS_SERVO_TIMEOUT", "2.0")),
         current_probe=os.environ.get("NFS_SERVO_PROBE", "Hx"),
     )
-    return HardwareConfig(motion=motion, spectrum=spectrum, camera=camera, servo=servo)
+    return HardwareConfig(
+        motion=motion,
+        motion_safety=motion_safety,
+        spectrum=spectrum,
+        camera=camera,
+        servo=servo,
+    )
 
 
 DISABLED_MESSAGE = (
     "真实设备未启用，请设置 NFS_ENABLE_REAL_HARDWARE=1 后再进行安全探测。"
+)
+
+JOG_DISABLED_MESSAGE = (
+    "真实点动未启用，请设置 NFS_ENABLE_REAL_MOTION_JOG=1 后再进行手动点动。"
 )

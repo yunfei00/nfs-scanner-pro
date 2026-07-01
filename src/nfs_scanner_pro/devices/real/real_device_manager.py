@@ -30,7 +30,7 @@ def get_real_device_manager() -> RealDeviceManager:
 class RealDeviceManager:
     def __init__(self, config: HardwareConfig | None = None) -> None:
         self.config = config or load_hardware_config()
-        self.motion = MotionGrblAdapter(self.config.motion)
+        self.motion = MotionGrblAdapter(self.config.motion, self.config.motion_safety)
         self.spectrum = SpectrumScpiAdapter(self.config.spectrum)
         self.camera = CameraAdapter(self.config.camera)
         self.servo = ServoAdapter(self.config.servo)
@@ -50,6 +50,16 @@ class RealDeviceManager:
         if self.enabled:
             return ""
         return DISABLED_MESSAGE
+
+    def motion_safe_jog(
+        self,
+        axis: str,
+        direction: str,
+        step_mm: float,
+        *,
+        dry_run: bool = True,
+    ) -> dict[str, Any]:
+        return self.motion.safe_jog(axis, direction, step_mm, dry_run=dry_run)
 
     def connect_all_safe(self) -> dict[str, str]:
         if not self.enabled:

@@ -222,7 +222,7 @@ def check_verify_all_cli(report: verification_report.VerificationReport) -> None
     if list_proc.returncode != 0:
         failures.append("--list failed")
     else:
-        for num in range(22, 38):
+        for num in range(22, 39):
             if f"({num:03d})" not in list_text:
                 failures.append(f"--list missing {num:03d}")
 

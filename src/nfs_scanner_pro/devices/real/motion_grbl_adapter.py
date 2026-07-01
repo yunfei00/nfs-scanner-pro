@@ -1,4 +1,4 @@
-"""GRBL 运动平台 Adapter — 安全连接与位置读取（Release 037）。"""
+"""GRBL 运动平台 Adapter — 安全连接、位置读取与手动点动（Release 037/038）。"""
 
 from __future__ import annotations
 
@@ -6,11 +6,21 @@ import time
 from typing import Any
 
 from nfs_scanner_pro.devices.device_state import DeviceState
-from nfs_scanner_pro.devices.real.hardware_config import MotionConfig, is_real_hardware_enabled
+from nfs_scanner_pro.devices.real.hardware_config import (
+    MotionConfig,
+    MotionSafetyConfig,
+    is_real_hardware_enabled,
+    is_real_motion_jog_enabled,
+    load_motion_safety_config,
+)
 from nfs_scanner_pro.devices.real.hardware_safety import (
+    EMERGENCY_STOP_BLOCKED_MESSAGE,
+    MOTION_BLOCKED_MESSAGE,
     MOTION_DISABLED_MESSAGE,
+    block_jog_command,
     block_motion_command,
     require_real_hardware_enabled,
+    require_real_motion_jog_enabled,
 )
 
 try:
@@ -21,11 +31,19 @@ except ImportError:  # pragma: no cover - optional dependency
     _serial_mod = None
 
 _GRBL_STARTUP_WAIT_S = 0.15
+_JOG_COMMAND_PREFIX = "$J=G91 G21 "
+_VALID_AXES = frozenset({"x", "y", "z"})
+_VALID_DIRECTIONS = frozenset({"+", "-"})
 
 
 class MotionGrblAdapter:
-    def __init__(self, config: MotionConfig | None = None) -> None:
+    def __init__(
+        self,
+        config: MotionConfig | None = None,
+        safety: MotionSafetyConfig | None = None,
+    ) -> None:
         self.config = config or MotionConfig()
+        self.safety = safety or load_motion_safety_config()
         self.port = self.config.port
         self.baudrate = self.config.baudrate
         self.timeout = self.config.timeout
@@ -146,15 +164,20 @@ class MotionGrblAdapter:
     def refresh_position(self) -> dict[str, Any]:
         status = self.query_status()
         if not status.get("ok"):
-            return {
-                "ok": False,
-                "x": self.x,
-                "y": self.y,
-                "z": self.z,
-                "source": self.position_source,
-                "state": self.grbl_state,
-                "error": status.get("error", "未收到运动平台状态"),
-            }
+            if self.is_connected():
+                return {
+                    "ok": False,
+                    "x": self.x,
+                    "y": self.y,
+                    "z": self.z,
+                    "source": self.position_source,
+                    "state": self.grbl_state,
+                    "error": status.get("error", "未收到运动平台状态"),
+                }
+            return self._position_from_state(
+                ok=bool(self.x or self.y or self.z),
+                error=status.get("error", "未收到运动平台状态"),
+            )
         return {
             "ok": True,
             "x": self.x,
@@ -212,9 +235,206 @@ class MotionGrblAdapter:
 
         return result
 
-    def jog(self, axis: str, direction: str) -> dict[str, Any]:
-        del axis, direction
-        return block_motion_command("jog")
+    def build_jog_command(
+        self,
+        axis: str,
+        direction: str,
+        step_mm: float,
+        *,
+        feed_mm_min: float | None = None,
+    ) -> str:
+        axis_key = (axis or "").strip().lower()
+        if axis_key not in _VALID_AXES:
+            raise ValueError(f"非法轴：{axis!r}")
+        if direction not in _VALID_DIRECTIONS:
+            raise ValueError(f"非法方向：{direction!r}")
+        if step_mm <= 0:
+            raise ValueError("步长必须大于 0")
+
+        delta = step_mm if direction == "+" else -step_mm
+        letter = axis_key.upper()
+        feed = feed_mm_min if feed_mm_min is not None else self.safety.jog_feed_mm_min
+        return f"{_JOG_COMMAND_PREFIX}{letter}{delta:.3f} F{int(feed)}"
+
+    def validate_jog(
+        self,
+        axis: str,
+        direction: str,
+        step_mm: float,
+        current_position: dict[str, float],
+    ) -> dict[str, Any]:
+        axis_key = (axis or "").strip().lower()
+        if axis_key not in _VALID_AXES:
+            return {
+                "ok": False,
+                "reason": f"非法轴：{axis!r}",
+                "target_position": None,
+            }
+        if direction not in _VALID_DIRECTIONS:
+            return {
+                "ok": False,
+                "reason": f"非法方向：{direction!r}",
+                "target_position": None,
+            }
+        try:
+            step = float(step_mm)
+        except (TypeError, ValueError):
+            return {
+                "ok": False,
+                "reason": "步长无效",
+                "target_position": None,
+            }
+        if step <= 0:
+            return {
+                "ok": False,
+                "reason": "步长必须大于 0",
+                "target_position": None,
+            }
+        if step > self.safety.max_jog_step_mm:
+            return {
+                "ok": False,
+                "reason": (
+                    f"步长 {step:.3f} mm 超过最大允许 "
+                    f"{self.safety.max_jog_step_mm:.3f} mm"
+                ),
+                "target_position": None,
+            }
+
+        try:
+            pos = {
+                "x": float(current_position["x"]),
+                "y": float(current_position["y"]),
+                "z": float(current_position["z"]),
+            }
+        except (KeyError, TypeError, ValueError):
+            return {
+                "ok": False,
+                "reason": "当前位置无效，禁止点动",
+                "target_position": None,
+            }
+
+        delta = step if direction == "+" else -step
+        target = dict(pos)
+        target[axis_key] = pos[axis_key] + delta
+
+        limit_reason = _soft_limit_reason(target, self.safety)
+        if limit_reason:
+            return {
+                "ok": False,
+                "reason": limit_reason,
+                "target_position": target,
+            }
+
+        return {"ok": True, "reason": "", "target_position": target}
+
+    def emergency_stop_blocked(self) -> dict[str, Any]:
+        return {
+            "ok": False,
+            "blocked": True,
+            "message": EMERGENCY_STOP_BLOCKED_MESSAGE,
+        }
+
+    def safe_jog(
+        self,
+        axis: str,
+        direction: str,
+        step_mm: float,
+        *,
+        dry_run: bool = False,
+    ) -> dict[str, Any]:
+        ok_jog, jog_message = require_real_motion_jog_enabled()
+        if not ok_jog:
+            return block_jog_command(jog_message)
+
+        before = self._read_position_for_jog(dry_run=dry_run)
+        if not before.get("ok"):
+            return {
+                "ok": False,
+                "blocked": False,
+                "error": before.get("error", "无法读取当前位置，禁止点动"),
+            }
+
+        current = {"x": before["x"], "y": before["y"], "z": before["z"]}
+        validation = self.validate_jog(axis, direction, step_mm, current)
+        if not validation.get("ok"):
+            return {
+                "ok": False,
+                "blocked": False,
+                "error": validation.get("reason", "点动校验失败"),
+                "target_position": validation.get("target_position"),
+            }
+
+        try:
+            command = self.build_jog_command(axis, direction, float(step_mm))
+        except ValueError as exc:
+            return {"ok": False, "blocked": False, "error": str(exc)}
+
+        target = validation["target_position"]
+        result: dict[str, Any] = {
+            "ok": True,
+            "dry_run": dry_run,
+            "axis": (axis or "").strip().lower(),
+            "direction": direction,
+            "step_mm": float(step_mm),
+            "command": command,
+            "position_before": current,
+            "target_position": target,
+            "position_after": dict(current),
+        }
+
+        if dry_run:
+            result["message"] = "dry-run：未发送点动命令"
+            return result
+
+        if not self.is_connected():
+            return {
+                "ok": False,
+                "blocked": False,
+                "error": "运动平台未连接，无法点动",
+                "command": command,
+                "target_position": target,
+            }
+
+        if self._serial is None:
+            return {
+                "ok": False,
+                "blocked": False,
+                "error": "串口未打开，无法点动",
+                "command": command,
+                "target_position": target,
+            }
+
+        try:
+            self._write_jog_command(command)
+            self._read_jog_response()
+            after = self.refresh_position()
+            if after.get("ok"):
+                result["position_after"] = {
+                    "x": after["x"],
+                    "y": after["y"],
+                    "z": after["z"],
+                }
+            else:
+                result["position_after"] = dict(current)
+                result["warning"] = after.get("error", "点动后未能读取位置")
+            result["message"] = "点动完成"
+            return result
+        except Exception as exc:  # noqa: BLE001
+            self.last_error = str(exc)
+            return {
+                "ok": False,
+                "blocked": False,
+                "error": f"点动失败：{exc}",
+                "command": command,
+                "target_position": target,
+                "position_before": current,
+            }
+
+    def jog(self, axis: str, direction: str, step_mm: float | None = None) -> dict[str, Any]:
+        step = self.safety.default_jog_step_mm if step_mm is None else step_mm
+        if not is_real_motion_jog_enabled():
+            return block_jog_command()
+        return self.safe_jog(axis, direction, step, dry_run=False)
 
     def move_to(self, x: float, y: float, z: float) -> dict[str, Any]:
         del x, y, z
@@ -224,13 +444,14 @@ class MotionGrblAdapter:
         return block_motion_command("home")
 
     def stop(self) -> dict[str, Any]:
-        return block_motion_command("stop")
+        return self.emergency_stop_blocked()
 
     def snapshot(self) -> dict[str, Any]:
         return {
             "type": "motion",
             "real": True,
             "enabled": is_real_hardware_enabled(),
+            "jog_enabled": is_real_motion_jog_enabled(),
             "connected": self.is_connected(),
             "port": self.port,
             "baudrate": self.baudrate,
@@ -242,9 +463,61 @@ class MotionGrblAdapter:
                 "source": self.position_source,
             },
             "safe_mode": True,
+            "jog_limits": {
+                "x_min": self.safety.x_min,
+                "x_max": self.safety.x_max,
+                "y_min": self.safety.y_min,
+                "y_max": self.safety.y_max,
+                "z_min": self.safety.z_min,
+                "z_max": self.safety.z_max,
+                "max_jog_step_mm": self.safety.max_jog_step_mm,
+                "default_jog_step_mm": self.safety.default_jog_step_mm,
+            },
             "last_error": self.last_error,
             "raw_status": self._last_status.get("raw", ""),
         }
+
+    def _read_position_for_jog(self, *, dry_run: bool) -> dict[str, Any]:
+        if self.is_connected():
+            pos = self.refresh_position()
+            if pos.get("ok"):
+                return pos
+            if dry_run:
+                return self._position_from_state(ok=True)
+            return pos
+        if dry_run:
+            return self._position_from_state(ok=True)
+        return {
+            "ok": False,
+            "error": "运动平台未连接，无法读取位置",
+            "x": self.x,
+            "y": self.y,
+            "z": self.z,
+        }
+
+    def _position_from_state(self, *, ok: bool, error: str = "") -> dict[str, Any]:
+        return {
+            "ok": ok,
+            "x": self.x,
+            "y": self.y,
+            "z": self.z,
+            "source": self.position_source,
+            "state": self.grbl_state,
+            "error": error,
+        }
+
+    def _write_jog_command(self, command: str) -> None:
+        if not command.startswith(_JOG_COMMAND_PREFIX):
+            raise ValueError("仅允许 GRBL 增量点动命令")
+        for forbidden in ("G0", "G1", "$H", "G28"):
+            if forbidden in command:
+                raise ValueError(f"禁止发送命令片段：{forbidden}")
+        if self._serial is None:
+            raise RuntimeError("串口未打开")
+        self._serial.write(f"{command}\n".encode("ascii"))
+
+    def _read_jog_response(self) -> str:
+        return self._read_line(timeout_extra=self.timeout)
 
     def _read_line(self, *, timeout_extra: float = 0.0) -> str:
         if self._serial is None:
@@ -266,3 +539,19 @@ def _parse_coord_triplet(text: str) -> tuple[float, float, float] | None:
         return float(parts[0]), float(parts[1]), float(parts[2])
     except ValueError:
         return None
+
+
+def _soft_limit_reason(target: dict[str, float], safety: MotionSafetyConfig) -> str:
+    checks = (
+        ("x", safety.x_min, safety.x_max),
+        ("y", safety.y_min, safety.y_max),
+        ("z", safety.z_min, safety.z_max),
+    )
+    for axis, low, high in checks:
+        value = target[axis]
+        if value < low or value > high:
+            return (
+                f"目标位置 {axis.upper()}={value:.3f} mm 超出软限位 "
+                f"[{low:.3f}, {high:.3f}]"
+            )
+    return ""
