@@ -31,8 +31,37 @@ ALLOWED_QUERY_COMMANDS = frozenset(
         "SENS:FREQ:CENT?",
         "INST:SEL?",
         "CONF?",
+        "CALC:MARK1:Y?",
+        "CALC:MARK:Y?",
+        "CALC:MARKER1:Y?",
+        "CALC:MARKER:Y?",
+        "CALC:MARK1:X?",
+        "CALC:MARK:X?",
+        "CALC:MARKER1:X?",
+        "CALC:MARKER:X?",
     }
 )
+
+MARKER_AMPLITUDE_COMMANDS = (
+    "CALC:MARK1:Y?",
+    "CALC:MARK:Y?",
+    "CALC:MARKER1:Y?",
+    "CALC:MARKER:Y?",
+)
+
+MARKER_FREQUENCY_COMMANDS = (
+    "CALC:MARK1:X?",
+    "CALC:MARK:X?",
+    "CALC:MARKER1:X?",
+    "CALC:MARKER:X?",
+)
+
+_MARKER_AMP_TO_FREQ = {
+    "CALC:MARK1:Y?": "CALC:MARK1:X?",
+    "CALC:MARK:Y?": "CALC:MARK:X?",
+    "CALC:MARKER1:Y?": "CALC:MARKER1:X?",
+    "CALC:MARKER:Y?": "CALC:MARKER:X?",
+}
 
 FORBIDDEN_COMMAND_KEYWORDS = (
     "INIT",
@@ -69,6 +98,10 @@ class SpectrumScpiAdapter:
         self._frequency_hz: float | None = None
         self._frequency_ghz: float | None = None
         self._trace_info: dict[str, Any] = {}
+        self._last_single_point: dict[str, Any] = {
+            "ok": False,
+            "disabled": True,
+        }
         self._visa_resource = None
         self._socket = None
 
@@ -123,6 +156,8 @@ class SpectrumScpiAdapter:
         if cmd in ALLOWED_QUERY_COMMANDS:
             return True, ""
         if not cmd.endswith("?"):
+            if " STAT ON" in cmd or cmd.endswith(" ON"):
+                return False, f"禁止启用 Marker 或写命令：{command!r}"
             return False, f"仅允许查询命令（必须以 ? 结尾）：{command!r}"
         if "FREQ:CENT" in cmd and not cmd.endswith("?"):
             return False, "禁止设置中心频率"
@@ -267,6 +302,227 @@ class SpectrumScpiAdapter:
             if not was_connected and self.is_connected():
                 outcome["disconnect"] = self.disconnect()
 
+    @staticmethod
+    def parse_amplitude_response(raw: str | None) -> dict[str, Any]:
+        if raw is None:
+            return {"ok": False, "error": "空幅度响应", "raw": ""}
+        text = str(raw).strip().strip('"')
+        if not text:
+            return {"ok": False, "error": "空幅度响应", "raw": raw}
+        first = text.split(",")[0].strip()
+        try:
+            amplitude = float(first)
+        except ValueError:
+            return {
+                "ok": False,
+                "error": f"无法解析幅度：{first!r}",
+                "raw": raw,
+            }
+        return {
+            "ok": True,
+            "amplitude": amplitude,
+            "amplitude_dbm": amplitude,
+            "unit": "dBm",
+            "raw": raw,
+        }
+
+    @staticmethod
+    def parse_marker_response(raw: str | None) -> dict[str, Any]:
+        if raw is None:
+            return {"ok": False, "error": "空 Marker 响应", "raw": ""}
+        text = str(raw).strip().strip('"')
+        if not text:
+            return {"ok": False, "error": "空 Marker 响应", "raw": raw}
+
+        parts = [p.strip().strip('"') for p in text.split(",")]
+        floats: list[float] = []
+        for part in parts:
+            if not part:
+                continue
+            try:
+                floats.append(float(part))
+            except ValueError:
+                continue
+
+        if not floats:
+            return {
+                "ok": False,
+                "error": f"无法解析 Marker 响应：{text!r}",
+                "raw": raw,
+            }
+
+        result: dict[str, Any] = {
+            "ok": True,
+            "raw": raw,
+            "unit": "dBm",
+        }
+
+        if len(floats) >= 2 and abs(floats[0]) >= 1e6:
+            result["frequency_hz"] = floats[0]
+            result["frequency_ghz"] = floats[0] / 1e9
+            result["amplitude"] = floats[1]
+            result["amplitude_dbm"] = floats[1]
+            return result
+
+        result["amplitude"] = floats[0]
+        result["amplitude_dbm"] = floats[0]
+        if len(floats) >= 2 and abs(floats[0]) < 1e6:
+            result["phase"] = floats[1]
+        return result
+
+    def read_marker_amplitude(self) -> dict[str, Any]:
+        if not is_real_hardware_enabled():
+            return {
+                "ok": False,
+                "error": SPECTRUM_DISABLED_MESSAGE,
+                "disabled": True,
+            }
+        if not self.is_connected():
+            return {"ok": False, "error": "频谱仪未连接", "raw": ""}
+
+        errors: list[str] = []
+        for command in MARKER_AMPLITUDE_COMMANDS:
+            result = self._execute_query(command)
+            if not result.get("ok"):
+                errors.append(str(result.get("error", command)))
+                continue
+            raw = str(result.get("raw", ""))
+            parsed = self.parse_marker_response(raw)
+            if not parsed.get("ok"):
+                amp_only = self.parse_amplitude_response(raw)
+                if not amp_only.get("ok"):
+                    errors.append(str(parsed.get("error", amp_only.get("error", ""))))
+                    continue
+                parsed = amp_only
+            frequency_hz = parsed.get("frequency_hz")
+            frequency_ghz = parsed.get("frequency_ghz")
+            if frequency_hz is None:
+                freq_cmd = _MARKER_AMP_TO_FREQ.get(command)
+                if freq_cmd:
+                    freq_result = self._execute_query(freq_cmd)
+                    if freq_result.get("ok"):
+                        freq_parsed = self.parse_frequency_response(
+                            str(freq_result.get("raw", ""))
+                        )
+                        if freq_parsed.get("ok"):
+                            frequency_hz = freq_parsed["frequency_hz"]
+                            frequency_ghz = freq_parsed["frequency_ghz"]
+            if frequency_hz is None and self._frequency_hz is not None:
+                frequency_hz = self._frequency_hz
+                frequency_ghz = self._frequency_ghz
+
+            outcome = {
+                "ok": True,
+                "source": "marker",
+                "command": command,
+                "frequency_hz": frequency_hz,
+                "frequency_ghz": frequency_ghz,
+                "amplitude": parsed.get("amplitude"),
+                "amplitude_dbm": parsed.get("amplitude_dbm"),
+                "unit": parsed.get("unit", "dBm"),
+                "trace": self.trace,
+                "raw": raw,
+            }
+            self._last_single_point = dict(outcome)
+            return outcome
+
+        return {
+            "ok": False,
+            "error": "当前仪表无可用 Marker 或未返回幅度",
+            "details": errors,
+            "raw": "",
+        }
+
+    def read_single_point_amplitude(self) -> dict[str, Any]:
+        if not is_real_hardware_enabled():
+            outcome = {
+                "ok": False,
+                "disabled": True,
+                "error": SPECTRUM_DISABLED_MESSAGE,
+            }
+            self._last_single_point = dict(outcome)
+            return outcome
+
+        was_connected = self.is_connected()
+        outcome: dict[str, Any] = {
+            "ok": False,
+            "enabled": True,
+            "connect": "",
+            "idn": {},
+            "frequency": {},
+            "marker": {},
+            "disconnect": "",
+        }
+        try:
+            if not was_connected:
+                outcome["connect"] = self.connect()
+                if not self.is_connected():
+                    outcome["error"] = outcome["connect"]
+                    self._last_single_point = {
+                        "ok": False,
+                        "disabled": False,
+                        "error": outcome["connect"],
+                    }
+                    return outcome
+
+            outcome["idn"] = self.query_idn()
+            outcome["frequency"] = self.get_current_frequency()
+            marker = self.read_marker_amplitude()
+            outcome["marker"] = marker
+            outcome["ok"] = bool(marker.get("ok"))
+            if marker.get("ok"):
+                outcome.update(
+                    {
+                        "source": marker.get("source", "marker"),
+                        "command": marker.get("command", ""),
+                        "frequency_hz": marker.get("frequency_hz"),
+                        "frequency_ghz": marker.get("frequency_ghz"),
+                        "amplitude": marker.get("amplitude"),
+                        "amplitude_dbm": marker.get("amplitude_dbm"),
+                        "unit": marker.get("unit", "dBm"),
+                        "trace": marker.get("trace", self.trace),
+                        "raw": marker.get("raw", ""),
+                    }
+                )
+                self._last_single_point = {
+                    "ok": True,
+                    "amplitude_dbm": marker.get("amplitude_dbm"),
+                    "unit": marker.get("unit", "dBm"),
+                    "source": marker.get("source", "marker"),
+                    "frequency_ghz": marker.get("frequency_ghz"),
+                }
+            else:
+                outcome["error"] = marker.get(
+                    "error", "Marker 单点幅度读取失败"
+                )
+                self._last_single_point = {
+                    "ok": False,
+                    "disabled": False,
+                    "error": outcome["error"],
+                    "frequency_ghz": outcome["frequency"].get("frequency_ghz"),
+                }
+            return outcome
+        except Exception as exc:  # noqa: BLE001
+            outcome["error"] = str(exc)
+            self._last_single_point = {
+                "ok": False,
+                "disabled": False,
+                "error": str(exc),
+            }
+            return outcome
+        finally:
+            if not was_connected and self.is_connected():
+                outcome["disconnect"] = self.disconnect()
+
+    def safe_single_point_snapshot(self) -> dict[str, Any]:
+        if not is_real_hardware_enabled():
+            return {
+                "ok": False,
+                "disabled": True,
+                "error": SPECTRUM_DISABLED_MESSAGE,
+            }
+        return dict(self.read_single_point_amplitude())
+
     def single_sweep(self) -> str:
         return "真实 Sweep 暂未启用，请在安全确认后开启。"
 
@@ -278,6 +534,12 @@ class SpectrumScpiAdapter:
         return "真实频率配置暂未启用，请在安全确认后开启。"
 
     def snapshot(self) -> dict[str, Any]:
+        if not is_real_hardware_enabled():
+            single_point: dict[str, Any] = {"ok": False, "disabled": True}
+        else:
+            single_point = dict(self._last_single_point)
+            if "disabled" not in single_point:
+                single_point.setdefault("disabled", False)
         return {
             "type": "spectrum",
             "real": True,
@@ -294,6 +556,7 @@ class SpectrumScpiAdapter:
             "frequency_hz": self._frequency_hz,
             "frequency_ghz": self._frequency_ghz,
             "trace_info": self._trace_info,
+            "single_point": single_point,
             "state": self.state.value,
             "safe_mode": True,
             "last_error": self.last_error,

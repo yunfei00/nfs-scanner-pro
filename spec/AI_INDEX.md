@@ -543,6 +543,18 @@ spec/AI_INDEX.md
 
 
 
+
+### 5.1 做 Real Spectrum Single Point Amplitude Read（Release 040）
+
+```text
+spec/AI_INDEX.md
+→ docs/product-spec/release/Release_040_Real_Spectrum_Single_Point_Amplitude_Read/README.md
+→ scripts/verify_release_040.py
+→ scripts/scaffold_verify_release.py
+```
+
+
+
 ### 5.2 做领域模型 / Mock JSON / 状态机
 
 ```text

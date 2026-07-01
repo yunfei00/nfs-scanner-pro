@@ -34,6 +34,7 @@ related_docs:
     - docs/product-spec/release/Release_030_Cross_Page_Workflow_UI_Verification/README.md
     - docs/product-spec/release/Release_031_Verification_Performance_Isolation/README.md
     - docs/product-spec/release/Release_032_Migrate_Legacy_Verify_Scripts_To_Isolated_Runtime/README.md
+    - docs/product-spec/release/Release_040_Real_Spectrum_Single_Point_Amplitude_Read/README.md
     - docs/product-spec/release/Release_039_Real_Spectrum_Analyzer_Safe_Connect_And_Read/README.md
     - docs/product-spec/release/Release_038_Real_Motion_Manual_Safe_Jog_Unlock/README.md
     - docs/product-spec/release/Release_037_Real_Motion_Platform_Safe_Connect_And_Position_Read/README.md

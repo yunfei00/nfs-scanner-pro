@@ -2,7 +2,7 @@
 
 ## 执行时间
 
-2026-07-01 23:34:20 UTC
+2026-07-01 23:47:09 UTC
 
 ## 执行命令
 
@@ -24,7 +24,7 @@ python scripts/verify_all.py
 - [SKIP] `verify_all_from` — NFS_VERIFY_NESTED=1
 - [PASS] `verify_all_summary_format` (0.00s)
 - [PASS] `no_real_device_access` (0.01s)
-- [PASS] `no_high_fidelity_changes` (0.11s)
+- [PASS] `no_high_fidelity_changes` (0.09s)
 
 ## 结果
 

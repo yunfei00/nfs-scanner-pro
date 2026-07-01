@@ -83,6 +83,22 @@ class RealDeviceManager:
         if not self.enabled:
             return {"status": "disabled", "message": DISABLED_MESSAGE}
         results = self.connect_all_safe()
+        if self.enabled:
+            single = self.spectrum.read_single_point_amplitude()
+            if isinstance(single, dict):
+                marker = single.get("marker", single)
+                results["spectrum_single_point"] = (
+                    "PASS" if single.get("ok") else "FAIL"
+                )
+                if single.get("ok"):
+                    results["spectrum_amplitude_dbm"] = str(
+                        single.get("amplitude_dbm", marker.get("amplitude_dbm", ""))
+                    )
+                    results["spectrum_marker_raw"] = str(single.get("raw", ""))
+                else:
+                    results["spectrum_amplitude_dbm"] = str(
+                        single.get("error", marker.get("error", ""))
+                    )
         if self.motion.is_connected():
             status = self.motion.query_status()
             position = self.motion.refresh_position()
@@ -95,36 +111,6 @@ class RealDeviceManager:
                     f"Y={position.get('y', 0):.3f} "
                     f"Z={position.get('z', 0):.3f} "
                     f"({position.get('source', '')})"
-                )
-        if self.spectrum.is_connected():
-            spectrum_test = self.spectrum.test_connection()
-            if isinstance(spectrum_test, dict):
-                idn = spectrum_test.get("idn", {})
-                freq = spectrum_test.get("frequency", {})
-                trace = spectrum_test.get("trace_info", {})
-                syst = spectrum_test.get("system_error", {})
-                results["spectrum_test"] = "PASS" if spectrum_test.get("ok") else "FAIL"
-                if isinstance(idn, dict):
-                    results["spectrum_idn"] = str(idn.get("idn", idn.get("error", "")))
-                if isinstance(syst, dict):
-                    results["spectrum_syst_err"] = str(
-                        syst.get("error_text", syst.get("error", ""))
-                    )
-                if isinstance(freq, dict) and freq.get("ok"):
-                    results["spectrum_freq"] = (
-                        f"{freq.get('frequency_ghz', 0):.6g} GHz"
-                    )
-                elif isinstance(freq, dict):
-                    results["spectrum_freq"] = str(freq.get("error", ""))
-                if isinstance(trace, dict) and trace.get("ok"):
-                    results["spectrum_trace"] = ", ".join(trace.get("traces", []))
-                elif isinstance(trace, dict):
-                    results["spectrum_trace"] = str(trace.get("error", ""))
-        elif self.enabled:
-            spectrum_test = self.spectrum.test_connection()
-            if isinstance(spectrum_test, dict):
-                results["spectrum_test"] = str(
-                    spectrum_test.get("error", spectrum_test.get("connect", "FAIL"))
                 )
         if self.camera.is_connected():
             results["camera_devices"] = ", ".join(self.camera.enumerate_devices()) or "—"
