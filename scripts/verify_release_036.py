@@ -185,11 +185,15 @@ def check_motion_commands_blocked(report: verification_report.VerificationReport
             adapter.home(),
             adapter.stop(),
         ]
-        ok = all(MOTION_BLOCKED_MESSAGE in msg for msg in messages)
+        ok = all(
+            (isinstance(msg, dict) and msg.get("blocked") and MOTION_BLOCKED_MESSAGE in str(msg.get("message", "")))
+            or (isinstance(msg, str) and MOTION_BLOCKED_MESSAGE in msg)
+            for msg in messages
+        )
         if ok:
             report.pass_check("motion_commands_blocked")
         else:
-            report.fail_check("motion_commands_blocked", "; ".join(messages))
+            report.fail_check("motion_commands_blocked", str(messages))
     except Exception as exc:  # noqa: BLE001
         report.fail_check("motion_commands_blocked", str(exc))
 

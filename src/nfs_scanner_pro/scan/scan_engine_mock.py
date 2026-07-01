@@ -30,6 +30,12 @@ def get_scan_engine() -> ScanEngineMock:
     return _engine
 
 
+def reset_scan_engine() -> None:
+    """丢弃单例，避免多次 MainWindow 验收时回调累积。"""
+    global _engine
+    _engine = None
+
+
 class ScanEngineMock:
     TICK_POINTS_MIN = 50
     TICK_POINTS_MAX = 100

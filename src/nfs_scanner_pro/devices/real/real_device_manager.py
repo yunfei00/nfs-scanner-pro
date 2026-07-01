@@ -74,8 +74,18 @@ class RealDeviceManager:
             return {"status": "disabled", "message": DISABLED_MESSAGE}
         results = self.connect_all_safe()
         if self.motion.is_connected():
-            results["motion_status"] = self.motion.query_status()
-            results["motion_position"] = self.motion.refresh_position()
+            status = self.motion.query_status()
+            position = self.motion.refresh_position()
+            if isinstance(status, dict):
+                results["motion_status_raw"] = str(status.get("raw", ""))
+                results["motion_state"] = str(status.get("state", ""))
+            if isinstance(position, dict):
+                results["motion_position"] = (
+                    f"X={position.get('x', 0):.3f} "
+                    f"Y={position.get('y', 0):.3f} "
+                    f"Z={position.get('z', 0):.3f} "
+                    f"({position.get('source', '')})"
+                )
         if self.spectrum.is_connected():
             results["spectrum_idn"] = self.spectrum.query_idn()
             results["spectrum_freq"] = self.spectrum.get_current_frequency()
@@ -95,6 +105,12 @@ class RealDeviceManager:
         for device_type, device in self._devices.items():
             if not self.enabled:
                 status = "disabled"
+            elif device_type is DeviceType.MOTION and hasattr(device, "grbl_state"):
+                if device.is_connected():
+                    grbl = getattr(device, "grbl_state", "") or device.state.value
+                    status = grbl
+                else:
+                    status = device.state.value
             else:
                 status = device.state.value if hasattr(device, "state") else "unknown"
             rows.append(

@@ -33,6 +33,7 @@ VERIFY_SCRIPTS: tuple[tuple[int, str, Path], ...] = (
     (34, "Release 034", SCRIPTS / "verify_release_034.py"),
     (35, "Release 035", SCRIPTS / "verify_release_035.py"),
     (36, "Release 036", SCRIPTS / "verify_release_036.py"),
+    (37, "Release 037", SCRIPTS / "verify_release_037.py"),
 )
 
 TAIL_LINES = 80
@@ -150,6 +151,7 @@ def run_script(
         verification_runtime.clean_release_runtime(release_id)
 
     env = verification_runtime.build_release_env(release_id)
+    env["NFS_VERIFY_NESTED"] = "1"
     print(f"Running {label} ...", flush=True)
     print(f"Runtime: {runtime_path}", flush=True)
     started = time.perf_counter()

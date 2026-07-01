@@ -495,6 +495,30 @@ spec/AI_INDEX.md
 
 
 
+
+### 5.1 做 Real Motion Platform Safe Connect And Position Read（Release 037）
+
+```text
+spec/AI_INDEX.md
+→ docs/product-spec/release/Release_037_Real_Motion_Platform_Safe_Connect_And_Position_Read/README.md
+→ scripts/verify_release_037.py
+→ scripts/scaffold_verify_release.py
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ### 5.2 做领域模型 / Mock JSON / 状态机
 
 ```text

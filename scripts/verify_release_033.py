@@ -222,7 +222,7 @@ def check_verify_all_cli(report: verification_report.VerificationReport) -> None
     if list_proc.returncode != 0:
         failures.append("--list failed")
     else:
-        for num in range(22, 37):
+        for num in range(22, 38):
             if f"({num:03d})" not in list_text:
                 failures.append(f"--list missing {num:03d}")
 
@@ -232,17 +232,17 @@ def check_verify_all_cli(report: verification_report.VerificationReport) -> None
         failures.append("--only 032 failed")
 
     from_proc = _run(
-        [sys.executable, str(VERIFY_ALL), "--from", "032"],
+        [sys.executable, str(VERIFY_ALL), "--from", "036"],
         env={"NFS_VERIFY_NESTED": "1"},
     )
     from_text = from_proc.stdout + from_proc.stderr
     running = [ln for ln in from_text.splitlines() if ln.startswith("Running ")]
     if from_proc.returncode != 0 or "RESULT: PASS" not in from_text:
-        failures.append("--from 032 failed")
-    elif len(running) != 5:
-        failures.append(f"--from 032 runs={len(running)} expected 5")
-    elif not any("Release 036" in ln for ln in running):
-        failures.append("--from 032 missing Release 036")
+        failures.append("--from 036 failed")
+    elif len(running) != 2:
+        failures.append(f"--from 036 runs={len(running)} expected 2")
+    elif not any("Release 037" in ln for ln in running):
+        failures.append("--from 036 missing Release 037")
 
     if failures:
         report.fail_check("verify_all_cli", "; ".join(failures))

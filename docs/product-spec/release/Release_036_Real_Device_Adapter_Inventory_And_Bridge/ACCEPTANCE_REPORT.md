@@ -2,7 +2,7 @@
 
 ## 执行时间
 
-2026-06-30 23:23:01 UTC
+2026-07-01 16:46:57 UTC
 
 ## 执行命令
 
@@ -14,15 +14,15 @@ python scripts/verify_all.py --only 036
 
 ## 检查项
 
-- [PASS] `compileall` (0.51s)
+- [PASS] `compileall` (0.61s)
 - [PASS] `code_inventory` (0.00s) — 7 files
-- [PASS] `mock_ui_boot` (0.29s)
-- [PASS] `device_manager_mock_intact` (0.15s)
+- [PASS] `mock_ui_boot` (0.21s)
+- [PASS] `device_manager_mock_intact` (0.00s)
 - [PASS] `real_adapters_importable` (0.00s)
 - [PASS] `real_hardware_disabled_by_default` (0.00s)
 - [PASS] `motion_commands_blocked` (0.00s)
-- [PASS] `check_real_devices_safe_default` (0.41s)
-- [PASS] `no_high_fidelity_changes` (0.06s)
+- [PASS] `check_real_devices_safe_default` (0.46s)
+- [PASS] `no_high_fidelity_changes` (0.07s)
 
 ## 结果
 

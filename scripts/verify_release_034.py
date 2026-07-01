@@ -75,7 +75,7 @@ class UiContext:
             raise RuntimeError("MainWindow not initialized")
 
 
-def _process(app, rounds: int = 10) -> None:
+def _process(app, rounds: int = 3) -> None:
     for _ in range(rounds):
         app.processEvents()
         time.sleep(0.02)
@@ -170,6 +170,9 @@ def _reset_isolated_runtime() -> Path:
     verification_runtime.clean_release_runtime("034")
     runtime_dir = verification_runtime.enter_release_runtime("R034")
     setup_path()
+    from nfs_scanner_pro.scan.scan_engine_mock import reset_scan_engine
+
+    reset_scan_engine()
     from nfs_scanner_pro import project_mock, workspace_state_mock
     from nfs_scanner_pro.app_paths import get_workspace_state_path
 

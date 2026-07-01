@@ -9,6 +9,7 @@ from nfs_scanner_pro.devices.real.hardware_config import (
 )
 from nfs_scanner_pro.devices.real.hardware_safety import (
     MOTION_BLOCKED_MESSAGE,
+    MOTION_DISABLED_MESSAGE,
     block_motion_command,
     require_real_hardware_enabled,
 )
@@ -22,6 +23,7 @@ __all__ = [
     "DISABLED_MESSAGE",
     "HardwareConfig",
     "MOTION_BLOCKED_MESSAGE",
+    "MOTION_DISABLED_MESSAGE",
     "MotionGrblAdapter",
     "RealDeviceManager",
     "ServoAdapter",
