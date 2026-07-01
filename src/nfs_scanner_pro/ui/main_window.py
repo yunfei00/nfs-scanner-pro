@@ -14,6 +14,7 @@ from PySide6.QtWidgets import (
     QMenu,
     QMenuBar,
     QMessageBox,
+    QSizePolicy,
     QStackedWidget,
     QToolBar,
     QToolButton,
@@ -190,6 +191,8 @@ class MainWindow(QMainWindow):
 
     def _build_menu_bar(self, menu_bar: QMenuBar) -> None:
         menu_bar.setObjectName("menuBar")
+        menu_bar.setNativeMenuBar(False)
+        menu_bar.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
 
         file_menu = menu_bar.addMenu("文件(F)")
         file_menu.addAction("新建项目", self._on_new_project)
@@ -613,6 +616,9 @@ class MainWindow(QMainWindow):
             if suffix != "未打开项目"
             else self.WINDOW_TITLE
         )
+        top_menu = getattr(self, "_top_menu_bar", None)
+        if top_menu is not None and hasattr(top_menu, "set_title_text"):
+            top_menu.set_title_text(self.windowTitle())
         self._sync_project_status_extras()
         if hasattr(self, "_scan_page") and self._scan_page is not None:
             from nfs_scanner_pro.scan import ScanTaskConfig

@@ -97,8 +97,26 @@ QToolButton[variant="secondary"]:hover {
 QWidget#topMenuBar {
     background-color: #0B1724;
     border-bottom: 1px solid #1E2D3D;
+    min-height: 64px;
+    max-height: 64px;
+}
+
+QWidget#titleBarStrip {
+    background-color: #0B1724;
+    border-bottom: 1px solid #1E2D3D;
     min-height: 32px;
     max-height: 32px;
+}
+
+QLabel#titleBarLabel {
+    color: #A8B3C2;
+    font-size: 12px;
+    padding: 0;
+    background: transparent;
+}
+
+QMenuBar#menuBar {
+    border-bottom: none;
 }
 
 QWidget#windowControls {
