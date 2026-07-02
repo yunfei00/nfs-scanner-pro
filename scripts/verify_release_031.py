@@ -121,7 +121,7 @@ def check_verify_all_list(report: verification_report.VerificationReport) -> Non
     text = proc.stdout
     ok = proc.returncode == 0 and all(
         f"Release {num:03d}" in text or f"Release 0{num}" in text or f"({num:03d})" in text
-        for num in range(22, 41)
+        for num in range(22, 42)
     )
     if ok:
         report.pass_check("verify_all_list")

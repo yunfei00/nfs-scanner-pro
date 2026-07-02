@@ -2,7 +2,7 @@
 
 ## 执行时间
 
-2026-07-01 23:47:46 UTC
+2026-07-02 00:00:18 UTC
 
 ## 执行命令
 
@@ -14,20 +14,20 @@ python scripts/verify_all.py
 
 ## 检查项
 
-- [PASS] `compileall` (0.39s)
-- [PASS] `runtime_isolation` (0.10s) — runtime/verification/R035/workspace_state_mock.json
-- [PASS] `mainwindow_boot` (0.53s)
-- [PASS] `current_project_init` (0.50s) — iPhone16_Mainboard
-- [PASS] `project_switch_scan_sync` (0.97s)
-- [PASS] `project_a_scan_result_path` (5.98s) — runtime/verification/R035/mock_projects/iPhone16_Mainboard/scans/ST-650C5C
-- [PASS] `project_b_scan_result_path` (10.14s) — runtime/verification/R035/mock_projects/RF_Module_Test/scans/ST-1034D5
+- [PASS] `compileall` (0.61s)
+- [PASS] `runtime_isolation` (0.18s) — runtime/verification/R035/workspace_state_mock.json
+- [PASS] `mainwindow_boot` (0.74s)
+- [PASS] `current_project_init` (0.79s) — iPhone16_Mainboard
+- [PASS] `project_switch_scan_sync` (1.31s)
+- [PASS] `project_a_scan_result_path` (12.66s) — runtime/verification/R035/mock_projects/iPhone16_Mainboard/scans/ST-981C5A
+- [PASS] `project_b_scan_result_path` (11.76s) — runtime/verification/R035/mock_projects/RF_Module_Test/scans/ST-D76A78
 - [PASS] `scantask_config_project_binding` (0.00s) — A=iPhone16_Mainboard/CPU_Area B=RF_Module_Test/RF_Area
 - [PASS] `analysis_data_source_project_isolation` (0.06s)
-- [PASS] `report_data_source_project_isolation` (0.07s)
-- [PASS] `workspace_project_restore` (0.04s) — runtime/verification/R035/workspace_state_mock.json
-- [PASS] `page_switch_regression` (2.27s)
-- [PASS] `no_real_device_access` (0.03s)
-- [PASS] `no_high_fidelity_changes` (0.10s)
+- [PASS] `report_data_source_project_isolation` (0.11s)
+- [PASS] `workspace_project_restore` (0.08s) — runtime/verification/R035/workspace_state_mock.json
+- [PASS] `page_switch_regression` (2.92s)
+- [PASS] `no_real_device_access` (0.02s)
+- [PASS] `no_high_fidelity_changes` (0.09s)
 
 ## 结果
 
@@ -39,11 +39,11 @@ PASS
 
 ## 项目 A 扫描结果路径
 
-- `runtime/verification/R035/mock_projects/iPhone16_Mainboard/scans/ST-650C5C`
+- `runtime/verification/R035/mock_projects/iPhone16_Mainboard/scans/ST-981C5A`
 
 ## 项目 B 扫描结果路径
 
-- `runtime/verification/R035/mock_projects/RF_Module_Test/scans/ST-1034D5`
+- `runtime/verification/R035/mock_projects/RF_Module_Test/scans/ST-D76A78`
 
 ## workspace_state_mock.json 路径
 

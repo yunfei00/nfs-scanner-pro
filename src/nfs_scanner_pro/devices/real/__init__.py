@@ -20,6 +20,7 @@ from nfs_scanner_pro.devices.real.hardware_safety import (
     require_real_hardware_enabled,
     require_real_motion_jog_enabled,
 )
+from nfs_scanner_pro.devices.real.joint_sample_adapter import JointSampleAdapter
 from nfs_scanner_pro.devices.real.motion_grbl_adapter import MotionGrblAdapter
 from nfs_scanner_pro.devices.real.real_device_manager import RealDeviceManager, get_real_device_manager
 from nfs_scanner_pro.devices.real.servo_adapter import ServoAdapter
@@ -33,6 +34,7 @@ __all__ = [
     "EMERGENCY_STOP_BLOCKED_MESSAGE",
     "MOTION_BLOCKED_MESSAGE",
     "MOTION_DISABLED_MESSAGE",
+    "JointSampleAdapter",
     "MotionGrblAdapter",
     "RealDeviceManager",
     "ServoAdapter",

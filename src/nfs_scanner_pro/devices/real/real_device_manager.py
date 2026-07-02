@@ -13,6 +13,7 @@ from nfs_scanner_pro.devices.real.hardware_config import (
     is_real_hardware_enabled,
     load_hardware_config,
 )
+from nfs_scanner_pro.devices.real.joint_sample_adapter import JointSampleAdapter
 from nfs_scanner_pro.devices.real.motion_grbl_adapter import MotionGrblAdapter
 from nfs_scanner_pro.devices.real.servo_adapter import ServoAdapter
 from nfs_scanner_pro.devices.real.spectrum_scpi_adapter import SpectrumScpiAdapter
@@ -32,6 +33,7 @@ class RealDeviceManager:
         self.config = config or load_hardware_config()
         self.motion = MotionGrblAdapter(self.config.motion, self.config.motion_safety)
         self.spectrum = SpectrumScpiAdapter(self.config.spectrum)
+        self.joint_sample = JointSampleAdapter(self.motion, self.spectrum)
         self.camera = CameraAdapter(self.config.camera)
         self.servo = ServoAdapter(self.config.servo)
         self._devices = {
@@ -60,6 +62,17 @@ class RealDeviceManager:
         dry_run: bool = True,
     ) -> dict[str, Any]:
         return self.motion.safe_jog(axis, direction, step_mm, dry_run=dry_run)
+
+    def sample_single_point_safe(self, *, save: bool = True) -> dict[str, Any]:
+        if not self.enabled:
+            return {
+                "ok": False,
+                "disabled": True,
+                "error": DISABLED_MESSAGE,
+                "motion_command_executed": False,
+                "sweep_started": False,
+            }
+        return self.joint_sample.sample_once_safe(save=save)
 
     def connect_all_safe(self) -> dict[str, str]:
         if not self.enabled:
@@ -152,12 +165,14 @@ class RealDeviceManager:
         return rows
 
     def get_snapshot(self) -> dict[str, Any]:
-        return build_device_snapshot(
+        snapshot = build_device_snapshot(
             self.motion.snapshot(),
             self.spectrum.snapshot(),
             self.camera.snapshot(),
             self.servo.snapshot(),
         )
+        snapshot["joint_sample"] = self.joint_sample.snapshot()
+        return snapshot
 
     def is_all_ready(self) -> bool:
         if not self.enabled:

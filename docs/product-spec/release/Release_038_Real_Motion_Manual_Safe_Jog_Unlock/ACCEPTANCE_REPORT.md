@@ -2,7 +2,7 @@
 
 ## 执行时间
 
-2026-07-01 23:49:11 UTC
+2026-07-02 00:02:09 UTC
 
 ## 执行命令
 
@@ -17,17 +17,17 @@ python scripts/check_real_devices_safe.py
 
 ## 检查项
 
-- [PASS] `compileall` (0.63s)
+- [PASS] `compileall` (0.52s)
 - [PASS] `real_motion_imports` (0.00s)
 - [PASS] `default_jog_disabled` (0.00s)
 - [PASS] `jog_command_builder` (0.00s)
 - [PASS] `soft_limit_validation` (0.00s)
 - [PASS] `dry_run_no_motion` (0.00s) — $J=G91 G21 X0.100 F100
 - [PASS] `jog_requires_double_enable` (0.00s)
-- [PASS] `manual_jog_script_default_safe` (1.60s)
+- [PASS] `manual_jog_script_default_safe` (1.54s)
 - [PASS] `source_motion_command_safety` (0.01s)
-- [PASS] `mock_ui_unchanged` (10.12s)
-- [PASS] `no_high_fidelity_changes` (0.10s)
+- [PASS] `mock_ui_unchanged` (9.10s)
+- [PASS] `no_high_fidelity_changes` (0.09s)
 
 ## 结果
 

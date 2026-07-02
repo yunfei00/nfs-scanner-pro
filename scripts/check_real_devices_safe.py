@@ -65,6 +65,7 @@ def main() -> int:
             "如需手动点动，请使用 scripts/manual_motion_jog_safe.py"
         )
     print("真实设备安全探测开始（不运动 / 不扫描 / 不改仪表配置）")
+    print("Joint single point sample: available（请使用 scripts/check_joint_single_point_sample_safe.py）")
     print("")
 
     exit_code = 0

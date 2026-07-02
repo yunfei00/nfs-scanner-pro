@@ -555,6 +555,18 @@ spec/AI_INDEX.md
 
 
 
+
+### 5.1 做 Real Joint Single Point Sample（Release 041）
+
+```text
+spec/AI_INDEX.md
+→ docs/product-spec/release/Release_041_Real_Joint_Single_Point_Sample/README.md
+→ scripts/verify_release_041.py
+→ scripts/scaffold_verify_release.py
+```
+
+
+
 ### 5.2 做领域模型 / Mock JSON / 状态机
 
 ```text
