@@ -567,6 +567,18 @@ spec/AI_INDEX.md
 
 
 
+
+### 5.1 做 Real Small Area 3x3 Scan Dry Run Planner（Release 042）
+
+```text
+spec/AI_INDEX.md
+→ docs/product-spec/release/Release_042_Real_Small_Area_3x3_Scan_Dry_Run_Planner/README.md
+→ scripts/verify_release_042.py
+→ scripts/scaffold_verify_release.py
+```
+
+
+
 ### 5.2 做领域模型 / Mock JSON / 状态机
 
 ```text

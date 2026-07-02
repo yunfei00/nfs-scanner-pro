@@ -46,6 +46,7 @@ This folder stores product design documents for NFS Scanner Professional.
 | Release 030 | Cross-Page Workflow UI Verification | [release/Release_030_Cross_Page_Workflow_UI_Verification/README.md](release/Release_030_Cross_Page_Workflow_UI_Verification/README.md) |
 | Release 031 | Verification Performance & Isolation | [release/Release_031_Verification_Performance_Isolation/README.md](release/Release_031_Verification_Performance_Isolation/README.md) |
 | Release 032 | Migrate Legacy Verify Scripts to Isolated Runtime | [release/Release_032_Migrate_Legacy_Verify_Scripts_To_Isolated_Runtime/README.md](release/Release_032_Migrate_Legacy_Verify_Scripts_To_Isolated_Runtime/README.md) |
+| Release 042 | Real Small Area 3x3 Scan Dry Run Planner | [release/Release_042_Real_Small_Area_3x3_Scan_Dry_Run_Planner/README.md](release/Release_042_Real_Small_Area_3x3_Scan_Dry_Run_Planner/README.md) |
 | Release 041 | Real Joint Single Point Sample | [release/Release_041_Real_Joint_Single_Point_Sample/README.md](release/Release_041_Real_Joint_Single_Point_Sample/README.md) |
 | Release 040 | Real Spectrum Single Point Amplitude Read | [release/Release_040_Real_Spectrum_Single_Point_Amplitude_Read/README.md](release/Release_040_Real_Spectrum_Single_Point_Amplitude_Read/README.md) |
 | Release 039 | Real Spectrum Analyzer Safe Connect And Read | [release/Release_039_Real_Spectrum_Analyzer_Safe_Connect_And_Read/README.md](release/Release_039_Real_Spectrum_Analyzer_Safe_Connect_And_Read/README.md) |
