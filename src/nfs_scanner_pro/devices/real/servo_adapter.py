@@ -26,6 +26,8 @@ class ServoAdapter:
         self.calibration = "未连接"
         self.state = DeviceState.DISCONNECTED
         self.last_error = ""
+        self._last_command = ""
+        self._last_response = ""
         self._transport: BaseTransport | None = None
 
     def bind_transport(self, transport: BaseTransport | None) -> None:
@@ -141,10 +143,26 @@ class ServoAdapter:
         return {"ok": False, "blocked": True, "message": SERVO_DISABLED_MESSAGE}
 
     def snapshot(self) -> dict[str, Any]:
+        from nfs_scanner_pro.devices.real.hardware_config import (
+            build_adapter_snapshot_common,
+            get_servo_config,
+            is_real_hardware_enabled,
+            is_real_servo_enabled,
+        )
+
+        common = build_adapter_snapshot_common(
+            enabled=is_real_hardware_enabled(),
+            connected=self.is_connected(),
+            fake=self._using_fake_transport(),
+            config=get_servo_config(),
+            last_error=self.last_error,
+            last_command=self._last_command,
+            last_response=self._last_response,
+        )
         return {
             "type": "servo",
             "real": True,
-            "enabled": is_real_hardware_enabled(),
+            **common,
             "servo_enabled": is_real_servo_enabled(),
             "fake_transport": self._using_fake_transport(),
             "current_probe": self.current_probe,
@@ -153,9 +171,7 @@ class ServoAdapter:
             "offset": self.offset,
             "calibration": self.calibration,
             "port": self.config.port,
-            "hx_angle": os.environ.get("NFS_SERVO_HX_ANGLE", "0"),
-            "hy_angle": os.environ.get("NFS_SERVO_HY_ANGLE", "90"),
+            "hx_angle": os.environ.get("NFS_SERVO_HX_ANGLE", str(self.config.hx_angle)),
+            "hy_angle": os.environ.get("NFS_SERVO_HY_ANGLE", str(self.config.hy_angle)),
             "state": self.state.value,
-            "last_error": self.last_error,
-            "safe_mode": True,
         }

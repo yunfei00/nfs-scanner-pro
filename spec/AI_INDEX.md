@@ -627,6 +627,18 @@ spec/AI_INDEX.md
 
 
 
+
+### 5.1 做 Real Hardware Bringup Readiness Pack（Release 047）
+
+```text
+spec/AI_INDEX.md
+→ docs/product-spec/release/Release_047_Real_Hardware_Bringup_Readiness_Pack/README.md
+→ scripts/verify_release_047.py
+→ scripts/scaffold_verify_release.py
+```
+
+
+
 ### 5.2 做领域模型 / Mock JSON / 状态机
 
 ```text

@@ -1,0 +1,57 @@
+# 本机真实硬件配置示例 — 请勿提交 Git
+#
+# 使用方法：
+# 1. 复制本文件为 config/hardware.local.yaml
+# 2. 按现场设备修改端口 / IP / 开关
+# 3. hardware.local.yaml 已在 .gitignore 中忽略
+# 4. 环境变量 NFS_* 仍可覆盖 yaml 中的值
+# 5. 首次联调请逐项开启 NFS_ENABLE_REAL_* 安全开关
+
+hardware_mode: real
+
+motion:
+  enabled: true
+  type: grbl
+  port: COM6
+  baudrate: 115200
+  timeout: 2.0
+  x_min: 0.0
+  x_max: 200.0
+  y_min: -200.0
+  y_max: 0.0
+  z_min: 0.0
+  z_max: 50.0
+  max_jog_step_mm: 1.0
+  default_jog_step_mm: 0.1
+  feed_mm_min: 100
+
+spectrum:
+  enabled: true
+  backend: socket
+  host: 192.168.1.100
+  port: 5025
+  visa_address: TCPIP0::192.168.1.100::inst0::INSTR
+  timeout: 3.0
+  default_marker: 1
+  max_trace_points: 201
+
+camera:
+  enabled: false
+  backend: opencv
+  index: 0
+  output_dir: runtime/camera
+
+servo:
+  enabled: false
+  type: serial
+  port: COM7
+  baudrate: 115200
+  hx_angle: 0
+  hy_angle: 90
+
+scan:
+  enabled: false
+  max_points: 9
+  dwell_ms: 200
+  require_manual_confirm: true
+  output_dir: runtime/real_scan_runs

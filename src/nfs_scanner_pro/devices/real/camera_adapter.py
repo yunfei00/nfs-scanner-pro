@@ -36,6 +36,8 @@ class CameraAdapter:
         self.capture_z = 0.0
         self.state = DeviceState.DISCONNECTED
         self.last_error = ""
+        self._last_command = ""
+        self._last_response = ""
         self._devices: list[str] = []
         self._transport: BaseTransport | None = None
         self._capture = None
@@ -178,10 +180,26 @@ class CameraAdapter:
         return self.status_label
 
     def snapshot(self) -> dict[str, Any]:
+        from nfs_scanner_pro.devices.real.hardware_config import (
+            build_adapter_snapshot_common,
+            get_camera_config,
+            is_real_camera_enabled,
+            is_real_hardware_enabled,
+        )
+
+        common = build_adapter_snapshot_common(
+            enabled=is_real_hardware_enabled(),
+            connected=self.is_connected(),
+            fake=self._using_fake_transport(),
+            config=get_camera_config(),
+            last_error=self.last_error,
+            last_command=self._last_command,
+            last_response=self._last_response,
+        )
         return {
             "type": "camera",
             "real": True,
-            "enabled": is_real_hardware_enabled(),
+            **common,
             "camera_enabled": is_real_camera_enabled(),
             "fake_transport": self._using_fake_transport(),
             "interface": self.interface,
@@ -189,6 +207,4 @@ class CameraAdapter:
             "status": self.status_label,
             "devices": list(self._devices),
             "state": self.state.value,
-            "last_error": self.last_error,
-            "safe_mode": True,
         }

@@ -65,6 +65,8 @@ class MotionGrblAdapter:
         self.grbl_state = ""
         self.position_source = ""
         self.last_error = ""
+        self._last_command = ""
+        self._last_response = ""
         self._serial = None
         self._transport: BaseTransport | None = None
         self._last_status: dict[str, Any] = {}
@@ -654,16 +656,34 @@ class MotionGrblAdapter:
         return self.emergency_stop_blocked()
 
     def snapshot(self) -> dict[str, Any]:
+        from nfs_scanner_pro.devices.real.hardware_config import (
+            build_adapter_snapshot_common,
+            get_motion_config,
+            is_real_hardware_enabled,
+            is_real_motion_estop_enabled,
+            is_real_motion_home_enabled,
+            is_real_motion_jog_enabled,
+            is_real_motion_move_enabled,
+        )
+
+        common = build_adapter_snapshot_common(
+            enabled=is_real_hardware_enabled(),
+            connected=self.is_connected(),
+            fake=self._using_fake_transport(),
+            config=get_motion_config(),
+            last_error=self.last_error,
+            last_command=self._last_command,
+            last_response=str(self._last_status.get("raw", "")),
+        )
         return {
             "type": "motion",
             "real": True,
-            "enabled": is_real_hardware_enabled(),
+            **common,
             "jog_enabled": is_real_motion_jog_enabled(),
             "move_enabled": is_real_motion_move_enabled(),
             "home_enabled": is_real_motion_home_enabled(),
             "estop_enabled": is_real_motion_estop_enabled(),
             "fake_transport": self._using_fake_transport(),
-            "connected": self.is_connected(),
             "port": self.port,
             "baudrate": self.baudrate,
             "state": self.grbl_state or self.state.value,
@@ -673,7 +693,6 @@ class MotionGrblAdapter:
                 "z": self.z,
                 "source": self.position_source,
             },
-            "safe_mode": True,
             "jog_limits": {
                 "x_min": self.safety.x_min,
                 "x_max": self.safety.x_max,
@@ -684,7 +703,6 @@ class MotionGrblAdapter:
                 "max_jog_step_mm": self.safety.max_jog_step_mm,
                 "default_jog_step_mm": self.safety.default_jog_step_mm,
             },
-            "last_error": self.last_error,
             "raw_status": self._last_status.get("raw", ""),
         }
 

@@ -38,6 +38,13 @@ runtime/**/*.csv
 *.log
 logs/
 
+# Local hardware config (do not commit)
+config/hardware.local.yaml
+
+# Hardware bring-up runtime outputs
+runtime/hardware_reports/
+runtime/real_device_logs/
+
 # OS files
 .DS_Store
 Thumbs.db

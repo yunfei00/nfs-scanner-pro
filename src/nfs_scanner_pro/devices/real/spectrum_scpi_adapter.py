@@ -128,6 +128,8 @@ class SpectrumScpiAdapter:
         self._visa_resource = None
         self._socket = None
         self._transport: BaseTransport | None = None
+        self._last_command = ""
+        self._last_response = ""
 
     def bind_transport(self, transport: BaseTransport | None) -> None:
         self._transport = transport
@@ -688,21 +690,38 @@ class SpectrumScpiAdapter:
         return "真实频率配置暂未启用，请在安全确认后开启。"
 
     def snapshot(self) -> dict[str, Any]:
+        from nfs_scanner_pro.devices.real.hardware_config import (
+            build_adapter_snapshot_common,
+            get_spectrum_config,
+            is_real_hardware_enabled,
+            is_real_spectrum_sweep_enabled,
+            is_real_spectrum_trace_read_enabled,
+            is_real_spectrum_write_enabled,
+        )
+
         if not is_real_hardware_enabled():
             single_point: dict[str, Any] = {"ok": False, "disabled": True}
         else:
             single_point = dict(self._last_single_point)
             if "disabled" not in single_point:
                 single_point.setdefault("disabled", False)
+        common = build_adapter_snapshot_common(
+            enabled=is_real_hardware_enabled(),
+            connected=self.is_connected(),
+            fake=self._using_fake_transport(),
+            config=get_spectrum_config(),
+            last_error=self.last_error,
+            last_command=self._last_command,
+            last_response=self._last_response,
+        )
         return {
             "type": "spectrum",
             "real": True,
-            "enabled": is_real_hardware_enabled(),
+            **common,
             "write_enabled": is_real_spectrum_write_enabled(),
             "sweep_enabled": is_real_spectrum_sweep_enabled(),
             "trace_read_enabled": is_real_spectrum_trace_read_enabled(),
             "fake_transport": self._using_fake_transport(),
-            "connected": self.is_connected(),
             "backend": self.config.backend,
             "address": self.address,
             "model": self.model,
@@ -716,8 +735,6 @@ class SpectrumScpiAdapter:
             "trace_info": self._trace_info,
             "single_point": single_point,
             "state": self.state.value,
-            "safe_mode": True,
-            "last_error": self.last_error,
         }
 
     def _connect_visa(self) -> str:
@@ -761,6 +778,8 @@ class SpectrumScpiAdapter:
 
         try:
             raw = self._transport_query(command)
+            self._last_command = command
+            self._last_response = raw
             if raw == "" and self.last_error:
                 return {"ok": False, "error": self.last_error, "raw": ""}
             return {"ok": True, "raw": raw, "value": raw}

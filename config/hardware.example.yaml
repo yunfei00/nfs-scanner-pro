@@ -1,0 +1,51 @@
+# 硬件配置模板 — 复制为 config/hardware.local.yaml 后在本机调试
+# 环境变量优先级高于本文件；未设置时使用下列默认值
+
+hardware_mode: mock
+
+motion:
+  enabled: false
+  type: grbl
+  port: COM6
+  baudrate: 115200
+  timeout: 2.0
+  x_min: 0.0
+  x_max: 200.0
+  y_min: -200.0
+  y_max: 0.0
+  z_min: 0.0
+  z_max: 50.0
+  max_jog_step_mm: 1.0
+  default_jog_step_mm: 0.1
+  feed_mm_min: 100
+
+spectrum:
+  enabled: false
+  backend: socket
+  host: 192.168.1.100
+  port: 5025
+  visa_address: TCPIP0::192.168.1.100::inst0::INSTR
+  timeout: 3.0
+  default_marker: 1
+  max_trace_points: 201
+
+camera:
+  enabled: false
+  backend: fake
+  index: 0
+  output_dir: runtime/camera
+
+servo:
+  enabled: false
+  type: serial
+  port: COM7
+  baudrate: 115200
+  hx_angle: 0
+  hy_angle: 90
+
+scan:
+  enabled: false
+  max_points: 9
+  dwell_ms: 200
+  require_manual_confirm: true
+  output_dir: runtime/real_scan_runs

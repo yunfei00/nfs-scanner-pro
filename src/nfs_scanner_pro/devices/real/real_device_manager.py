@@ -367,29 +367,50 @@ class RealDeviceManager:
 
     def get_snapshot(self) -> dict[str, Any]:
         from nfs_scanner_pro.devices.hardware_mode import get_hardware_mode
+        from nfs_scanner_pro.devices.real.hardware_config import build_adapter_snapshot_common
 
+        motion_snap = self.motion.snapshot()
+        spectrum_snap = self.spectrum.snapshot()
+        camera_snap = self.camera.snapshot()
+        servo_snap = self.servo.snapshot()
         snapshot = build_device_snapshot(
-            self.motion.snapshot(),
-            self.spectrum.snapshot(),
-            self.camera.snapshot(),
-            self.servo.snapshot(),
+            motion_snap,
+            spectrum_snap,
+            camera_snap,
+            servo_snap,
         )
+        any_connected = any(
+            device.is_connected() for device in self._devices.values()
+        )
+        common = build_adapter_snapshot_common(
+            enabled=is_real_hardware_enabled(),
+            connected=any_connected,
+            fake=self._fake_mode,
+            config={
+                "hardware_mode": get_hardware_mode().value,
+                "real_hardware_enabled": is_real_hardware_enabled(),
+            },
+            last_error="",
+            last_command="",
+            last_response="",
+        )
+        snapshot.update(common)
         snapshot["joint_sample"] = self.joint_sample.snapshot()
         snapshot["fake_mode"] = self._fake_mode
         snapshot["hardware_mode"] = get_hardware_mode().value
         snapshot["real_hardware_enabled"] = is_real_hardware_enabled()
         snapshot["safe_mode"] = True
-        snapshot["motion"] = self.motion.snapshot()
-        snapshot["spectrum"] = self.spectrum.snapshot()
-        snapshot["camera"] = self.camera.snapshot()
-        snapshot["servo"] = self.servo.snapshot()
+        snapshot["motion"] = motion_snap
+        snapshot["spectrum"] = spectrum_snap
+        snapshot["camera"] = camera_snap
+        snapshot["servo"] = servo_snap
         snapshot["hardware_flags"] = {
             "real_hardware": is_real_hardware_enabled(),
-            "motion_jog": self.motion.snapshot().get("jog_enabled"),
-            "motion_move": self.motion.snapshot().get("move_enabled"),
-            "spectrum_write": self.spectrum.snapshot().get("write_enabled"),
-            "camera": self.camera.snapshot().get("camera_enabled"),
-            "servo": self.servo.snapshot().get("servo_enabled"),
+            "motion_jog": motion_snap.get("jog_enabled"),
+            "motion_move": motion_snap.get("move_enabled"),
+            "spectrum_write": spectrum_snap.get("write_enabled"),
+            "camera": camera_snap.get("camera_enabled"),
+            "servo": servo_snap.get("servo_enabled"),
         }
         return snapshot
 

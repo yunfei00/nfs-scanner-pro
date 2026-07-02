@@ -46,6 +46,7 @@ This folder stores product design documents for NFS Scanner Professional.
 | Release 030 | Cross-Page Workflow UI Verification | [release/Release_030_Cross_Page_Workflow_UI_Verification/README.md](release/Release_030_Cross_Page_Workflow_UI_Verification/README.md) |
 | Release 031 | Verification Performance & Isolation | [release/Release_031_Verification_Performance_Isolation/README.md](release/Release_031_Verification_Performance_Isolation/README.md) |
 | Release 032 | Migrate Legacy Verify Scripts to Isolated Runtime | [release/Release_032_Migrate_Legacy_Verify_Scripts_To_Isolated_Runtime/README.md](release/Release_032_Migrate_Legacy_Verify_Scripts_To_Isolated_Runtime/README.md) |
+| Release 047 | Real Hardware Bringup Readiness Pack | [release/Release_047_Real_Hardware_Bringup_Readiness_Pack/README.md](release/Release_047_Real_Hardware_Bringup_Readiness_Pack/README.md) |
 | Release 046 | Real Scan UI Console Dry Fake Real Entry | [release/Release_046_Real_Scan_UI_Console_Dry_Fake_Real_Entry/README.md](release/Release_046_Real_Scan_UI_Console_Dry_Fake_Real_Entry/README.md) |
 | Release 045 | Real Fake Mock Hardware Mode Switch And Debug Guide | [release/Release_045_Real_Fake_Mock_Hardware_Mode_Switch_And_Debug_Guide/README.md](release/Release_045_Real_Fake_Mock_Hardware_Mode_Switch_And_Debug_Guide/README.md) |
 | Release 044 | Real Hardware Functional Layer Offline Complete | [release/Release_044_Real_Hardware_Functional_Layer_Offline_Complete/README.md](release/Release_044_Real_Hardware_Functional_Layer_Offline_Complete/README.md) |

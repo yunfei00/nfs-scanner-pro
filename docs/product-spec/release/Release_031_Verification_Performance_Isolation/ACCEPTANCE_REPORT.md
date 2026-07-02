@@ -2,7 +2,7 @@
 
 ## 执行时间
 
-2026-07-02 01:38:06 UTC
+2026-07-02 01:59:12 UTC
 
 ## 执行命令
 
@@ -16,15 +16,15 @@ python scripts/verify_all.py
 
 ## 检查项
 
-- [PASS] `compileall` (0.04s)
-- [PASS] `runtime_isolation` (0.02s) — runtime\verification\R031\mock_projects\iPhone16_Mainboard\scans\ST-VERIFY-031
+- [PASS] `compileall` (0.05s)
+- [PASS] `runtime_isolation` (0.01s) — runtime\verification\R031\mock_projects\iPhone16_Mainboard\scans\ST-VERIFY-031
 - [PASS] `runtime_gitignore` (0.00s) — ok
 - [SKIP] `verify_all_list` — NFS_VERIFY_NESTED=1
 - [SKIP] `verify_all_only` — NFS_VERIFY_NESTED=1
 - [SKIP] `verify_all_from` — NFS_VERIFY_NESTED=1
 - [PASS] `verify_all_summary_format` (0.00s)
 - [PASS] `no_real_device_access` (0.01s)
-- [PASS] `no_high_fidelity_changes` (0.19s)
+- [PASS] `no_high_fidelity_changes` (0.15s)
 
 ## 结果
 
