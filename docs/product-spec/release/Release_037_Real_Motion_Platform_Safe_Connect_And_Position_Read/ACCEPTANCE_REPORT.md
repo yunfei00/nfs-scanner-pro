@@ -2,7 +2,7 @@
 
 ## 执行时间
 
-2026-07-02 02:07:02 UTC
+2026-07-02 02:39:43 UTC
 
 ## 执行命令
 
@@ -14,16 +14,16 @@ python scripts/verify_all.py --only 037
 
 ## 检查项
 
-- [PASS] `compileall` (0.35s)
+- [PASS] `compileall` (0.33s)
 - [PASS] `real_motion_imports` (0.00s)
 - [PASS] `default_real_hardware_disabled` (0.00s)
 - [PASS] `grbl_status_parser` (0.00s)
 - [PASS] `motion_commands_blocked` (0.00s)
 - [PASS] `safe_command_whitelist` (0.01s) — writes=['?']
-- [PASS] `check_real_devices_safe_default` (0.50s)
-- [PASS] `mock_ui_unchanged` (3.92s)
-- [PASS] `top_menu_always_visible` (0.32s) — menus=['文件(F)', '编辑(E)', '视图(V)', '工具(T)', '设置(S)', '帮助(H)']
-- [PASS] `no_high_fidelity_changes` (0.07s)
+- [PASS] `check_real_devices_safe_default` (0.44s)
+- [PASS] `mock_ui_unchanged` (3.65s)
+- [PASS] `top_menu_always_visible` (0.46s) — menus=['文件(F)', '编辑(E)', '视图(V)', '工具(T)', '设置(S)', '帮助(H)']
+- [PASS] `no_high_fidelity_changes` (0.08s)
 
 ## 结果
 

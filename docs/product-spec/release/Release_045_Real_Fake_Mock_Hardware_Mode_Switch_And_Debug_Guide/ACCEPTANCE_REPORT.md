@@ -2,7 +2,7 @@
 
 ## 执行时间
 
-2026-07-02 02:07:04 UTC
+2026-07-02 02:39:45 UTC
 
 ## 执行命令
 
@@ -17,19 +17,19 @@ python scripts/hardware_debug_wizard.py --fake-check
 
 ## PASS / FAIL 项
 
-- [PASS] `compileall` (0.53s)
+- [PASS] `compileall` (0.39s)
 - [PASS] `hardware_mode_imports` (0.00s)
-- [PASS] `hardware_mode_default_mock` (0.03s)
+- [PASS] `hardware_mode_default_mock` (0.02s)
 - [PASS] `hardware_mode_env_override` (0.00s)
-- [PASS] `hardware_mode_persistence` (0.05s)
-- [PASS] `device_page_mode_ui` (0.34s)
-- [PASS] `real_probe_default_disabled` (0.16s)
-- [PASS] `hardware_debug_wizard_default` (0.47s)
-- [PASS] `hardware_debug_wizard_fake_check` (2.85s)
+- [PASS] `hardware_mode_persistence` (0.02s)
+- [PASS] `device_page_mode_ui` (0.33s)
+- [PASS] `real_probe_default_disabled` (0.12s)
+- [PASS] `hardware_debug_wizard_default` (0.43s)
+- [PASS] `hardware_debug_wizard_fake_check` (3.22s)
 - [PASS] `hardware_debug_guide_exists` (0.00s)
-- [PASS] `source_safety_guards` (0.00s)
-- [PASS] `mock_ui_unchanged` (67.51s)
-- [PASS] `no_high_fidelity_changes` (0.07s)
+- [PASS] `source_safety_guards` (0.01s)
+- [PASS] `mock_ui_unchanged` (61.68s)
+- [PASS] `no_high_fidelity_changes` (0.06s)
 
 ## 默认硬件模式
 

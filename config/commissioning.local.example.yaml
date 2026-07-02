@@ -1,0 +1,22 @@
+# 本机联调流程配置示例 — 请勿提交 Git
+#
+# 使用方法：
+# 1. 复制为 config/commissioning.local.yaml
+# 2. 可按现场需要增减阶段
+# 3. 默认不启用真实执行
+# 4. commissioning.local.yaml 已在 .gitignore 中忽略
+
+workflow_name: nfs-scanner-real-hardware-commissioning-local
+version: "1.0"
+default_mode: offline
+
+# 继承标准 workflow，可在本机覆盖 stages
+extends: commissioning.workflow.example.yaml
+
+operator: ""
+
+notes: |
+  首次联调请使用 offline → fake → real-safe 顺序。
+  不要跳过 manual_confirm_required 步骤。
+
+stages: []

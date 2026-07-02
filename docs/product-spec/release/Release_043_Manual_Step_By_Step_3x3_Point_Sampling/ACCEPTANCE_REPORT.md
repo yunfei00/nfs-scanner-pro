@@ -2,7 +2,7 @@
 
 ## 执行时间
 
-2026-07-02 02:07:04 UTC
+2026-07-02 02:39:45 UTC
 
 ## 执行命令
 
@@ -19,13 +19,13 @@ python scripts/manual_3x3_point_sample_safe.py
 - [PASS] `create_manual_session` (0.00s)
 - [PASS] `position_tolerance_validation` (0.00s)
 - [PASS] `fake_sample_update` (0.00s)
-- [PASS] `manual_session_persistence` (0.04s) — runtime/verification/R043/manual_scan_sessions/MS-DA83A679/manual_scan_session.json
-- [PASS] `script_default_safe` (0.54s)
-- [PASS] `script_create_session` (0.77s)
-- [PASS] `script_fake_sample` (0.59s)
-- [PASS] `script_requires_confirm_for_real_sample` (0.51s)
+- [PASS] `manual_session_persistence` (0.03s) — runtime/verification/R043/manual_scan_sessions/MS-6052CFE4/manual_scan_session.json
+- [PASS] `script_default_safe` (0.49s)
+- [PASS] `script_create_session` (0.73s)
+- [PASS] `script_fake_sample` (0.50s)
+- [PASS] `script_requires_confirm_for_real_sample` (0.48s)
 - [PASS] `source_no_motion_or_sweep_commands` (0.00s)
-- [PASS] `mock_ui_unchanged` (27.08s)
+- [PASS] `mock_ui_unchanged` (25.98s)
 - [PASS] `no_high_fidelity_changes` (0.07s)
 
 ## 结果

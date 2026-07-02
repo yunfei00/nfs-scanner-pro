@@ -639,6 +639,18 @@ spec/AI_INDEX.md
 
 
 
+
+### 5.1 做 Real Hardware Commissioning Standard Workflow（Release 048）
+
+```text
+spec/AI_INDEX.md
+→ docs/product-spec/release/Release_048_Real_Hardware_Commissioning_Standard_Workflow/README.md
+→ scripts/verify_release_048.py
+→ scripts/scaffold_verify_release.py
+```
+
+
+
 ### 5.2 做领域模型 / Mock JSON / 状态机
 
 ```text

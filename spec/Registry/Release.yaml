@@ -34,6 +34,7 @@ related_docs:
     - docs/product-spec/release/Release_030_Cross_Page_Workflow_UI_Verification/README.md
     - docs/product-spec/release/Release_031_Verification_Performance_Isolation/README.md
     - docs/product-spec/release/Release_032_Migrate_Legacy_Verify_Scripts_To_Isolated_Runtime/README.md
+    - docs/product-spec/release/Release_048_Real_Hardware_Commissioning_Standard_Workflow/README.md
     - docs/product-spec/release/Release_047_Real_Hardware_Bringup_Readiness_Pack/README.md
     - docs/product-spec/release/Release_046_Real_Scan_UI_Console_Dry_Fake_Real_Entry/README.md
     - docs/product-spec/release/Release_045_Real_Fake_Mock_Hardware_Mode_Switch_And_Debug_Guide/README.md

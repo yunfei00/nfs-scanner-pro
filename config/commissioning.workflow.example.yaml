@@ -1,0 +1,93 @@
+# 标准现场联调流程 — Release 048
+workflow_name: nfs-scanner-real-hardware-commissioning
+version: "1.0"
+default_mode: offline
+
+stages:
+  - id: env_check
+    name: 环境检查
+    required: true
+    real_hardware_required: false
+    risk_level: low
+
+  - id: config_check
+    name: 配置检查
+    required: true
+    real_hardware_required: false
+    risk_level: low
+
+  - id: motion_status
+    name: 运动平台状态读取
+    required: true
+    real_hardware_required: true
+    risk_level: low
+
+  - id: motion_jog
+    name: 运动平台小步点动
+    required: true
+    real_hardware_required: true
+    manual_confirm_required: true
+    risk_level: high
+
+  - id: spectrum_idn
+    name: 频谱仪 IDN 查询
+    required: true
+    real_hardware_required: true
+    risk_level: low
+
+  - id: spectrum_marker
+    name: 频谱仪 Marker 幅度读取
+    required: true
+    real_hardware_required: true
+    risk_level: low
+
+  - id: camera_list
+    name: 相机枚举
+    required: false
+    real_hardware_required: true
+    risk_level: low
+
+  - id: camera_capture
+    name: 相机拍照
+    required: false
+    real_hardware_required: true
+    manual_confirm_required: true
+    risk_level: medium
+
+  - id: servo_state
+    name: 舵机状态读取
+    required: false
+    real_hardware_required: true
+    risk_level: low
+
+  - id: servo_switch
+    name: 舵机 Hx Hy 切换
+    required: false
+    real_hardware_required: true
+    manual_confirm_required: true
+    risk_level: high
+
+  - id: joint_sample
+    name: 当前位置与频谱单点联合采样
+    required: true
+    real_hardware_required: true
+    manual_confirm_required: true
+    risk_level: medium
+
+  - id: scan_plan_dry_run
+    name: 3x3 扫描计划 Dry Run
+    required: true
+    real_hardware_required: false
+    risk_level: low
+
+  - id: scan_fake_run
+    name: 3x3 扫描 Fake Run
+    required: true
+    real_hardware_required: false
+    risk_level: low
+
+  - id: real_run_gate
+    name: 真实扫描执行门禁
+    required: true
+    real_hardware_required: false
+    risk_level: high

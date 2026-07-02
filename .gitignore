@@ -40,10 +40,12 @@ logs/
 
 # Local hardware config (do not commit)
 config/hardware.local.yaml
+config/commissioning.local.yaml
 
 # Hardware bring-up runtime outputs
 runtime/hardware_reports/
 runtime/real_device_logs/
+runtime/commissioning_sessions/
 
 # OS files
 .DS_Store
