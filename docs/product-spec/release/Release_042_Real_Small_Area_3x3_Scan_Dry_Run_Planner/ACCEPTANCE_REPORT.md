@@ -2,7 +2,7 @@
 
 ## 执行时间
 
-2026-07-02 00:10:39 UTC
+2026-07-02 00:20:58 UTC
 
 ## 执行命令
 
@@ -19,12 +19,12 @@ python scripts/plan_small_area_scan_dry_run.py
 - [PASS] `real_scan_plan_imports` (0.00s)
 - [PASS] `generate_3x3_plan` (0.00s)
 - [PASS] `soft_limit_validation` (0.00s)
-- [PASS] `scan_plan_persistence` (0.04s) — runtime/verification/R042/scan_plans/SP3x3-50EABE27/scan_plan.json
-- [PASS] `dry_run_script_no_save` (0.80s)
-- [PASS] `dry_run_script_save` (0.93s)
-- [PASS] `no_real_connection_or_sampling` (0.77s)
+- [PASS] `scan_plan_persistence` (0.04s) — runtime/verification/R042/scan_plans/SP3x3-8F80AC0F/scan_plan.json
+- [PASS] `dry_run_script_no_save` (0.62s)
+- [PASS] `dry_run_script_save` (0.64s)
+- [PASS] `no_real_connection_or_sampling` (0.58s)
 - [PASS] `source_no_motion_or_sweep_commands` (0.00s)
-- [PASS] `mock_ui_unchanged` (26.47s)
+- [PASS] `mock_ui_unchanged` (25.68s)
 - [PASS] `no_high_fidelity_changes` (0.09s)
 
 ## 结果

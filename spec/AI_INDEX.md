@@ -579,6 +579,18 @@ spec/AI_INDEX.md
 
 
 
+
+### 5.1 做 Manual Step By Step 3x3 Point Sampling（Release 043）
+
+```text
+spec/AI_INDEX.md
+→ docs/product-spec/release/Release_043_Manual_Step_By_Step_3x3_Point_Sampling/README.md
+→ scripts/verify_release_043.py
+→ scripts/scaffold_verify_release.py
+```
+
+
+
 ### 5.2 做领域模型 / Mock JSON / 状态机
 
 ```text

@@ -74,6 +74,112 @@ class RealDeviceManager:
             }
         return self.joint_sample.sample_once_safe(save=save)
 
+    def manual_sample_plan_point_safe(
+        self,
+        plan_point: dict[str, Any],
+        tolerance_mm: float,
+        *,
+        save: bool = False,
+    ) -> dict[str, Any]:
+        """逐点手动采样：只读当前位置与频谱单点，校验容差，不运动。"""
+        from nfs_scanner_pro.scan.manual_scan_session import (
+            validate_position_near_plan_point,
+        )
+
+        if not self.enabled:
+            return {
+                "ok": False,
+                "disabled": True,
+                "error": DISABLED_MESSAGE,
+                "motion_command_executed": False,
+                "sweep_started": False,
+            }
+
+        motion_connected = False
+        spectrum_connected = False
+        outcome: dict[str, Any] = {
+            "ok": False,
+            "enabled": True,
+            "motion_command_executed": False,
+            "sweep_started": False,
+        }
+        try:
+            motion_connect = self.motion.connect()
+            outcome["motion_connect"] = motion_connect
+            if not self.motion.is_connected():
+                outcome["error"] = f"运动平台连接失败：{motion_connect}"
+                return outcome
+            motion_connected = True
+
+            position = self.motion.refresh_position()
+            outcome["motion_position"] = position
+            if not isinstance(position, dict) or not position.get("ok"):
+                outcome["error"] = str(
+                    position.get("error", "运动平台位置读取失败")
+                    if isinstance(position, dict)
+                    else "运动平台位置读取失败"
+                )
+                return outcome
+
+            planned = {
+                "x": plan_point.get("x", plan_point.get("planned_x")),
+                "y": plan_point.get("y", plan_point.get("planned_y")),
+                "z": plan_point.get("z", plan_point.get("planned_z")),
+            }
+            validation = validate_position_near_plan_point(
+                planned,
+                {"x": position["x"], "y": position["y"], "z": position["z"]},
+                tolerance_mm,
+            )
+            outcome["position_validation"] = validation
+            if not validation.get("ok"):
+                outcome["error"] = validation.get("reason", "位置超出容差")
+                return outcome
+
+            spectrum_connect = self.spectrum.connect()
+            outcome["spectrum_connect"] = spectrum_connect
+            if not self.spectrum.is_connected():
+                outcome["error"] = f"频谱仪连接失败：{spectrum_connect}"
+                return outcome
+            spectrum_connected = True
+
+            marker = self.spectrum.read_marker_amplitude()
+            outcome["spectrum_marker"] = marker
+            if not isinstance(marker, dict) or not marker.get("ok"):
+                outcome["error"] = str(
+                    marker.get("error", "频谱仪单点幅度读取失败")
+                    if isinstance(marker, dict)
+                    else "频谱仪单点幅度读取失败"
+                )
+                return outcome
+
+            record = self.joint_sample.build_sample_record(position, marker)
+            record["task_id"] = "MANUAL-3X3-POINT"
+            outcome["record"] = record
+            outcome["ok"] = True
+
+            if save:
+                json_path = self.joint_sample.save_sample_json(record)
+                csv_path = self.joint_sample.save_sample_csv(record)
+                outcome["json_path"] = str(json_path)
+                outcome["csv_path"] = str(csv_path)
+                record["sample_path"] = str(json_path)
+            return outcome
+        except Exception as exc:  # noqa: BLE001
+            outcome["error"] = str(exc)
+            return outcome
+        finally:
+            if spectrum_connected and self.spectrum.is_connected():
+                try:
+                    outcome["spectrum_disconnect"] = self.spectrum.disconnect()
+                except Exception:  # noqa: BLE001
+                    pass
+            if motion_connected and self.motion.is_connected():
+                try:
+                    outcome["motion_disconnect"] = self.motion.disconnect()
+                except Exception:  # noqa: BLE001
+                    pass
+
     def connect_all_safe(self) -> dict[str, str]:
         if not self.enabled:
             return {"status": "disabled", "message": DISABLED_MESSAGE}
