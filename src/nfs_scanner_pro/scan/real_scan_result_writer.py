@@ -86,6 +86,11 @@ def build_summary(
     failed_points: int,
     state: str,
 ) -> dict[str, Any]:
+    motion_executed = "none"
+    if mode == "fake_run":
+        motion_executed = "fake"
+    elif mode == "real_run":
+        motion_executed = "real"
     return {
         "task_id": task_id,
         "plan_id": plan_id,
@@ -97,7 +102,9 @@ def build_summary(
         "dry_run": mode == "dry_run",
         "fake_run": mode == "fake_run",
         "real_run": mode == "real_run",
-        "motion_command_executed_any": mode == "real_run",
+        "real_hardware": mode == "real_run",
+        "motion_command_executed": motion_executed,
+        "motion_command_executed_any": mode in ("fake_run", "real_run"),
         "sweep_started_any": False,
         "updated_at": datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
     }

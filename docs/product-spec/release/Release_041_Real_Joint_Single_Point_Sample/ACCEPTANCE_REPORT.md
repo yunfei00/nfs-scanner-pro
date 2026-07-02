@@ -2,7 +2,7 @@
 
 ## 执行时间
 
-2026-07-02 01:20:44 UTC
+2026-07-02 01:44:11 UTC
 
 ## 执行命令
 
@@ -15,18 +15,18 @@ python scripts/check_real_devices_safe.py
 
 ## 检查项
 
-- [PASS] `compileall` (0.64s)
+- [PASS] `compileall` (0.26s)
 - [PASS] `joint_sample_imports` (0.00s)
 - [PASS] `default_real_hardware_disabled` (0.00s)
 - [PASS] `sample_record_builder` (0.00s)
-- [PASS] `sample_json_csv_persistence` (0.04s) — runtime/verification/R041/joint_samples/SP-106D0469/single_point_sample.json
+- [PASS] `sample_json_csv_persistence` (0.04s) — runtime/verification/R041/joint_samples/SP-DE17FC23/single_point_sample.json
 - [PASS] `no_connection_when_disabled` (0.00s)
 - [PASS] `fake_adapter_joint_sample` (0.00s)
 - [PASS] `real_device_manager_joint_status` (0.00s)
-- [PASS] `check_joint_sample_script_default` (1.73s)
+- [PASS] `check_joint_sample_script_default` (0.89s)
 - [PASS] `source_no_motion_or_sweep_commands` (0.00s)
-- [PASS] `mock_ui_unchanged` (34.68s)
-- [PASS] `no_high_fidelity_changes` (0.14s)
+- [PASS] `mock_ui_unchanged` (19.16s)
+- [PASS] `no_high_fidelity_changes` (0.08s)
 
 ## 结果
 

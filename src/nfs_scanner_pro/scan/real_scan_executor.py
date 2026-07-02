@@ -58,8 +58,25 @@ class RealScanExecutor:
         if self.plan is None:
             return {"ok": False, "error": "未加载扫描计划"}
         validation = validate_scan_plan(self.plan)
+        self._stop_requested = False
+        self._paused = False
+        self.state = RealScanState.RUNNING
+        total = self.plan.point_count()
+        self._update_progress(
+            current_index=-1,
+            message="dry-run 校验中",
+            completed=0,
+            failed=0,
+        )
+        self._logs.append({"event": "dry_run_start", "total_points": total})
         self.state = RealScanState.COMPLETED if validation.get("ok") else RealScanState.FAILED
-        self._update_progress(message="dry-run 完成", completed=0, failed=0)
+        self._update_progress(
+            current_index=total - 1 if total else -1,
+            message="dry-run 完成",
+            completed=0,
+            failed=0 if validation.get("ok") else total,
+        )
+        self._logs.append({"event": "dry_run_done", "validation": validation.get("summary", "")})
         summary = build_summary(
             task_id=self.task_id,
             plan_id=self.plan.plan_id,
@@ -81,6 +98,8 @@ class RealScanExecutor:
     def fake_run(self) -> dict[str, Any]:
         if self.plan is None:
             return {"ok": False, "error": "未加载扫描计划"}
+        self._stop_requested = False
+        self._paused = False
         self.manager.enable_fake_transports()
         self.manager.motion.connect()
         self.manager.spectrum.connect()
@@ -174,6 +193,14 @@ class RealScanExecutor:
         }
 
     def real_run(self) -> dict[str, Any]:
+        from nfs_scanner_pro.devices.hardware_mode import is_real_mode
+
+        if not is_real_mode():
+            return {
+                "ok": False,
+                "blocked": True,
+                "error": "NFS_HARDWARE_MODE 必须为 real",
+            }
         if not is_real_hardware_enabled():
             return {"ok": False, "blocked": True, "error": "NFS_ENABLE_REAL_HARDWARE 未启用"}
         ok_exec, message = require_real_scan_execution_enabled()
@@ -208,7 +235,12 @@ class RealScanExecutor:
 
     def stop(self) -> dict[str, Any]:
         self._stop_requested = True
+        self._paused = False
         self.state = RealScanState.STOPPING
+        self._logs.append({"event": "stop_requested", "real_device_stop": False})
+        if self.progress is not None:
+            self.progress.message = "停止请求已记录（不发送真实 stop）"
+            self.progress.state = self.state.value
         return {"ok": True, "state": self.state.value}
 
     def snapshot(self) -> dict[str, Any]:

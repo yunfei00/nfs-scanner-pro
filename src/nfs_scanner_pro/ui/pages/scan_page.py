@@ -54,6 +54,20 @@ class ScanPage(ScanCanvasWidget):
     def bind_parameter_dock(self, dock) -> None:
         self._param_dock = dock
         self._apply_params_editable(self._engine.state.params_editable())
+        self._embed_real_scan_console(dock)
+
+    def _embed_real_scan_console(self, dock) -> None:
+        if getattr(self, "_real_scan_console", None) is not None:
+            return
+        from PySide6.QtWidgets import QScrollArea
+
+        from nfs_scanner_pro.ui.real_scan_console_widget import RealScanConsoleWidget
+
+        console = RealScanConsoleWidget(dock)
+        self._real_scan_console = console
+        scroll = dock.findChild(QScrollArea, "scanParameterScroll")
+        if scroll is not None and scroll.widget() is not None:
+            scroll.widget().layout().addWidget(console)
 
     def start_scan_mock(self) -> None:
         if not self._engine.state.start_enabled():

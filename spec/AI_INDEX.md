@@ -615,6 +615,18 @@ spec/AI_INDEX.md
 
 
 
+
+### 5.1 做 Real Scan UI Console Dry Fake Real Entry（Release 046）
+
+```text
+spec/AI_INDEX.md
+→ docs/product-spec/release/Release_046_Real_Scan_UI_Console_Dry_Fake_Real_Entry/README.md
+→ scripts/verify_release_046.py
+→ scripts/scaffold_verify_release.py
+```
+
+
+
 ### 5.2 做领域模型 / Mock JSON / 状态机
 
 ```text
