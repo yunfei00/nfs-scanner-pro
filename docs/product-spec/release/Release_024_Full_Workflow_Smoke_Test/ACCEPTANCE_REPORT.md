@@ -2,7 +2,7 @@
 
 ## 执行时间
 
-2026-07-02 00:46:29 UTC
+2026-07-02 01:11:38 UTC
 
 ## 执行命令
 
@@ -17,9 +17,9 @@ python scripts/verify_all.py
 - [PASS] `project_prepare` — project=iPhone16_Mainboard recent=3
 - [PASS] `workspace_state` — last_page=scan gitignored=True
 - [PASS] `device_mock`
-- [PASS] `scan_engine` — task=ST-EA33D0 points=6461/6461
-- [PASS] `scan_result_persistence` — dir=ST-EA33D0 csv_rows=200 msg=True
-- [PASS] `analysis_page` — dock='分析参数' task=ST-EA33D0 trace=Trace 1
+- [PASS] `scan_engine` — task=ST-9569CF points=6461/6461
+- [PASS] `scan_result_persistence` — dir=ST-9569CF csv_rows=200 msg=True
+- [PASS] `analysis_page` — dock='分析参数' task=ST-9569CF trace=Trace 1
 - [PASS] `report_page` — dock='报告设置' draft=report_draft.json
 - [PASS] `page_switch_regression` — 0:'扫描参数':stack=True, 1:'设备配置':stack=True, 2:'分析参数':stack=True, 3:'报告设置':stack=True, 0:'扫描参数':stack=True
 - [PASS] `no_real_device_access`
@@ -31,7 +31,7 @@ PASS
 ## runtime 产物
 
 - `runtime/verification/R024/workspace_state_mock.json`
-- `runtime/verification/R024/mock_projects/iPhone16_Mainboard/scans/ST-EA33D0/`
+- `runtime/verification/R024/mock_projects/iPhone16_Mainboard/scans/ST-9569CF/`
 - `runtime/verification/R024/mock_projects/iPhone16_Mainboard/reports/RP-SMOKE-024/report_draft.json`
 
 ## 是否接真实设备

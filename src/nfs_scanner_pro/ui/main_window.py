@@ -120,7 +120,9 @@ class MainWindow(QMainWindow):
         self._restored_width = self.DEFAULT_WIDTH
         self._restored_height = self.DEFAULT_HEIGHT
         self._nav.expanded_changed.connect(self._on_navigation_expanded_changed)
+        self._device_page.hardware_mode_changed.connect(self._on_hardware_mode_changed)
         self._restore_workspace_state()
+        self._apply_startup_hardware_mode()
         self._sync_scan_toolbar()
 
     def _restore_workspace_state(self) -> None:
@@ -474,6 +476,33 @@ class MainWindow(QMainWindow):
         self._action_param_panel.blockSignals(True)
         self._action_param_panel.setChecked(visible)
         self._action_param_panel.blockSignals(False)
+
+    def _apply_startup_hardware_mode(self) -> None:
+        from nfs_scanner_pro.devices.hardware_mode import get_hardware_mode
+
+        mode = get_hardware_mode()
+        self._device_page.apply_hardware_mode(mode)
+        self._refresh_hardware_mode_status(mode.value)
+
+    def _on_hardware_mode_changed(self, mode_value: str) -> None:
+        self._refresh_hardware_mode_status(mode_value)
+
+    def _refresh_hardware_mode_status(self, mode_value: str | None = None) -> None:
+        from nfs_scanner_pro.devices.hardware_mode import (
+            HardwareMode,
+            get_hardware_mode,
+            hardware_mode_label,
+            normalize_hardware_mode,
+        )
+
+        mode = normalize_hardware_mode(mode_value) if mode_value else get_hardware_mode()
+        if mode is HardwareMode.MOCK:
+            text = f"硬件模式：{hardware_mode_label(mode)}"
+        elif mode is HardwareMode.FAKE:
+            text = "硬件模式：Fake — 已切换到 Fake Hardware 模式"
+        else:
+            text = "硬件模式：Real 未连接 — Real Hardware 模式待安全探测"
+        self._status.set_state(text)
 
     def _device_action(self, text: str) -> None:
         self._status.set_state(f"设备操作：{text}（原型）")

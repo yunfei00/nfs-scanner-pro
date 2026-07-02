@@ -41,6 +41,7 @@ VERIFY_SCRIPTS: tuple[tuple[int, str, Path], ...] = (
     (42, "Release 042", SCRIPTS / "verify_release_042.py"),
     (43, "Release 043", SCRIPTS / "verify_release_043.py"),
     (44, "Release 044", SCRIPTS / "verify_release_044.py"),
+    (45, "Release 045", SCRIPTS / "verify_release_045.py"),
 )
 
 TAIL_LINES = 80

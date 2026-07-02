@@ -2,7 +2,7 @@
 
 ## 执行时间
 
-2026-07-02 00:54:30 UTC
+2026-07-02 01:20:45 UTC
 
 ## 执行命令
 
@@ -14,19 +14,19 @@ python scripts/manual_3x3_point_sample_safe.py
 
 ## 检查项
 
-- [PASS] `compileall` (0.10s)
+- [PASS] `compileall` (0.11s)
 - [PASS] `manual_scan_imports` (0.00s)
 - [PASS] `create_manual_session` (0.00s)
 - [PASS] `position_tolerance_validation` (0.00s)
 - [PASS] `fake_sample_update` (0.00s)
-- [PASS] `manual_session_persistence` (0.05s) — runtime/verification/R043/manual_scan_sessions/MS-001DC26F/manual_scan_session.json
-- [PASS] `script_default_safe` (1.85s)
-- [PASS] `script_create_session` (1.28s)
-- [PASS] `script_fake_sample` (0.84s)
-- [PASS] `script_requires_confirm_for_real_sample` (0.82s)
+- [PASS] `manual_session_persistence` (0.04s) — runtime/verification/R043/manual_scan_sessions/MS-16EF5109/manual_scan_session.json
+- [PASS] `script_default_safe` (0.95s)
+- [PASS] `script_create_session` (1.46s)
+- [PASS] `script_fake_sample` (1.10s)
+- [PASS] `script_requires_confirm_for_real_sample` (0.99s)
 - [PASS] `source_no_motion_or_sweep_commands` (0.00s)
-- [PASS] `mock_ui_unchanged` (37.99s)
-- [PASS] `no_high_fidelity_changes` (0.12s)
+- [PASS] `mock_ui_unchanged` (46.88s)
+- [PASS] `no_high_fidelity_changes` (0.10s)
 
 ## 结果
 

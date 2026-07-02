@@ -2,7 +2,7 @@
 
 ## 执行时间
 
-2026-07-02 00:46:57 UTC
+2026-07-02 01:12:11 UTC
 
 ## 执行命令
 
@@ -14,15 +14,15 @@ python scripts/verify_all.py
 
 ## 检查项
 
-- [PASS] `compileall` (0.10s)
-- [PASS] `scaffold_help` (0.30s)
-- [PASS] `scaffold_dry_run` (0.23s)
-- [PASS] `scaffold_temp_generate` (1.49s)
-- [PASS] `scaffold_existing_release_guard` (0.30s)
+- [PASS] `compileall` (0.07s)
+- [PASS] `scaffold_help` (0.25s)
+- [PASS] `scaffold_dry_run` (0.25s)
+- [PASS] `scaffold_temp_generate` (1.82s)
+- [PASS] `scaffold_existing_release_guard` (0.21s)
 - [PASS] `scaffold_template_content` (0.00s)
 - [SKIP] `verify_all_cli` — NFS_VERIFY_NESTED=1
-- [PASS] `no_real_device_access` (0.02s)
-- [PASS] `no_high_fidelity_changes` (0.11s)
+- [PASS] `no_real_device_access` (0.01s)
+- [PASS] `no_high_fidelity_changes` (0.08s)
 
 ## 结果
 

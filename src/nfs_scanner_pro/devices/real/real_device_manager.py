@@ -10,7 +10,9 @@ from nfs_scanner_pro.devices.real.camera_adapter import CameraAdapter
 from nfs_scanner_pro.devices.real.hardware_config import (
     DISABLED_MESSAGE,
     HardwareConfig,
+    is_real_camera_enabled,
     is_real_hardware_enabled,
+    is_real_servo_enabled,
     load_hardware_config,
 )
 from nfs_scanner_pro.devices.real.joint_sample_adapter import JointSampleAdapter
@@ -267,41 +269,66 @@ class RealDeviceManager:
         }
 
     def test_all_safe(self) -> dict[str, str]:
+        """仅安全探测：status/position、IDN/frequency/marker、enumerate、get_state。"""
         if not self.enabled:
             return {"status": "disabled", "message": DISABLED_MESSAGE}
-        results = self.connect_all_safe()
-        if self.enabled:
-            single = self.spectrum.read_single_point_amplitude()
-            if isinstance(single, dict):
-                marker = single.get("marker", single)
-                results["spectrum_single_point"] = (
-                    "PASS" if single.get("ok") else "FAIL"
-                )
-                if single.get("ok"):
-                    results["spectrum_amplitude_dbm"] = str(
-                        single.get("amplitude_dbm", marker.get("amplitude_dbm", ""))
+
+        from nfs_scanner_pro.devices.hardware_mode import is_fake_mode
+
+        if is_fake_mode() and not self._fake_mode:
+            self.enable_fake_transports()
+
+        results: dict[str, str] = {"status": "ok", "safe_mode": "true"}
+        try:
+            results["motion_connect"] = self.motion.connect()
+            if self.motion.is_connected():
+                status = self.motion.query_status()
+                position = self.motion.refresh_position()
+                if isinstance(status, dict):
+                    results["motion_status_raw"] = str(status.get("raw", ""))
+                    results["motion_state"] = str(status.get("state", ""))
+                if isinstance(position, dict):
+                    results["motion_position"] = (
+                        f"X={position.get('x', 0):.3f} "
+                        f"Y={position.get('y', 0):.3f} "
+                        f"Z={position.get('z', 0):.3f} "
+                        f"({position.get('source', '')})"
                     )
-                    results["spectrum_marker_raw"] = str(single.get("raw", ""))
-                else:
-                    results["spectrum_amplitude_dbm"] = str(
-                        single.get("error", marker.get("error", ""))
+
+            results["spectrum_connect"] = self.spectrum.connect()
+            if self.spectrum.is_connected():
+                idn = self.spectrum.query_idn()
+                frequency = self.spectrum.get_current_frequency()
+                marker = self.spectrum.read_marker_amplitude()
+                if isinstance(idn, dict):
+                    results["spectrum_idn"] = str(idn.get("idn", idn.get("raw", "")))
+                if isinstance(frequency, dict):
+                    results["spectrum_frequency"] = str(
+                        frequency.get("frequency_ghz", frequency.get("raw", ""))
                     )
-        if self.motion.is_connected():
-            status = self.motion.query_status()
-            position = self.motion.refresh_position()
-            if isinstance(status, dict):
-                results["motion_status_raw"] = str(status.get("raw", ""))
-                results["motion_state"] = str(status.get("state", ""))
-            if isinstance(position, dict):
-                results["motion_position"] = (
-                    f"X={position.get('x', 0):.3f} "
-                    f"Y={position.get('y', 0):.3f} "
-                    f"Z={position.get('z', 0):.3f} "
-                    f"({position.get('source', '')})"
-                )
-        if self.camera.is_connected():
-            results["camera_devices"] = ", ".join(self.camera.enumerate_devices()) or "—"
-        return results
+                if isinstance(marker, dict):
+                    results["spectrum_marker"] = (
+                        "PASS" if marker.get("ok") else str(marker.get("error", "FAIL"))
+                    )
+                    if marker.get("ok"):
+                        results["spectrum_amplitude_dbm"] = str(marker.get("amplitude_dbm", ""))
+
+            if self._fake_mode or is_real_camera_enabled():
+                results["camera_connect"] = self.camera.connect()
+                results["camera_devices"] = ", ".join(self.camera.enumerate_devices()) or "—"
+            else:
+                results["camera"] = "skipped (NFS_ENABLE_REAL_CAMERA not set)"
+
+            if self._fake_mode or is_real_servo_enabled():
+                results["servo_connect"] = self.servo.connect()
+                state = self.servo.get_state()
+                if isinstance(state, dict):
+                    results["servo_state"] = str(state.get("probe", state.get("raw", "")))
+            else:
+                results["servo"] = "skipped (NFS_ENABLE_REAL_SERVO not set)"
+            return results
+        finally:
+            self.disconnect_all()
 
     def get_device_status(self) -> list[dict[str, str]]:
         details = {
@@ -339,6 +366,8 @@ class RealDeviceManager:
         return rows
 
     def get_snapshot(self) -> dict[str, Any]:
+        from nfs_scanner_pro.devices.hardware_mode import get_hardware_mode
+
         snapshot = build_device_snapshot(
             self.motion.snapshot(),
             self.spectrum.snapshot(),
@@ -347,6 +376,13 @@ class RealDeviceManager:
         )
         snapshot["joint_sample"] = self.joint_sample.snapshot()
         snapshot["fake_mode"] = self._fake_mode
+        snapshot["hardware_mode"] = get_hardware_mode().value
+        snapshot["real_hardware_enabled"] = is_real_hardware_enabled()
+        snapshot["safe_mode"] = True
+        snapshot["motion"] = self.motion.snapshot()
+        snapshot["spectrum"] = self.spectrum.snapshot()
+        snapshot["camera"] = self.camera.snapshot()
+        snapshot["servo"] = self.servo.snapshot()
         snapshot["hardware_flags"] = {
             "real_hardware": is_real_hardware_enabled(),
             "motion_jog": self.motion.snapshot().get("jog_enabled"),

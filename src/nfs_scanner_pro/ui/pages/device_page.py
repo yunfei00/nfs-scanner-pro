@@ -1,11 +1,25 @@
-"""设备页 — Device Center Mock（Release 012/018）。"""
+"""设备页 — Device Center Mock（Release 012/018 / 045 硬件模式）。"""
 
 from __future__ import annotations
 
 from PySide6.QtCore import Signal
-from PySide6.QtWidgets import QGridLayout, QLabel, QVBoxLayout, QWidget
+from PySide6.QtWidgets import (
+    QComboBox,
+    QGridLayout,
+    QHBoxLayout,
+    QLabel,
+    QPushButton,
+    QVBoxLayout,
+    QWidget,
+)
 
 from nfs_scanner_pro.devices import get_device_manager
+from nfs_scanner_pro.devices.hardware_mode import (
+    HardwareMode,
+    get_hardware_mode,
+    normalize_hardware_mode,
+    set_hardware_mode,
+)
 from nfs_scanner_pro.ui import mock_data
 from nfs_scanner_pro.ui.widgets.camera_preview_mock import CameraPreviewMock
 from nfs_scanner_pro.ui.widgets.device_card import DeviceCard
@@ -15,6 +29,7 @@ from nfs_scanner_pro.ui.widgets.jog_control import JogControl
 
 class DevicePage(QWidget):
     action_triggered = Signal(str)
+    hardware_mode_changed = Signal(str)
 
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
@@ -30,6 +45,7 @@ class DevicePage(QWidget):
         crumb.setObjectName("breadcrumbBar")
         crumb.setProperty("role", "pageBreadcrumb")
         root.addWidget(crumb)
+        self._build_hardware_mode_bar(root)
 
         grid_wrap = QWidget(self)
         grid_wrap.setObjectName("deviceCenter")
@@ -57,6 +73,92 @@ class DevicePage(QWidget):
             device.add_state_listener(self._on_device_state_changed)
 
         self._refresh_from_manager()
+        self.apply_hardware_mode(get_hardware_mode())
+
+    def _build_hardware_mode_bar(self, root: QVBoxLayout) -> None:
+        bar = QWidget(self)
+        bar.setObjectName("hardwareModeBar")
+        layout = QHBoxLayout(bar)
+        layout.setContentsMargins(16, 8, 16, 8)
+        layout.setSpacing(12)
+
+        layout.addWidget(QLabel("硬件模式：", bar))
+        self._mode_combo = QComboBox(bar)
+        self._mode_combo.setObjectName("hardwareModeCombo")
+        for label, value in (
+            ("Mock 模式", HardwareMode.MOCK.value),
+            ("Fake 模式", HardwareMode.FAKE.value),
+            ("Real 模式", HardwareMode.REAL.value),
+        ):
+            self._mode_combo.addItem(label, value)
+        self._mode_combo.currentIndexChanged.connect(self._on_hardware_mode_combo_changed)
+        layout.addWidget(self._mode_combo)
+
+        self._probe_btn = QPushButton("安全探测", bar)
+        self._probe_btn.setObjectName("realSafeProbeButton")
+        self._probe_btn.clicked.connect(self._on_safe_probe)
+        self._probe_btn.setVisible(False)
+        layout.addWidget(self._probe_btn)
+
+        self._mode_hint = QLabel("", bar)
+        self._mode_hint.setObjectName("hardwareModeHint")
+        self._mode_hint.setWordWrap(True)
+        layout.addWidget(self._mode_hint, stretch=1)
+        root.addWidget(bar)
+
+    def apply_hardware_mode(self, mode: str | HardwareMode) -> None:
+        normalized = normalize_hardware_mode(mode)
+        self._mode_combo.blockSignals(True)
+        index = self._mode_combo.findData(normalized.value)
+        if index >= 0:
+            self._mode_combo.setCurrentIndex(index)
+        self._mode_combo.blockSignals(False)
+        self._update_hardware_mode_ui(normalized)
+
+    def _on_hardware_mode_combo_changed(self, _index: int) -> None:
+        value = self._mode_combo.currentData()
+        mode = set_hardware_mode(value)
+        self._update_hardware_mode_ui(mode)
+        self.hardware_mode_changed.emit(mode.value)
+
+    def _update_hardware_mode_ui(self, mode: HardwareMode) -> None:
+        self._probe_btn.setVisible(mode is HardwareMode.REAL)
+        if mode is HardwareMode.MOCK:
+            self._mode_hint.setText("Mock 模式 — 使用 MockDeviceManager，不连接真实设备。")
+        elif mode is HardwareMode.FAKE:
+            self._mode_hint.setText(
+                "Fake Ready — 已切换到 Fake Hardware 模式，使用 FakeTransport 离线测试，不连接真实设备。"
+            )
+        else:
+            self._mode_hint.setText(
+                "Real Hardware 模式已选择，但尚未连接。"
+                "如需连接，请设置 NFS_ENABLE_REAL_HARDWARE=1 并点击安全探测。"
+            )
+
+    def _on_safe_probe(self) -> None:
+        from nfs_scanner_pro.devices.real.hardware_config import is_real_hardware_enabled
+        from nfs_scanner_pro.devices.real.real_device_manager import RealDeviceManager
+
+        if not is_real_hardware_enabled():
+            message = "真实硬件未启用，请设置 NFS_ENABLE_REAL_HARDWARE=1"
+            self._mode_hint.setText(message)
+            self._show_result(message)
+            return
+
+        manager = RealDeviceManager()
+        try:
+            result = manager.test_all_safe()
+            if result.get("status") == "disabled":
+                message = str(result.get("message", "真实硬件未启用"))
+                self._mode_hint.setText(message)
+                self._show_result(message)
+                return
+            summary = "；".join(f"{key}={value}" for key, value in sorted(result.items()))
+            message = f"安全探测完成：{summary}"
+            self._mode_hint.setText("Real Hardware 安全探测已完成（无运动 / 无 sweep）。")
+            self._show_result(message)
+        finally:
+            manager.disconnect_all()
 
     def _on_device_state_changed(self, _state) -> None:
         self._refresh_from_manager()

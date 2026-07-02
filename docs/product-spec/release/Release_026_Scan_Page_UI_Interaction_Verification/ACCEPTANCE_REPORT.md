@@ -2,7 +2,7 @@
 
 ## 执行时间
 
-2026-07-02 00:46:34 UTC
+2026-07-02 01:11:45 UTC
 
 ## 执行命令
 
@@ -17,10 +17,10 @@ python scripts/verify_all.py
 - [PASS] `mainwindow_boot` — dock='扫描参数'
 - [PASS] `scan_toolbar_buttons` — ['开始扫描', '停止扫描', '拍照', '区域对齐', '网格', '测量']
 - [PASS] `start_scan_ui_binding` — engine=扫描中 status='状态：扫描中'
-- [PASS] `scan_progress_updates` — index 0->120 progress=1
+- [PASS] `scan_progress_updates` — index 0->151 progress=2
 - [PASS] `scan_canvas_current_point` — method=True marker=True
 - [PASS] `stop_scan_ui_binding` — engine=准备就绪 status='状态：已停止'
-- [PASS] `scan_completion_persistence` — task=ST-0AF90B points=6461/6461 csv=200
+- [PASS] `scan_completion_persistence` — task=ST-3038E8 points=6461/6461 csv=200
 - [PASS] `scan_parameter_locking` — after_complete=True locked=True
 - [PASS] `page_switch_regression` — 0:'扫描参数', 1:'设备配置', 2:'分析参数', 3:'报告设置', 0:'扫描参数'
 - [PASS] `no_real_device_access`
@@ -31,7 +31,7 @@ PASS
 
 ## runtime 产物
 
-- `runtime/verification/R026/mock_projects/iPhone16_Mainboard/scans/ST-0AF90B/`
+- `runtime/verification/R026/mock_projects/iPhone16_Mainboard/scans/ST-3038E8/`
 
 ## 是否接真实设备
 

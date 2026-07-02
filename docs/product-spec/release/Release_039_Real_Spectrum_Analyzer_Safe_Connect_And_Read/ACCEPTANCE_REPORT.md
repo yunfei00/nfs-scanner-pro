@@ -2,7 +2,7 @@
 
 ## 执行时间
 
-2026-07-02 00:54:29 UTC
+2026-07-02 01:20:44 UTC
 
 ## 执行命令
 
@@ -22,11 +22,11 @@ python scripts/check_real_devices_safe.py
 - [PASS] `scpi_query_whitelist` (0.00s)
 - [PASS] `frequency_response_parser` (0.00s)
 - [PASS] `no_connection_when_disabled` (0.00s)
-- [PASS] `check_real_devices_safe_default` (0.68s)
-- [PASS] `real_device_manager_spectrum_status` (0.00s)
-- [PASS] `mock_ui_unchanged` (19.74s)
+- [PASS] `check_real_devices_safe_default` (0.91s)
+- [PASS] `real_device_manager_spectrum_status` (0.01s)
+- [PASS] `mock_ui_unchanged` (24.78s)
 - [PASS] `source_scpi_command_safety` (0.00s)
-- [PASS] `no_high_fidelity_changes` (0.11s)
+- [PASS] `no_high_fidelity_changes` (0.12s)
 
 ## 结果
 

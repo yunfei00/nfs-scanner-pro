@@ -2,7 +2,7 @@
 
 ## 执行时间
 
-2026-07-02 00:54:30 UTC
+2026-07-02 01:20:45 UTC
 
 ## 执行命令
 
@@ -15,7 +15,7 @@ python scripts/debug_real_motion.py --fake --status
 
 ## 检查项
 
-- [PASS] `compileall` (0.64s)
+- [PASS] `compileall` (0.59s)
 - [PASS] `real_hardware_imports` (0.00s)
 - [PASS] `safety_flags_default_false` (0.00s)
 - [PASS] `fake_transports` (0.00s)
@@ -24,13 +24,13 @@ python scripts/debug_real_motion.py --fake --status
 - [PASS] `camera_full_api_offline` (0.00s)
 - [PASS] `servo_full_api_offline` (0.00s)
 - [PASS] `real_device_manager_offline` (0.00s)
-- [PASS] `real_scan_executor_dry_run` (0.01s) — runtime/verification/R044/real_scan_runs/RS-DE5CD4E8/scan_result.json
-- [PASS] `real_scan_executor_fake_run` (0.02s) — runtime/verification/R044/real_scan_runs/RS-0CA923DD/scan_result.json
-- [PASS] `cli_default_safe` (6.30s)
-- [PASS] `cli_fake_mode` (4.02s)
+- [PASS] `real_scan_executor_dry_run` (0.00s) — runtime/verification/R044/real_scan_runs/RS-5205A196/scan_result.json
+- [PASS] `real_scan_executor_fake_run` (0.02s) — runtime/verification/R044/real_scan_runs/RS-D84EA252/scan_result.json
+- [PASS] `cli_default_safe` (5.21s)
+- [PASS] `cli_fake_mode` (4.48s)
 - [PASS] `source_safety_guards` (0.00s)
-- [PASS] `mock_ui_unchanged` (86.10s)
-- [PASS] `no_high_fidelity_changes` (0.10s)
+- [PASS] `mock_ui_unchanged` (104.03s)
+- [PASS] `no_high_fidelity_changes` (0.09s)
 
 ## 结果
 

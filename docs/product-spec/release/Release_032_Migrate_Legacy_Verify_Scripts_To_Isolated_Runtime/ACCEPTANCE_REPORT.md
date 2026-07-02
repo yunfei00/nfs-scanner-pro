@@ -2,7 +2,7 @@
 
 ## 执行时间
 
-2026-07-02 00:46:54 UTC
+2026-07-02 01:12:08 UTC
 
 ## 执行命令
 
@@ -20,12 +20,12 @@ python scripts/verify_all.py
 - [PASS] `app_paths_runtime_override` (0.01s) — runtime\verification\R032
 - [SKIP] `verify_all_isolated_only` — NFS_VERIFY_NESTED=1
 - [SKIP] `verify_all_isolated_from` — NFS_VERIFY_NESTED=1
-- [PASS] `runtime_no_mock_projects_pollution` (0.07s) — new_st_verify=0 isolated_json=True
+- [PASS] `runtime_no_mock_projects_pollution` (0.10s) — new_st_verify=0 isolated_json=True
 - [PASS] `legacy_scripts_no_hardcoded_runtime` (0.01s) — checked 9 scripts
 - [SKIP] `verify_all_cli` — NFS_VERIFY_NESTED=1
 - [PASS] `runtime_gitignore` (0.00s) — ok
-- [PASS] `no_real_device_access` (0.01s)
-- [PASS] `no_high_fidelity_changes` (0.09s)
+- [PASS] `no_real_device_access` (0.02s)
+- [PASS] `no_high_fidelity_changes` (0.10s)
 
 ## 结果
 
