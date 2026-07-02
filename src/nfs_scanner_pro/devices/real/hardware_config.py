@@ -14,6 +14,42 @@ def is_real_motion_jog_enabled() -> bool:
     return os.environ.get("NFS_ENABLE_REAL_MOTION_JOG", "").strip() == "1"
 
 
+def is_real_motion_move_enabled() -> bool:
+    return os.environ.get("NFS_ENABLE_REAL_MOTION_MOVE", "").strip() == "1"
+
+
+def is_real_motion_home_enabled() -> bool:
+    return os.environ.get("NFS_ENABLE_REAL_MOTION_HOME", "").strip() == "1"
+
+
+def is_real_motion_estop_enabled() -> bool:
+    return os.environ.get("NFS_ENABLE_REAL_MOTION_ESTOP", "").strip() == "1"
+
+
+def is_real_spectrum_write_enabled() -> bool:
+    return os.environ.get("NFS_ENABLE_REAL_SPECTRUM_WRITE", "").strip() == "1"
+
+
+def is_real_spectrum_sweep_enabled() -> bool:
+    return os.environ.get("NFS_ENABLE_REAL_SPECTRUM_SWEEP", "").strip() == "1"
+
+
+def is_real_spectrum_trace_read_enabled() -> bool:
+    return os.environ.get("NFS_ENABLE_REAL_SPECTRUM_TRACE_READ", "").strip() == "1"
+
+
+def is_real_camera_enabled() -> bool:
+    return os.environ.get("NFS_ENABLE_REAL_CAMERA", "").strip() == "1"
+
+
+def is_real_servo_enabled() -> bool:
+    return os.environ.get("NFS_ENABLE_REAL_SERVO", "").strip() == "1"
+
+
+def is_real_scan_execution_enabled() -> bool:
+    return os.environ.get("NFS_ENABLE_REAL_SCAN_EXECUTION", "").strip() == "1"
+
+
 @dataclass
 class MotionConfig:
     port: str = "COM6"
@@ -136,4 +172,40 @@ SPECTRUM_DISABLED_MESSAGE = (
 
 JOG_DISABLED_MESSAGE = (
     "真实点动未启用，请设置 NFS_ENABLE_REAL_MOTION_JOG=1 后再进行手动点动。"
+)
+
+MOVE_DISABLED_MESSAGE = (
+    "真实 move_to 未启用，请设置 NFS_ENABLE_REAL_MOTION_MOVE=1。"
+)
+
+HOME_DISABLED_MESSAGE = (
+    "真实 home 未启用，请设置 NFS_ENABLE_REAL_MOTION_HOME=1。"
+)
+
+ESTOP_DISABLED_MESSAGE = (
+    "真实急停未启用，请设置 NFS_ENABLE_REAL_MOTION_ESTOP=1。"
+)
+
+SPECTRUM_WRITE_DISABLED_MESSAGE = (
+    "频谱仪写命令未启用，请设置 NFS_ENABLE_REAL_SPECTRUM_WRITE=1。"
+)
+
+SPECTRUM_SWEEP_DISABLED_MESSAGE = (
+    "频谱 sweep 未启用，请设置 NFS_ENABLE_REAL_SPECTRUM_SWEEP=1。"
+)
+
+SPECTRUM_TRACE_DISABLED_MESSAGE = (
+    "Trace 读取未启用，请设置 NFS_ENABLE_REAL_SPECTRUM_TRACE_READ=1。"
+)
+
+CAMERA_DISABLED_MESSAGE = (
+    "真实相机未启用，请设置 NFS_ENABLE_REAL_CAMERA=1。"
+)
+
+SERVO_DISABLED_MESSAGE = (
+    "真实舵机未启用，请设置 NFS_ENABLE_REAL_SERVO=1。"
+)
+
+SCAN_EXECUTION_DISABLED_MESSAGE = (
+    "真实扫描执行未启用，请设置 NFS_ENABLE_REAL_SCAN_EXECUTION=1。"
 )

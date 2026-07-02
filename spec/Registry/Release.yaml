@@ -34,6 +34,7 @@ related_docs:
     - docs/product-spec/release/Release_030_Cross_Page_Workflow_UI_Verification/README.md
     - docs/product-spec/release/Release_031_Verification_Performance_Isolation/README.md
     - docs/product-spec/release/Release_032_Migrate_Legacy_Verify_Scripts_To_Isolated_Runtime/README.md
+    - docs/product-spec/release/Release_044_Real_Hardware_Functional_Layer_Offline_Complete/README.md
     - docs/product-spec/release/Release_043_Manual_Step_By_Step_3x3_Point_Sampling/README.md
     - docs/product-spec/release/Release_042_Real_Small_Area_3x3_Scan_Dry_Run_Planner/README.md
     - docs/product-spec/release/Release_041_Real_Joint_Single_Point_Sample/README.md

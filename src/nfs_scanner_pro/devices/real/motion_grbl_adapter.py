@@ -10,18 +10,28 @@ from nfs_scanner_pro.devices.real.hardware_config import (
     MotionConfig,
     MotionSafetyConfig,
     is_real_hardware_enabled,
+    is_real_motion_estop_enabled,
+    is_real_motion_home_enabled,
     is_real_motion_jog_enabled,
+    is_real_motion_move_enabled,
     load_motion_safety_config,
 )
 from nfs_scanner_pro.devices.real.hardware_safety import (
     EMERGENCY_STOP_BLOCKED_MESSAGE,
+    ESTOP_DISABLED_MESSAGE,
+    HOME_DISABLED_MESSAGE,
     MOTION_BLOCKED_MESSAGE,
     MOTION_DISABLED_MESSAGE,
+    MOVE_DISABLED_MESSAGE,
     block_jog_command,
     block_motion_command,
     require_real_hardware_enabled,
+    require_real_motion_estop_enabled,
+    require_real_motion_home_enabled,
     require_real_motion_jog_enabled,
+    require_real_motion_move_enabled,
 )
+from nfs_scanner_pro.devices.real.transports import BaseTransport
 
 try:
     import importlib
@@ -56,12 +66,29 @@ class MotionGrblAdapter:
         self.position_source = ""
         self.last_error = ""
         self._serial = None
+        self._transport: BaseTransport | None = None
         self._last_status: dict[str, Any] = {}
+
+    def bind_transport(self, transport: BaseTransport | None) -> None:
+        self._transport = transport
+
+    def _using_fake_transport(self) -> bool:
+        return self._transport is not None and getattr(self._transport, "is_fake", False)
 
     def is_connected(self) -> bool:
         return self.state in (DeviceState.CONNECTED, DeviceState.BUSY)
 
     def connect(self) -> str:
+        if self._transport is not None:
+            message = self._transport.connect()
+            if self._transport.is_connected():
+                self.state = DeviceState.CONNECTED
+                status = self.query_status()
+                if isinstance(status, dict) and status.get("ok"):
+                    return message
+                return message
+            self.state = DeviceState.DISCONNECTED
+            return message
         if not is_real_hardware_enabled():
             self.last_error = MOTION_DISABLED_MESSAGE
             self.state = DeviceState.DISCONNECTED
@@ -95,6 +122,11 @@ class MotionGrblAdapter:
             return f"运动平台连接失败：{exc}"
 
     def disconnect(self) -> str:
+        if self._transport is not None:
+            message = self._transport.disconnect()
+            self.state = DeviceState.DISCONNECTED
+            self.grbl_state = ""
+            return message
         if self._serial is not None:
             try:
                 self._serial.close()
@@ -106,6 +138,29 @@ class MotionGrblAdapter:
         return "运动平台已断开"
 
     def query_status(self) -> dict[str, Any]:
+        if self._transport is not None:
+            if not self._transport.is_connected():
+                return {
+                    "ok": False,
+                    "error": "运动平台未连接",
+                    "raw": "",
+                    "state": "",
+                    "x": self.x,
+                    "y": self.y,
+                    "z": self.z,
+                    "source": "",
+                }
+            raw = self._transport.query("?")
+            parsed = self.parse_grbl_status_line(raw)
+            if parsed.get("ok"):
+                self.grbl_state = str(parsed.get("state", ""))
+                self.x = float(parsed.get("x", self.x))
+                self.y = float(parsed.get("y", self.y))
+                self.z = float(parsed.get("z", self.z))
+                self.position_source = str(parsed.get("source", ""))
+                self.state = DeviceState.CONNECTED
+            self._last_status = parsed
+            return parsed
         ok_enabled, message = require_real_hardware_enabled()
         if not ok_enabled:
             return {
@@ -327,13 +382,6 @@ class MotionGrblAdapter:
 
         return {"ok": True, "reason": "", "target_position": target}
 
-    def emergency_stop_blocked(self) -> dict[str, Any]:
-        return {
-            "ok": False,
-            "blocked": True,
-            "message": EMERGENCY_STOP_BLOCKED_MESSAGE,
-        }
-
     def safe_jog(
         self,
         axis: str,
@@ -342,11 +390,14 @@ class MotionGrblAdapter:
         *,
         dry_run: bool = False,
     ) -> dict[str, Any]:
-        ok_jog, jog_message = require_real_motion_jog_enabled()
-        if not ok_jog:
-            return block_jog_command(jog_message)
+        if not self._using_fake_transport():
+            ok_jog, jog_message = require_real_motion_jog_enabled()
+            if not ok_jog:
+                return block_jog_command(jog_message)
+        elif self._transport and not self._transport.is_connected():
+            self._transport.connect()
 
-        before = self._read_position_for_jog(dry_run=dry_run)
+        before = self._read_position_for_jog(dry_run=dry_run or self._using_fake_transport())
         if not before.get("ok"):
             return {
                 "ok": False,
@@ -384,6 +435,20 @@ class MotionGrblAdapter:
 
         if dry_run:
             result["message"] = "dry-run：未发送点动命令"
+            return result
+
+        if self._transport is not None:
+            self._transport.write(f"{command}\n")
+            self._transport.query("?")
+            after = self.refresh_position()
+            if after.get("ok"):
+                result["position_after"] = {
+                    "x": after["x"],
+                    "y": after["y"],
+                    "z": after["z"],
+                }
+            result["fake"] = self._using_fake_transport()
+            result["message"] = "点动完成（transport）"
             return result
 
         if not self.is_connected():
@@ -436,12 +501,154 @@ class MotionGrblAdapter:
             return block_jog_command()
         return self.safe_jog(axis, direction, step, dry_run=False)
 
-    def move_to(self, x: float, y: float, z: float) -> dict[str, Any]:
-        del x, y, z
+    def build_move_command(
+        self,
+        x: float | None = None,
+        y: float | None = None,
+        z: float | None = None,
+        *,
+        feed: float | None = None,
+    ) -> str:
+        parts = ["G90", "G21", "G1"]
+        coords: list[str] = []
+        if x is not None:
+            coords.append(f"X{float(x):.3f}")
+        if y is not None:
+            coords.append(f"Y{float(y):.3f}")
+        if z is not None:
+            coords.append(f"Z{float(z):.3f}")
+        if not coords:
+            raise ValueError("至少需要一个坐标")
+        feed_val = feed if feed is not None else self.safety.jog_feed_mm_min
+        return " ".join(parts + coords + [f"F{int(feed_val)}"])
+
+    def validate_move_target(
+        self,
+        x: float | None,
+        y: float | None,
+        z: float | None,
+    ) -> dict[str, Any]:
+        target: dict[str, float] = {"x": self.x, "y": self.y, "z": self.z}
+        if x is not None:
+            target["x"] = float(x)
+        if y is not None:
+            target["y"] = float(y)
+        if z is not None:
+            target["z"] = float(z)
+        if x is None and y is None and z is None:
+            return {"ok": False, "reason": "至少需要一个目标坐标", "target": target}
+        reason = _soft_limit_reason(target, self.safety)
+        if reason:
+            return {"ok": False, "reason": reason, "target": target}
+        return {"ok": True, "reason": "", "target": target}
+
+    def move_to(
+        self,
+        x: float | None = None,
+        y: float | None = None,
+        z: float | None = None,
+        *,
+        feed: float | None = None,
+        dry_run: bool = False,
+    ) -> dict[str, Any]:
+        if dry_run:
+            validation = self.validate_move_target(x, y, z)
+            if not validation.get("ok"):
+                return {
+                    "ok": False,
+                    "blocked": False,
+                    "error": validation.get("reason", "目标校验失败"),
+                }
+            try:
+                command = self.build_move_command(x, y, z, feed=feed)
+            except ValueError as exc:
+                return {"ok": False, "error": str(exc)}
+            return {
+                "ok": True,
+                "dry_run": True,
+                "command": command,
+                "target": validation["target"],
+                "message": "dry-run：未发送 move_to 命令",
+            }
+
+        if self._using_fake_transport():
+            validation = self.validate_move_target(x, y, z)
+            if not validation.get("ok"):
+                return {
+                    "ok": False,
+                    "blocked": False,
+                    "error": validation.get("reason", "目标校验失败"),
+                }
+            command = self.build_move_command(x, y, z, feed=feed)
+            if self._transport and not self._transport.is_connected():
+                self._transport.connect()
+            if self._transport:
+                self._transport.write(f"{command}\n")
+            return {
+                "ok": True,
+                "fake": True,
+                "command": command,
+                "target": validation["target"],
+                "message": "fake move_to 完成",
+            }
+
         return block_motion_command("move_to")
 
-    def home(self) -> dict[str, Any]:
+    def home(self, *, dry_run: bool = False) -> dict[str, Any]:
+        command = "$H"
+        if dry_run:
+            return {
+                "ok": True,
+                "dry_run": True,
+                "command": command,
+                "message": "dry-run：未发送 home 命令",
+            }
+        if self._using_fake_transport():
+            if self._transport and not self._transport.is_connected():
+                self._transport.connect()
+            if self._transport:
+                self._transport.write(f"{command}\n")
+            return {
+                "ok": True,
+                "fake": True,
+                "command": command,
+                "message": "fake home 完成",
+            }
         return block_motion_command("home")
+
+    def emergency_stop(self, *, dry_run: bool = False) -> dict[str, Any]:
+        command = "!"
+        if dry_run:
+            return {
+                "ok": True,
+                "dry_run": True,
+                "command": command,
+                "message": "dry-run：未发送急停",
+            }
+        if self._using_fake_transport():
+            if self._transport:
+                self._transport.write(command)
+            return {
+                "ok": True,
+                "fake": True,
+                "command": command,
+                "message": "fake 急停完成",
+            }
+        ok_estop, estop_message = require_real_motion_estop_enabled()
+        if not ok_estop:
+            return {
+                "ok": False,
+                "blocked": True,
+                "message": estop_message or EMERGENCY_STOP_BLOCKED_MESSAGE,
+            }
+        return {"ok": False, "blocked": True, "message": ESTOP_DISABLED_MESSAGE}
+
+    def emergency_stop_blocked(self) -> dict[str, Any]:
+        return {
+            "ok": False,
+            "blocked": True,
+            "message": EMERGENCY_STOP_BLOCKED_MESSAGE,
+        }
 
     def stop(self) -> dict[str, Any]:
         return self.emergency_stop_blocked()
@@ -452,6 +659,10 @@ class MotionGrblAdapter:
             "real": True,
             "enabled": is_real_hardware_enabled(),
             "jog_enabled": is_real_motion_jog_enabled(),
+            "move_enabled": is_real_motion_move_enabled(),
+            "home_enabled": is_real_motion_home_enabled(),
+            "estop_enabled": is_real_motion_estop_enabled(),
+            "fake_transport": self._using_fake_transport(),
             "connected": self.is_connected(),
             "port": self.port,
             "baudrate": self.baudrate,

@@ -591,6 +591,18 @@ spec/AI_INDEX.md
 
 
 
+
+### 5.1 做 Real Hardware Functional Layer Offline Complete（Release 044）
+
+```text
+spec/AI_INDEX.md
+→ docs/product-spec/release/Release_044_Real_Hardware_Functional_Layer_Offline_Complete/README.md
+→ scripts/verify_release_044.py
+→ scripts/scaffold_verify_release.py
+```
+
+
+
 ### 5.2 做领域模型 / Mock JSON / 状态机
 
 ```text

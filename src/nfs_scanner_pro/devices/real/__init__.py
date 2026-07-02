@@ -1,13 +1,29 @@
 """真实设备 Adapter 层 — 默认关闭，需 NFS_ENABLE_REAL_HARDWARE=1。"""
 
 from nfs_scanner_pro.devices.real.camera_adapter import CameraAdapter
+from nfs_scanner_pro.devices.real.command_result import CommandResult
+from nfs_scanner_pro.devices.real.transports import (
+    FakeCameraTransport,
+    FakeScpiTransport,
+    FakeSerialTransport,
+    FakeServoTransport,
+)
 from nfs_scanner_pro.devices.real.hardware_config import (
     DISABLED_MESSAGE,
     HardwareConfig,
     JOG_DISABLED_MESSAGE,
     SPECTRUM_DISABLED_MESSAGE,
+    is_real_camera_enabled,
     is_real_hardware_enabled,
+    is_real_motion_estop_enabled,
+    is_real_motion_home_enabled,
     is_real_motion_jog_enabled,
+    is_real_motion_move_enabled,
+    is_real_scan_execution_enabled,
+    is_real_servo_enabled,
+    is_real_spectrum_sweep_enabled,
+    is_real_spectrum_trace_read_enabled,
+    is_real_spectrum_write_enabled,
     load_hardware_config,
     load_motion_safety_config,
 )
@@ -28,6 +44,11 @@ from nfs_scanner_pro.devices.real.spectrum_scpi_adapter import SpectrumScpiAdapt
 
 __all__ = [
     "CameraAdapter",
+    "CommandResult",
+    "FakeCameraTransport",
+    "FakeScpiTransport",
+    "FakeSerialTransport",
+    "FakeServoTransport",
     "DISABLED_MESSAGE",
     "HardwareConfig",
     "SPECTRUM_DISABLED_MESSAGE",

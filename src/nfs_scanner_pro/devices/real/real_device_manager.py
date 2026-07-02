@@ -42,6 +42,74 @@ class RealDeviceManager:
             DeviceType.CAMERA: self.camera,
             DeviceType.SERVO: self.servo,
         }
+        self._fake_mode = False
+
+    def enable_fake_transports(self) -> None:
+        from nfs_scanner_pro.devices.real.transports import (
+            FakeCameraTransport,
+            FakeScpiTransport,
+            FakeSerialTransport,
+            FakeServoTransport,
+        )
+
+        self._fake_mode = True
+        self.motion.bind_transport(FakeSerialTransport())
+        self.spectrum.bind_transport(FakeScpiTransport())
+        self.camera.bind_transport(FakeCameraTransport())
+        self.servo.bind_transport(FakeServoTransport())
+
+    def run_motion_jog(
+        self,
+        axis: str,
+        direction: str,
+        step_mm: float,
+        *,
+        dry_run: bool = True,
+    ) -> dict[str, Any]:
+        return self.motion.safe_jog(axis, direction, step_mm, dry_run=dry_run)
+
+    def run_motion_move(
+        self,
+        x: float | None = None,
+        y: float | None = None,
+        z: float | None = None,
+        *,
+        dry_run: bool = True,
+    ) -> dict[str, Any]:
+        return self.motion.move_to(x, y, z, dry_run=dry_run)
+
+    def run_motion_home(self, *, dry_run: bool = True) -> dict[str, Any]:
+        return self.motion.home(dry_run=dry_run)
+
+    def run_spectrum_configure(self, **kwargs: Any) -> dict[str, Any]:
+        return self.spectrum.configure_measurement(dry_run=kwargs.pop("dry_run", True), **kwargs)
+
+    def run_spectrum_sweep(self, *, dry_run: bool = True) -> dict[str, Any]:
+        return self.spectrum.trigger_single_sweep(dry_run=dry_run)
+
+    def run_camera_capture(self, *, dry_run: bool = True, fake: bool = False) -> dict[str, Any]:
+        if fake and not self._fake_mode:
+            self.enable_fake_transports()
+        return self.camera.capture_image(dry_run=dry_run and not fake)
+
+    def run_servo_switch(self, probe: str, *, dry_run: bool = True) -> dict[str, Any]:
+        if probe.lower() == "hx":
+            return self.servo.switch_hx(dry_run=dry_run)
+        return self.servo.switch_hy(dry_run=dry_run)
+
+    def run_joint_sample(self, *, save: bool = False) -> dict[str, Any]:
+        return self.sample_single_point_safe(save=save)
+
+    def run_scan_offline_or_real(
+        self,
+        executor: Any,
+        mode: str = "dry_run",
+    ) -> dict[str, Any]:
+        if mode == "dry_run":
+            return executor.dry_run()
+        if mode == "fake_run":
+            return executor.fake_run()
+        return executor.real_run()
 
     @property
     def enabled(self) -> bool:
@@ -278,6 +346,15 @@ class RealDeviceManager:
             self.servo.snapshot(),
         )
         snapshot["joint_sample"] = self.joint_sample.snapshot()
+        snapshot["fake_mode"] = self._fake_mode
+        snapshot["hardware_flags"] = {
+            "real_hardware": is_real_hardware_enabled(),
+            "motion_jog": self.motion.snapshot().get("jog_enabled"),
+            "motion_move": self.motion.snapshot().get("move_enabled"),
+            "spectrum_write": self.spectrum.snapshot().get("write_enabled"),
+            "camera": self.camera.snapshot().get("camera_enabled"),
+            "servo": self.servo.snapshot().get("servo_enabled"),
+        }
         return snapshot
 
     def is_all_ready(self) -> bool:

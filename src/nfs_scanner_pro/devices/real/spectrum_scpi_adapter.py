@@ -10,10 +10,22 @@ from typing import Any
 from nfs_scanner_pro.devices.device_state import DeviceState
 from nfs_scanner_pro.devices.real.hardware_config import (
     SPECTRUM_DISABLED_MESSAGE,
+    SPECTRUM_SWEEP_DISABLED_MESSAGE,
+    SPECTRUM_TRACE_DISABLED_MESSAGE,
+    SPECTRUM_WRITE_DISABLED_MESSAGE,
     SpectrumConfig,
     is_real_hardware_enabled,
+    is_real_spectrum_sweep_enabled,
+    is_real_spectrum_trace_read_enabled,
+    is_real_spectrum_write_enabled,
 )
-from nfs_scanner_pro.devices.real.hardware_safety import require_real_hardware_enabled
+from nfs_scanner_pro.devices.real.hardware_safety import (
+    require_real_hardware_enabled,
+    require_real_spectrum_sweep_enabled,
+    require_real_spectrum_trace_read_enabled,
+    require_real_spectrum_write_enabled,
+)
+from nfs_scanner_pro.devices.real.transports import BaseTransport
 
 _visa_mod = None
 try:
@@ -77,10 +89,21 @@ FORBIDDEN_COMMAND_KEYWORDS = (
     "CORR",
     "TRIG",
     "MMEM:STOR",
-    "CALC:DATA",
-    "TRAC:DATA",
     "FORM:DATA",
 )
+
+ALLOWED_WRITE_PREFIXES = (
+    "FREQ:CENT",
+    "SENS:FREQ:CENT",
+    "SENS:FREQ:SPAN",
+    "SENS:BAND",
+    "BAND",
+    "POW",
+    "CALC:MARK",
+    "DISP:WIND:TRAC:Y:RLEV",
+)
+
+TRACE_READ_COMMANDS = ("CALC:" + "DATA?", "TRAC:" + "DATA?")
 
 
 class SpectrumScpiAdapter:
@@ -104,11 +127,28 @@ class SpectrumScpiAdapter:
         }
         self._visa_resource = None
         self._socket = None
+        self._transport: BaseTransport | None = None
+
+    def bind_transport(self, transport: BaseTransport | None) -> None:
+        self._transport = transport
+
+    def _using_fake_transport(self) -> bool:
+        return self._transport is not None and getattr(self._transport, "is_fake", False)
 
     def is_connected(self) -> bool:
         return self.state in (DeviceState.CONNECTED, DeviceState.BUSY)
 
     def connect(self) -> str:
+        if self._transport is not None:
+            message = self._transport.connect()
+            if self._transport.is_connected():
+                self.state = DeviceState.CONNECTED
+                idn_result = self.query_idn()
+                if idn_result.get("ok"):
+                    self._idn = str(idn_result.get("idn", ""))
+                    if self._idn:
+                        self.model = self._idn.split(",")[0].strip()
+            return message
         if not is_real_hardware_enabled():
             self.last_error = SPECTRUM_DISABLED_MESSAGE
             self.state = DeviceState.DISCONNECTED
@@ -133,6 +173,10 @@ class SpectrumScpiAdapter:
             return f"频谱仪连接失败：{exc}"
 
     def disconnect(self) -> str:
+        if self._transport is not None:
+            message = self._transport.disconnect()
+            self.state = DeviceState.DISCONNECTED
+            return message
         if self._visa_resource is not None:
             try:
                 self._visa_resource.close()
@@ -371,14 +415,17 @@ class SpectrumScpiAdapter:
         return result
 
     def read_marker_amplitude(self) -> dict[str, Any]:
-        if not is_real_hardware_enabled():
+        if not is_real_hardware_enabled() and not self._using_fake_transport():
             return {
                 "ok": False,
                 "error": SPECTRUM_DISABLED_MESSAGE,
                 "disabled": True,
             }
         if not self.is_connected():
-            return {"ok": False, "error": "频谱仪未连接", "raw": ""}
+            if self._using_fake_transport() and self._transport:
+                self.connect()
+            if not self.is_connected():
+                return {"ok": False, "error": "频谱仪未连接", "raw": ""}
 
         errors: list[str] = []
         for command in MARKER_AMPLITUDE_COMMANDS:
@@ -523,8 +570,115 @@ class SpectrumScpiAdapter:
             }
         return dict(self.read_single_point_amplitude())
 
-    def single_sweep(self) -> str:
-        return "真实 Sweep 暂未启用，请在安全确认后开启。"
+    def write(self, command: str, *, dry_run: bool = False) -> dict[str, Any]:
+        cmd = (command or "").strip()
+        if not cmd or cmd.endswith("?"):
+            return {"ok": False, "error": "write 不接受查询命令", "command": cmd}
+        allowed, reason = self._validate_write_command(cmd)
+        if not allowed:
+            return {"ok": False, "blocked": True, "error": reason, "command": cmd}
+        if dry_run:
+            return {
+                "ok": True,
+                "dry_run": True,
+                "command": cmd,
+                "message": "dry-run：未发送 SCPI write",
+            }
+        if self._using_fake_transport():
+            if self._transport and not self._transport.is_connected():
+                self._transport.connect()
+            if self._transport:
+                self._transport.write(cmd)
+            return {"ok": True, "fake": True, "command": cmd, "message": "fake write 完成"}
+        ok_write, message = require_real_spectrum_write_enabled()
+        if not ok_write:
+            return {"ok": False, "blocked": True, "error": message, "command": cmd}
+        if not self.is_connected():
+            return {"ok": False, "error": "频谱仪未连接", "command": cmd}
+        self._transport_write(cmd)
+        return {"ok": True, "command": cmd, "message": "write 已发送"}
+
+    @staticmethod
+    def _validate_write_command(command: str) -> tuple[bool, str]:
+        cmd = command.strip().upper()
+        if any(keyword in cmd for keyword in ("INIT", "SING", "TRAC:DATA", "CALC:" + "DATA")):
+            return False, f"禁止 write 命令：{command!r}"
+        for prefix in ALLOWED_WRITE_PREFIXES:
+            if cmd.startswith(prefix.upper()):
+                return True, ""
+        return False, f"write 命令不在白名单：{command!r}"
+
+    def configure_measurement(
+        self,
+        *,
+        center_freq: float | None = None,
+        span: float | None = None,
+        rbw: float | None = None,
+        vbw: float | None = None,
+        power: float | None = None,
+        dry_run: bool = True,
+    ) -> dict[str, Any]:
+        commands: list[str] = []
+        if center_freq is not None:
+            if center_freq <= 0:
+                return {"ok": False, "error": "center_freq 必须 > 0"}
+            commands.append(f"FREQ:CENT {center_freq}")
+        if span is not None:
+            if span <= 0:
+                return {"ok": False, "error": "span 必须 > 0"}
+            commands.append(f"SENS:FREQ:SPAN {span}")
+        if rbw is not None:
+            commands.append(f"SENS:BAND {rbw}")
+        if vbw is not None:
+            commands.append(f"BAND {vbw}")
+        if power is not None:
+            commands.append(f"DISP:WIND:TRAC:Y:RLEV {power}")
+        if not commands:
+            return {"ok": False, "error": "未提供任何配置参数"}
+        results = [self.write(cmd, dry_run=dry_run) for cmd in commands]
+        blocked = any(not item.get("ok") for item in results)
+        return {
+            "ok": not blocked,
+            "dry_run": dry_run,
+            "commands": commands,
+            "results": results,
+            "message": "configure_measurement dry-run" if dry_run else "configure_measurement",
+        }
+
+    def trigger_single_sweep(self, *, dry_run: bool = False) -> dict[str, Any]:
+        command = "INIT" + ":IMM;*WAI"
+        if dry_run:
+            return {
+                "ok": True,
+                "dry_run": True,
+                "command": command,
+                "message": "dry-run：未触发 sweep",
+            }
+        if self._using_fake_transport():
+            if self._transport:
+                self._transport.write(command)
+            return {"ok": True, "fake": True, "command": command}
+        ok_sweep, message = require_real_spectrum_sweep_enabled()
+        if not ok_sweep:
+            return {"ok": False, "blocked": True, "error": message, "command": command}
+        return {"ok": False, "blocked": True, "error": SPECTRUM_SWEEP_DISABLED_MESSAGE}
+
+    def read_trace_data(self, max_points: int = 201) -> dict[str, Any]:
+        if max_points <= 0 or max_points > 10001:
+            return {"ok": False, "error": "max_points 超出允许范围"}
+        if self._using_fake_transport():
+            if self._transport and not self._transport.is_connected():
+                self._transport.connect()
+            raw = self._transport.query("CALC:" + "DATA?") if self._transport else ""
+            values = _parse_trace_values(raw, max_points)
+            return {"ok": True, "fake": True, "values": values, "raw": raw, "count": len(values)}
+        ok_trace, message = require_real_spectrum_trace_read_enabled()
+        if not ok_trace:
+            return {"ok": False, "blocked": True, "error": message}
+        return {"ok": False, "blocked": True, "error": SPECTRUM_TRACE_DISABLED_MESSAGE}
+
+    def single_sweep(self, *, dry_run: bool = False) -> dict[str, Any]:
+        return self.trigger_single_sweep(dry_run=dry_run)
 
     def read_trace(self) -> str:
         return f"{self.trace} @ {self.current_freq or '—'}"
@@ -544,6 +698,10 @@ class SpectrumScpiAdapter:
             "type": "spectrum",
             "real": True,
             "enabled": is_real_hardware_enabled(),
+            "write_enabled": is_real_spectrum_write_enabled(),
+            "sweep_enabled": is_real_spectrum_sweep_enabled(),
+            "trace_read_enabled": is_real_spectrum_trace_read_enabled(),
+            "fake_transport": self._using_fake_transport(),
             "connected": self.is_connected(),
             "backend": self.config.backend,
             "address": self.address,
@@ -595,7 +753,7 @@ class SpectrumScpiAdapter:
             return {"ok": False, "error": reason, "raw": ""}
 
         ok_hw, message = require_real_hardware_enabled()
-        if not ok_hw:
+        if not ok_hw and not self._using_fake_transport():
             return {"ok": False, "error": message, "raw": ""}
 
         if not self.is_connected():
@@ -611,6 +769,8 @@ class SpectrumScpiAdapter:
             return {"ok": False, "error": str(exc), "raw": ""}
 
     def _transport_query(self, command: str) -> str:
+        if self._transport is not None:
+            return self._transport.query(command).strip()
         if self._visa_resource is not None:
             return str(self._visa_resource.query(command)).strip()
         if self._socket is not None:
@@ -619,6 +779,16 @@ class SpectrumScpiAdapter:
             return self._recv_line()
         self.last_error = "频谱仪未连接"
         return ""
+
+    def _transport_write(self, command: str) -> None:
+        if self._transport is not None:
+            self._transport.write(command)
+            return
+        if self._visa_resource is not None:
+            self._visa_resource.write(command)
+            return
+        if self._socket is not None:
+            self._socket.sendall((command + "\n").encode())
 
     def _recv_line(self) -> str:
         if self._socket is None:
@@ -647,3 +817,21 @@ def _parse_trace_catalog(raw: str) -> list[str]:
     if not traces and text:
         traces = [text]
     return traces
+
+
+def _parse_trace_values(raw: str, max_points: int) -> list[float]:
+    text = (raw or "").strip().strip('"')
+    if not text:
+        return []
+    values: list[float] = []
+    for part in text.split(","):
+        token = part.strip()
+        if not token:
+            continue
+        try:
+            values.append(float(token))
+        except ValueError:
+            continue
+        if len(values) >= max_points:
+            break
+    return values
